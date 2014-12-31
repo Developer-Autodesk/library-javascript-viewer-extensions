@@ -73,7 +73,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
                     var menu =  Autodesk.Viewing.Extensions.ViewerObjectContextMenu.
                         prototype.buildMenu.call(
-                            this, event, status);
+                        this, event, status);
 
                     return menu;
                 }
@@ -94,7 +94,9 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
             _self.onExplode);
 
-        _self.overlay = _self.createOverlay();
+        _self.createOverlay(function(overlay) {
+            _self.overlay = overlay;
+        });
 
         _viewer.onResize = function() {
 
@@ -383,35 +385,35 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.worldToScreen = function(worldPoint, camera) {
 
-         var p = new THREE.Vector4();
+        var p = new THREE.Vector4();
 
-         p.x = worldPoint.x;
-         p.y = worldPoint.y;
-         p.z = worldPoint.z;
-         p.w = 1;
+        p.x = worldPoint.x;
+        p.y = worldPoint.y;
+        p.z = worldPoint.z;
+        p.w = 1;
 
-         p.applyMatrix4(camera.matrixWorldInverse);
-         p.applyMatrix4(camera.projectionMatrix);
+        p.applyMatrix4(camera.matrixWorldInverse);
+        p.applyMatrix4(camera.projectionMatrix);
 
-         // Don't want to mirror values with negative z (behind camera)
-         // if camera is inside the bounding box,
-         // better to throw markers to the screen sides.
-         if (p.w > 0)
-         {
-             p.x /= p.w;
-             p.y /= p.w;
-             p.z /= p.w;
-         }
+        // Don't want to mirror values with negative z (behind camera)
+        // if camera is inside the bounding box,
+        // better to throw markers to the screen sides.
+        if (p.w > 0)
+        {
+            p.x /= p.w;
+            p.y /= p.w;
+            p.z /= p.w;
+        }
 
-         // This one is multiplying by width/2 and –height/2,
-         // and offsetting by canvas location
-         var point = _viewer.impl.viewportToClient(p.x, p.y);
+        // This one is multiplying by width/2 and –height/2,
+        // and offsetting by canvas location
+        var point = _viewer.impl.viewportToClient(p.x, p.y);
 
-         // snap to the center of the pixel
-         point.x = Math.floor(point.x) + 0.5;
-         point.y = Math.floor(point.y) + 0.5;
+        // snap to the center of the pixel
+        point.x = Math.floor(point.x) + 0.5;
+        point.y = Math.floor(point.y) + 0.5;
 
-         return point;
+        return point;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -442,26 +444,26 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.getPropertyValue = function (dbId, displayName, callback) {
 
-            function _cb(result) {
+        function _cb(result) {
 
-                if (result.properties) {
+            if (result.properties) {
 
-                    for (var i = 0; i < result.properties.length; i++) {
+                for (var i = 0; i < result.properties.length; i++) {
 
-                        var prop = result.properties[i];
+                    var prop = result.properties[i];
 
-                        if (prop.displayName === displayName) {
+                    if (prop.displayName === displayName) {
 
-                            callback(prop.displayValue);
-                            return;
-                        }
+                        callback(prop.displayValue);
+                        return;
                     }
-
-                    callback('undefined');
                 }
-            }
 
-            _viewer.getProperties(dbId, _cb);
+                callback('undefined');
+            }
+        }
+
+        _viewer.getProperties(dbId, _cb);
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -510,7 +512,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             _viewer.getCamera());
 
         var offset = getClientOffset(
-           document.getElementById('ViewerDiv'));
+            document.getElementById('ViewerDiv'));
 
         markUp.screenPoint = screenPoint;
 
@@ -521,10 +523,10 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
         markUp.line.attr({
             path:
-                "M" + (screenPoint.x - offset.x) +
-                "," + (screenPoint.y - offset.y) +
-                "L" + (markUp.textPos.x - offset.x) +
-                "," + (markUp.textPos.y - offset.y)
+            "M" + (screenPoint.x - offset.x) +
+            "," + (screenPoint.y - offset.y) +
+            "L" + (markUp.textPos.x - offset.x) +
+            "," + (markUp.textPos.y - offset.y)
         });
 
         var divYOffset = 30;
@@ -552,33 +554,41 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     // create overlay 2d canvas
     //
     ///////////////////////////////////////////////////////////////////////////
-    _self.createOverlay = function () {
+    _self.createOverlay = function (callback) {
 
-        if (typeof Raphael === 'undefined') {
-            return null;
-        }
+        jQuery.getScript('http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js')
+            .done(function () {
 
-        var overlayDiv = document.createElement("div");
+                if (typeof Raphael === 'undefined') {
+                    callback(null);
+                }
 
-        overlayDiv.id = 'overlayDivId';
+                var overlayDiv = document.createElement("div");
 
-        _viewer.clientContainer.appendChild(
-            overlayDiv);
+                overlayDiv.id = 'overlayDivId';
 
-        overlayDiv.style.top = "0";
-        overlayDiv.style.left = "0";
-        overlayDiv.style.right = "0";
-        overlayDiv.style.bottom = "0";
-        overlayDiv.style.zIndex = "999";
-        overlayDiv.style.position = "absolute";
-        overlayDiv.style.pointerEvents = "none";
+                _viewer.clientContainer.appendChild(
+                    overlayDiv);
 
-        var overlay = new Raphael(
-            overlayDiv,
-            overlayDiv.clientWidth,
-            overlayDiv.clientHeight);
+                overlayDiv.style.top = "0";
+                overlayDiv.style.left = "0";
+                overlayDiv.style.right = "0";
+                overlayDiv.style.bottom = "0";
+                overlayDiv.style.zIndex = "999";
+                overlayDiv.style.position = "absolute";
+                overlayDiv.style.pointerEvents = "none";
 
-        return overlay;
+                var overlay = new Raphael(
+                    overlayDiv,
+                    overlayDiv.clientWidth,
+                    overlayDiv.clientHeight);
+
+                callback(overlay);
+            })
+            .fail(function(jqxhr, settings, exception) {
+                console.log("Load failed createOverlay: " + exception);
+                callback(null);
+            });
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -650,6 +660,6 @@ Autodesk.ADN.Viewing.Extension.Annotation.prototype.constructor =
     Autodesk.ADN.Viewing.Extension.Annotation;
 
 Autodesk.Viewing.theExtensionManager.registerExtension(
-    'Autodesk.ADN.Viewing.Extension.2dAnnotation',
+    'Autodesk.ADN.Viewing.Extension.Annotation',
     Autodesk.ADN.Viewing.Extension.Annotation);
 
