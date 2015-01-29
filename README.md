@@ -26,14 +26,14 @@ There are two ways to load an extension with viewer API:
             loadDocument(viewer, options.document);
         });
 
-Please refer to this sample(https://github.com/Developer-Autodesk/tutorial-aspnet-view.and.data.api/blob/master/FirstViewerWebApp/FirstViewerWebApp/Scripts/Viewer.js) for detail.
+Please refer to [this sample](https://github.com/Developer-Autodesk/tutorial-aspnet-view.and.data.api/blob/master/FirstViewerWebApp/FirstViewerWebApp/Scripts/Viewer.js) for detail.
 
 * Load extensions danamically on demand:
 
 		//load extension for SEO
 		viewer.loadExtension('Autodesk.ADN.Viewing.Extension.SEO');
 
-Please refer to this sample(https://github.com/Developer-Autodesk/library-javascript-view.and.data.api/blob/master/AdnViewerManager_Sample.html) for detail.
+Please refer to [this sample](https://github.com/Developer-Autodesk/library-javascript-view.and.data.api/blob/master/AdnViewerManager_Sample.html) for detail.
 
 ## License
 
