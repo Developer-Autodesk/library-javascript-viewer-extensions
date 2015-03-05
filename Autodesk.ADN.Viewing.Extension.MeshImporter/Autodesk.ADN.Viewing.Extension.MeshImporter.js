@@ -2,6 +2,21 @@
 // Mesh Importer viewer Extension
 // by Philippe Leefsma, October 2014
 //
+
+
+    //TODO: doucument how to create the mesh json file
+
+// Usage example 
+
+/*
+
+ // load the MeshImporter extension
+ viewer.loadExtension('Autodesk.ADN.Viewing.Extension.MeshImporter');
+
+
+
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
@@ -52,12 +67,18 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
             'z-index':'100'
         });
 
+
         $("#meshFileInputId").on('change',
             function (event) {
 
                 var file = event.target.files[0];
 
                 _self.loadFromFile(file);
+
+                //TODO : change happens only once for same file
+                //replace a new file input to trigger again
+                //$('#meshFileInputId').replaceWith('<input type="file" name="file" id="meshFileInputId" style="visibilty:hidden"/>');
+
             });
 
         return true;
@@ -82,7 +103,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.onKeyup = function(event){
 
-        if (event.keyCode == 27) {
+        if (event.keyCode == 27) { //Escape
 
             _viewer.impl.scene.remove(_importedModel);
 
@@ -129,7 +150,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
                 console.log('Cannot read file: ' + file.name);
             };
 
-            reader.readAsText(file);
+            //reader.readAsText(file);
         }
     }
 
