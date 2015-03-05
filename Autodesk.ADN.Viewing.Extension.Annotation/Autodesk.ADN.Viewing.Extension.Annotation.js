@@ -2,6 +2,21 @@
 // 2D Annotation viewer Extension
 // by Philippe Leefsma, October 2014
 //
+//
+//
+//   Usage example:
+
+    // var options = {
+    //     // the id of viewer container, generaly it is a <div> tag
+    //     viewerContainerId : "viewerDiv",
+    //     // the property name to displayed as label
+    //     lablePropertyName : "Mass"
+
+    // };
+    // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Annotation',options);
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
@@ -20,6 +35,8 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
         kModeInitDrag: 1,
         kModeDrag: 2
     };
+
+    var annotationOption = options;
 
     var _mode = ModeEnum.kModeIddle;
 
@@ -149,7 +166,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
         var divId = newGuid();
 
         $("<div></div>").attr('id', divId).appendTo(
-            "#ViewerDiv");
+            "#"+ annotationOption.viewerContainerId);
 
         $('#' + divId).css({
 
@@ -310,7 +327,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
                     _mode = ModeEnum.kModeDrag;
 
-                    _self.getPropertyValue(markUp.dbId, 'label',
+                    _self.getPropertyValue(markUp.dbId, annotationOption.lablePropertyName,
 
                         function (value) {
 
@@ -512,7 +529,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             _viewer.getCamera());
 
         var offset = getClientOffset(
-            document.getElementById('ViewerDiv'));
+            document.getElementById(annotationOption.viewerContainerId));
 
         markUp.screenPoint = screenPoint;
 
