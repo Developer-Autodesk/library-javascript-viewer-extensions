@@ -2,6 +2,17 @@
 // Move viewer Extension
 // by Philippe Leefsma, October 2014
 //
+
+
+// Usage Example
+
+/*
+
+    // load the Move extension
+    viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Move');
+
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
