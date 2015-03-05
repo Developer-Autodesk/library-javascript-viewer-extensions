@@ -49,9 +49,9 @@ Autodesk.ADN.Viewing.Extension.PropertyPanel = function (viewer, options) {
                     _panel, properties);
 
                 _panel.addProperty(
-                    "Node Id",
-                    _selectedNodeId,
-                    "Customization");
+                    "Node Id",          //property name
+                    _selectedNodeId,    //property value
+                    "Customization");   //group name
 
                 _self.GetQuoteData(function(response){
 
