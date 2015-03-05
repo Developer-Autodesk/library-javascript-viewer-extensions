@@ -2,6 +2,66 @@
 // ContextMenu viewer extension
 // by Philippe Leefsma, October 2014
 //
+// Usage Example:
+
+/*
+                //build context option 
+                var contextMenuOption = {
+
+                    //context menus when some elements are selected
+                    nodeSpecificMenus : [
+                        //menu item
+                        {
+                            title : " Write dbId to console",
+                            handler : function(dbId){
+
+                                console.log("Node-specific Menu Item clicked [dbId: " + dbId + "]");
+
+                            }
+                        },
+                        //menu item
+                        {
+                            title : "alert dbId",
+                            handler : function(dbId){
+                                alert("Node-specific Menu Item clicked [dbId: " + dbId + "]");
+                            }
+
+                        } //,
+                        // append your own menu item ....
+
+                    ],
+                    //context menus when nothing is selected
+                    zeroSelectionMenus : [
+                        //menu item
+                        {
+                            title : "zeroSelectionMenu Item 1",
+                            handler : function(){
+                                alert("zeroSelectionMenu Item 1 clicked.");
+                            }
+                        },
+                        //menu item
+                        {
+                            title : "zeroSelectionMenu Item 2",
+                            handler : function(){
+                                alert("zeroSelectionMenu Item 2 clicked.");
+                            }
+                        }//,
+                            // append your own menu item ....
+
+                    ]
+
+                };
+
+
+                // load the ContextMenu extension
+                viewer.loadExtension('Autodesk.ADN.Viewing.Extension.ContextMenu',contextMenuOption);
+
+
+
+
+
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
@@ -9,6 +69,8 @@ AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 Autodesk.ADN.Viewing.Extension.ContextMenu = function (viewer, options) {
 
     Autodesk.Viewing.Extension.call(this, viewer, options);
+
+    var contextMenuOption = options;
 
     var _self = this;
 
@@ -36,21 +98,35 @@ Autodesk.ADN.Viewing.Extension.ContextMenu = function (viewer, options) {
                     this, event, status);
 
                 if(_selectedId) {
-                    menu.push({
-                        title: "Node-specific Menu Item [dbId: " + _selectedId + "]",
-                        target: function () {
-                            console.log("Node-specific Menu Item clicked [dbId: " + _selectedId + "]");
-                        }
-                    });
+
+                    for (var i = 0; i < contextMenuOption.nodeSpecificMenus.length; i++) {
+                        var menuItem = contextMenuOption.nodeSpecificMenus[i];
+                        
+                             menu.push({
+                                 title:  menuItem.title + "[dbId: " + _selectedId + "]",
+                                 target: function (){
+                                        menuItem.handler(_selectedId);
+                                 }
+                                 
+                             });
+
+                        
+                    }
+        
                 }
                 else {
+                    for (var i = 0; i < contextMenuOption.zeroSelectionMenus.length; i++) {
+                        var menuItem = contextMenuOption.zeroSelectionMenus[i];
+                       
+                             menu.push({
+                                 title:  menuItem.title,
+                                 target: menuItem.handler
+                             });
 
-                    menu.push({
-                        title: "Zero-selection Menu Item",
-                        target: function () {
-                            console.log("Zero-selection Menu Item clicked");
-                        }
-                    });
+                        
+                    }
+
+    
                 }
 
                 return menu;
