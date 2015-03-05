@@ -2,6 +2,20 @@
 // Basic viewer extension
 // by Philippe Leefsma, October 2014
 //
+//
+
+//   Usage example:
+
+    // // Let's load the Basic extension
+    // var options = {
+        
+    //     //no options needed for this sample.
+
+    // };
+    // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Basic',options);
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
