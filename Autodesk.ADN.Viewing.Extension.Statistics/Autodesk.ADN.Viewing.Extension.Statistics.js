@@ -65,7 +65,7 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.onKeyup = function(event){
 
-        if (event.keyCode == 27) {
+        if (event.keyCode == 27) { //Escape
 
             _viewer.isolateById([]);
             _viewer.fitToView([]);
