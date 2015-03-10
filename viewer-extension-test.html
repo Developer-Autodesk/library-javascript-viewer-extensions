@@ -23,12 +23,17 @@
         <!-- Bootstrap JavaScript -->
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <!-- Viewer -->
-        <link type="text/css" rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.css?v=v1.2.8"/>
-        <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.min.js?v=v1.2.8"></script>
+        <link type="text/css" rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.css"/>
+        <script src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.min.js"></script>
         <script src="https://cdn.rawgit.com/Developer-Autodesk/library-javascript-view.and.data.api/master/js/Autodesk.ADN.Toolkit.Viewer.js"></script>
         
+
+        <!-- Basic extesion -->
+        <script src="Autodesk.ADN.Viewing.Extension.API/Autodesk.ADN.Viewing.Extension.API.js"></script>
+
+
         <!-- Link the js file of the extension you want to test -->
-        <script src="Autodesk.ADN.Viewing.Extension.PropertyPanel/Autodesk.ADN.Viewing.Extension.PropertyPanel.js"></script>
+        <script src="Autodesk.ADN.Viewing.Extension.Statistics/Autodesk.ADN.Viewing.Extension.Statistics.js"></script>
 
         <script>
             // Replace with your own urn ...
@@ -51,19 +56,25 @@
             {
 
 
+                //load the API extension first
+                viewer.loadExtension('Autodesk.ADN.Viewing.Extension.API');
 
+                //viewer.startExplodeMotion();
+                viewer.getAllLeafComponents(function(c){
+                    console.log(c);
 
+                });
 
-                //build option 
-                var options = {
+                // //build option 
+                // var options = {
 
                    
 
-                };
+                // };
 
 
-                // load the PropertyPanel extension
-                viewer.loadExtension('Autodesk.ADN.Viewing.Extension.PropertyPanel',options);
+                // // load the Statistics extension
+                // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Statistics',options);
 
 
 
