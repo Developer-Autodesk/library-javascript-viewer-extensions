@@ -47,7 +47,7 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
         $('<div/>').
             attr('id', 'colorPickerDivId').
             append('<input type="text" class="spectrum"/>').
-            appendTo('#' + _viewer.clientContainer.id);
+            appendTo('#' + _viewer.container.id);
 
         $('#colorPickerDivId').css({
 
@@ -61,7 +61,7 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
         $('<div/>').
             attr('id', 'tex1DivId').
             append('<a href=""><img width="30" height="30" src="public/images/textures/wood.jpg"/></a>').
-            appendTo('#' + _viewer.clientContainer.id);
+            appendTo('#' + _viewer.container.id);
 
         $('#tex1DivId').css({
 
@@ -81,7 +81,7 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
         $('<div/>').
             attr('id', 'tex2DivId').
             append('<a href=""><img width="30" height="30" src="public/images/textures/steel.jpg"/></a>').
-            appendTo('#' + _viewer.clientContainer.id);
+            appendTo('#' + _viewer.container.id);
 
         $('#tex2DivId').css({
 
@@ -101,7 +101,7 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
         $('<div/>').
             attr('id', 'tex3DivId').
             append('<a href=""><img width="30" height="30" src="public/images/textures/brick.jpg"/></a>').
-            appendTo('#' + _viewer.clientContainer.id);
+            appendTo('#' + _viewer.container.id);
 
         $('#tex3DivId').css({
 

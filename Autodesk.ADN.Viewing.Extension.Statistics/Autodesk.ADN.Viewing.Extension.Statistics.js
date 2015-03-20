@@ -23,25 +23,32 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
 
         console.log('Autodesk.ADN.Viewing.Extension.Statistics loaded');
 
-        $(document).bind(
-            'keyup', _self.onKeyup);
+        /*require([
+            'https://rawgit.com/DmitryBaranovskiy/raphael/master/raphael-min.js',
+            'https://rawgit.com/DmitryBaranovskiy/g.raphael/master/min/g.raphael-min.js',
+            'https://rawgit.com/DmitryBaranovskiy/g.raphael/master/min/g.pie-min.js'
+        ], function() {*/
 
-        _viewer.getAllLeafComponents(function(components){
+            $(document).bind(
+                'keyup', _self.onKeyup);
 
-            components.forEach(function(component){
+            _viewer.getAllLeafComponents(function(components){
 
-                var name = component.name.split(':')[0];
+                components.forEach(function(component){
 
-                if(!_componentMap[name]) {
+                    var name = component.name.split(':')[0];
 
-                    _componentMap[name] = [];
-                }
+                    if(!_componentMap[name]) {
 
-                _componentMap[name].push(component.dbId);
+                        _componentMap[name] = [];
+                    }
+
+                    _componentMap[name].push(component.dbId);
+                });
+
+                _self.loadPie(_componentMap);
             });
-
-            _self.loadPie(_componentMap);
-        });
+        //});
 
         return true;
     };
@@ -176,7 +183,7 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
 
         overlayDiv.id = 'overlayPieDivId';
 
-        _viewer.clientContainer.appendChild(
+        _viewer.container.appendChild(
             overlayDiv);
 
         overlayDiv.style.top = "0";

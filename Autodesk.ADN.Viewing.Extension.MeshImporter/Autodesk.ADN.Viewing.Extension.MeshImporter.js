@@ -52,7 +52,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
             attr('id', 'meshImporterDivId').
             append('<button id="meshImporterBtnId" type="button" onclick=$("#meshFileInputId").trigger("click")>Import Mesh</button>').
             append('<input type="file" name="file" id="meshFileInputId" style="visibilty:hidden"/>').
-            appendTo('#' + _viewer.clientContainer.id);
+            appendTo('#' + _viewer.container.id);
 
         $('#meshFileInputId').css({
             'visibility':'hidden'

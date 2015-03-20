@@ -66,7 +66,8 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
             _self.onItemSelected);
 
         $(document).unbind(
-            'keyup', _self.onKeyup);
+            'keyup',
+            _self.onKeyup);
 
         _self.cancel();
 
@@ -91,13 +92,13 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.cancel = function(){
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("click", _self.onMouseClickInit);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("click", _self.onMouseClickEnd);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("mousemove", _self.onMouseMouse);
 
         _self.restorePositions(_selectedMeshMap);
@@ -133,6 +134,8 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.onItemSelected = function (event) {
 
+        console.log('onItemSelected');
+
         _viewer.select([]);
 
         if(_running) {
@@ -145,10 +148,10 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
 
             _self.previousPos = null;
 
-            $("#" + _viewer.clientContainer.id).
+            $("#" + _viewer.container.id).
                 bind("mousemove", _self.onMouseMove);
 
-            $("#" + _viewer.clientContainer.id).
+            $("#" + _viewer.container.id).
                 bind("click", _self.onMouseClickInit);
 
             var fragIdsArray = (Array.isArray(fragId) ?
@@ -196,10 +199,10 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.onMouseClickInit = function(event) {
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("click", _self.onMouseClickInit);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             bind("click", _self.onMouseClickEnd);
 
         _running = true;
@@ -217,9 +220,9 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
 
         if (hitPoint) {
 
-            for(var fragId in _selectedMeshMap) {
+            var offset = null;
 
-                console.log("FragId: " + fragId);
+            for(var fragId in _selectedMeshMap) {
 
                 var mesh = _viewer.impl.getRenderProxy(
                     _viewer,
@@ -227,16 +230,23 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
 
                 var pos = _self.getMeshPosition(mesh);
 
-                var offset = {
+                if(offset === null) {
 
-                    x: hitPoint.x - pos.x,
-                    y: hitPoint.y - pos.y,
-                    z: hitPoint.z - pos.z
+                    offset = {
+
+                        x: hitPoint.x - pos.x,
+                        y: hitPoint.y - pos.y,
+                        z: hitPoint.z - pos.z
+                    }
+
+                    _selectedMeshMap[fragId].offset = offset;
                 }
+                else {
 
-                _selectedMeshMap[fragId].offset = offset;
-
-                console.log(offset);
+                    _selectedMeshMap[fragId].offset = {
+                        x: 0, y: 0, z: 0
+                    };
+                }
             }
         }
     }
@@ -245,15 +255,17 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
 
         _self.previousPos = _self.screenToWorld(event);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("mousemove", _self.onMouseMove);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("click", _self.onMouseClickEnd);
 
         _selectedMeshMap = {};
 
         _running = false;
+
+        _viewer.impl.invalidate(true);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -272,10 +284,6 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
 
             var offset = _selectedMeshMap[fragId].offset;
 
-            //var offset = { x: 0, y: 0, z: 0 };
-
-            console.log(offset);
-
             pos = {
                 x: pos.x - offset.x,
                 y: pos.y - offset.y,
@@ -285,7 +293,8 @@ Autodesk.ADN.Viewing.Extension.Move = function (viewer, options) {
             mesh.matrixWorld.setPosition(pos);
         }
 
-        _viewer.impl.invalidate(true);
+        //_viewer.impl.invalidate(true);
+        _viewer.impl.sceneUpdated(true);
     }
 
     ///////////////////////////////////////////////////////////////////////////

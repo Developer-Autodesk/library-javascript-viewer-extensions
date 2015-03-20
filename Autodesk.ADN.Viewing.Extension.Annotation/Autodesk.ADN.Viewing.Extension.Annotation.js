@@ -56,78 +56,85 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
-        // context menu stuff
+        require([
 
-        Autodesk.ADN.Viewing.Extension.MarkUpContextMenu = function (viewer) {
+            'https://rawgit.com/DmitryBaranovskiy/raphael/master/raphael-min.js'
 
-            Autodesk.Viewing.Extensions.ViewerObjectContextMenu.call(
-                this, viewer);
-        };
+        ], function() {
 
-        Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype =
-            Object.create(Autodesk.Viewing.Extensions.ViewerObjectContextMenu.prototype);
+            // context menu stuff
 
-        Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype.constructor =
-            Autodesk.ADN.Viewing.Extension.MarkUpContextMenu;
+            Autodesk.ADN.Viewing.Extension.MarkUpContextMenu = function (viewer) {
 
-        Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype.buildMenu =
-
-            function (event, status) {
-
-                if(typeof event.markUp !== 'undefined') {
-
-                    var menu = [{
-
-                        title: "Delete annotation",
-                        target: function () {
-                            deleteMarkUp(event.markUp);
-                        }
-                    }];
-
-                    return menu;
-                }
-                else {
-
-                    var menu =  Autodesk.Viewing.Extensions.ViewerObjectContextMenu.
-                        prototype.buildMenu.call(
-                        this, event, status);
-
-                    return menu;
-                }
+                Autodesk.Viewing.Extensions.ViewerObjectContextMenu.call(
+                    this, viewer);
             };
 
-        _self.viewer.setContextMenu(
-            new Autodesk.ADN.Viewing.Extension.MarkUpContextMenu(
-                _self.viewer));
+            Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype =
+                Object.create(Autodesk.Viewing.Extensions.ViewerObjectContextMenu.prototype);
 
-        $("#" + _viewer.clientContainer.id).
-            bind("click", _self.onMouseClick);
+            Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype.constructor =
+                Autodesk.ADN.Viewing.Extension.MarkUpContextMenu;
 
-        _viewer.addEventListener(
-            Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
+            Autodesk.ADN.Viewing.Extension.MarkUpContextMenu.prototype.buildMenu =
 
-        _viewer.addEventListener(
-            Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
-            _self.onExplode);
+                function (event, status) {
 
-        _self.createOverlay(function(overlay) {
-            _self.overlay = overlay;
+                    if(typeof event.markUp !== 'undefined') {
+
+                        var menu = [{
+
+                            title: "Delete annotation",
+                            target: function () {
+                                deleteMarkUp(event.markUp);
+                            }
+                        }];
+
+                        return menu;
+                    }
+                    else {
+
+                        var menu =  Autodesk.Viewing.Extensions.ViewerObjectContextMenu.
+                            prototype.buildMenu.call(
+                            this, event, status);
+
+                        return menu;
+                    }
+                };
+
+            _self.viewer.setContextMenu(
+                new Autodesk.ADN.Viewing.Extension.MarkUpContextMenu(
+                    _self.viewer));
+
+            $("#" + _viewer.container.id).
+                bind("click", _self.onMouseClick);
+
+            _viewer.addEventListener(
+                Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+                _self.onItemSelected);
+
+            _viewer.addEventListener(
+                Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
+                _self.onExplode);
+
+            _self.createOverlay(function(overlay) {
+                _self.overlay = overlay;
+            });
+
+            _viewer.onResize = function() {
+
+                // force update
+                var view = _viewer.getCurrentView();
+
+                _viewer.setView(view);
+            }
+
+            _viewer.setPropertyPanel(null);
+
+            console.log("Autodesk.ADN.Viewing.Extension.Annotation loaded");
+
+            return true;
         });
-
-        _viewer.onResize = function() {
-
-            // force update
-            var view = _viewer.getCurrentView();
-
-            _viewer.setView(view);
-        }
-
-        _viewer.setPropertyPanel(null);
-
-        console.log("Autodesk.ADN.Viewing.Extension.Annotation loaded");
-
-        return true;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -145,7 +152,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
         _viewer.setContextMenu(null);
 
-        $("#" + _viewer.clientContainer.id).
+        $("#" + _viewer.container.id).
             unbind("click", _self.onMouseClick);
 
         _viewer.removeEventListener(
@@ -318,7 +325,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
                     _self.updateMarkUp(markUp);
 
-                    $("#" + _viewer.clientContainer.id).
+                    $("#" + _viewer.container.id).
                         bind("mousemove", _self.onMouseMove);
 
                     _viewer.addEventListener(
@@ -343,7 +350,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
             case ModeEnum.kModeDrag:
 
-                $("#" + _viewer.clientContainer.id).
+                $("#" + _viewer.container.id).
                     unbind("mousemove", _self.onMouseMove);
 
                 var markUp = _currentMarkUp;
@@ -422,7 +429,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             p.z /= p.w;
         }
 
-        // This one is multiplying by width/2 and –height/2,
+        // This one is multiplying by width/2 and â€“height/2,
         // and offsetting by canvas location
         var point = _viewer.impl.viewportToClient(p.x, p.y);
 
@@ -534,14 +541,14 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
         markUp.screenPoint = screenPoint;
 
         markUp.connector.attr({
-            cx: screenPoint.x - offset.x,
-            cy: screenPoint.y - offset.y
+            cx: screenPoint.x,
+            cy: screenPoint.y
         });
 
         markUp.line.attr({
             path:
-            "M" + (screenPoint.x - offset.x) +
-            "," + (screenPoint.y - offset.y) +
+            "M" + (screenPoint.x) +
+            "," + (screenPoint.y) +
             "L" + (markUp.textPos.x - offset.x) +
             "," + (markUp.textPos.y - offset.y)
         });
@@ -573,39 +580,31 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.createOverlay = function (callback) {
 
-        jQuery.getScript('http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js')
-            .done(function () {
+        if (typeof Raphael === 'undefined') {
+            callback(null);
+        }
 
-                if (typeof Raphael === 'undefined') {
-                    callback(null);
-                }
+        var overlayDiv = document.createElement("div");
 
-                var overlayDiv = document.createElement("div");
+        overlayDiv.id = 'overlayDivId';
 
-                overlayDiv.id = 'overlayDivId';
+        _viewer.container.appendChild(
+            overlayDiv);
 
-                _viewer.clientContainer.appendChild(
-                    overlayDiv);
+        overlayDiv.style.top = "0";
+        overlayDiv.style.left = "0";
+        overlayDiv.style.right = "0";
+        overlayDiv.style.bottom = "0";
+        overlayDiv.style.zIndex = "999";
+        overlayDiv.style.position = "absolute";
+        overlayDiv.style.pointerEvents = "none";
 
-                overlayDiv.style.top = "0";
-                overlayDiv.style.left = "0";
-                overlayDiv.style.right = "0";
-                overlayDiv.style.bottom = "0";
-                overlayDiv.style.zIndex = "999";
-                overlayDiv.style.position = "absolute";
-                overlayDiv.style.pointerEvents = "none";
+        var overlay = new Raphael(
+            overlayDiv,
+            overlayDiv.clientWidth,
+            overlayDiv.clientHeight);
 
-                var overlay = new Raphael(
-                    overlayDiv,
-                    overlayDiv.clientWidth,
-                    overlayDiv.clientHeight);
-
-                callback(overlay);
-            })
-            .fail(function(jqxhr, settings, exception) {
-                console.log("Load failed createOverlay: " + exception);
-                callback(null);
-            });
+        callback(overlay);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -679,4 +678,3 @@ Autodesk.ADN.Viewing.Extension.Annotation.prototype.constructor =
 Autodesk.Viewing.theExtensionManager.registerExtension(
     'Autodesk.ADN.Viewing.Extension.Annotation',
     Autodesk.ADN.Viewing.Extension.Annotation);
-

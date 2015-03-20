@@ -37,7 +37,8 @@ Autodesk.ADN.Viewing.Extension.PropertyPanel = function (viewer, options) {
 
                 Autodesk.Viewing.Extensions.ViewerPropertyPanel.
                     prototype.setNodeProperties.call(
-                    _panel, nodeId);
+                        _panel,
+                        nodeId);
 
                 _selectedNodeId = nodeId;
             };
