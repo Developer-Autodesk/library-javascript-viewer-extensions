@@ -140,7 +140,9 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
                         _viewer,
                         subFragId);
 
-                    _viewer.getPropertyValue(component.dbId, "Mass", function(mass) {
+                    _viewer.getPropertyValue(
+                        component.dbId,
+                        "Mass", function(mass) {
 
                         mass = (mass !== 'undefined' ? mass : 1.0);
 
@@ -149,24 +151,24 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
                             "vInit",
                             function (vInit) {
 
-                                vInit = (vInit !== 'undefined' ? vInit : "0;0;0");
+                                vInit =
+                                (vInit !== 'undefined' ? vInit : "0;0;0");
 
                                 vInit = parseArray(vInit, ';');
 
                                 _meshMap[subFragId] = {
+                                   transform: mesh.matrixWorld.clone(),
+                                   component: component,
 
-                                    transform: mesh.matrixWorld.clone(),
-                                    component: component,
+                                   vAngularInit: [0,0,0],
+                                   vAngular: [0,0,0],
 
-                                    vAngularInit: [0,0,0],
-                                    vAngular: [0,0,0],
+                                   vLinearInit: vInit,
+                                   vLinear: vInit,
 
-                                    vLinearInit: vInit,
-                                    vLinear: vInit,
-
-                                    mass: mass,
-                                    mesh: mesh,
-                                    body: null
+                                   mass: mass,
+                                   mesh: mesh,
+                                   body: null
                                 }
                             });
                     });
@@ -259,13 +261,16 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
             this.container.style.resize = "none";
         };
 
-        Autodesk.ADN.Viewing.Extension.Physics.ControlPanel.prototype = Object.create(
-            Autodesk.Viewing.UI.DockingPanel.prototype);
+        Autodesk.ADN.Viewing.Extension.Physics.
+            ControlPanel.prototype = Object.create(
+                Autodesk.Viewing.UI.DockingPanel.prototype);
 
-        Autodesk.ADN.Viewing.Extension.Physics.ControlPanel.prototype.constructor =
-            Autodesk.ADN.Viewing.Extension.Physics.ControlPanel;
+        Autodesk.ADN.Viewing.Extension.Physics.
+            ControlPanel.prototype.constructor =
+                Autodesk.ADN.Viewing.Extension.Physics.ControlPanel;
 
-        Autodesk.ADN.Viewing.Extension.Physics.ControlPanel.prototype.initialize = function() {
+        Autodesk.ADN.Viewing.Extension.Physics.
+            ControlPanel.prototype.initialize = function() {
 
             // Override DockingPanel initialize() to:
             // - create a standard title bar
@@ -295,12 +300,13 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
 
         content.id = 'physicsDivId';
 
-        var panel = new Autodesk.ADN.Viewing.Extension.Physics.ControlPanel(
-            _viewer.clientContainer,
-            'Physics',
-            'Physics',
-            content,
-            0, 0);
+        var panel = new Autodesk.ADN.Viewing.Extension.Physics.
+            ControlPanel(
+                _viewer.container,
+                'Physics',
+                'Physics',
+                content,
+                0, 0);
 
         $('#physicsDivId').css('color', 'white');
 
@@ -411,7 +417,8 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.createWorld = function() {
 
-        var collisionConfiguration = new Ammo.btDefaultCollisionConfiguration;
+        var collisionConfiguration =
+            new Ammo.btDefaultCollisionConfiguration;
 
         var world = new Ammo.btDiscreteDynamicsWorld(
             new Ammo.btCollisionDispatcher(collisionConfiguration),
@@ -608,7 +615,17 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
 
         var vertexBuffer = geometry.vb;
 
+        //console.log(geometry);
+
+        var vertices = [];
+
         for(var i=0; i < vertexBuffer.length; i += geometry.vbstride) {
+
+            vertices.push({
+                x: vertexBuffer[i],
+                y: vertexBuffer[i+1],
+                z: vertexBuffer[i+2]
+            });
 
             hull.addPoint(new Ammo.btVector3(
                 vertexBuffer[i],
@@ -616,7 +633,57 @@ Autodesk.ADN.Viewing.Extension.Physics = function (viewer, options) {
                 vertexBuffer[i+2]));
         }
 
+        var faceBuffer = mesh.geometry.attributes.index.array;
+
+        for(var i=0; i < faceBuffer.length; i+=3) {
+
+            var v1 = vertices[faceBuffer[i]];
+            var v2 = vertices[faceBuffer[i+1]];
+            var v3 = vertices[faceBuffer[i+2]];
+
+            hull.addPoint(new Ammo.btVector3(
+                (v1.x + v2.x) / 2.0,
+                (v1.y + v2.y) / 2.0,
+                (v1.z + v2.z) / 2.0));
+
+            hull.addPoint(new Ammo.btVector3(
+                (v1.x + v3.x) / 2.0,
+                (v1.y + v3.y) / 2.0,
+                (v1.z + v3.z) / 2.0));
+
+            hull.addPoint(new Ammo.btVector3(
+                (v2.x + v3.x) / 2.0,
+                (v2.y + v3.y) / 2.0,
+                (v2.z + v3.z) / 2.0));
+
+            hull.addPoint(new Ammo.btVector3(
+                (v1.x + v2.x + v3.x) / 3.0,
+                (v1.y + v2.y + v3.y) / 3.0,
+                (v1.z + v2.z + v3.z) / 3.0));
+        }
+
         return hull;
+    }
+
+    function addMesh(geometry) {
+
+        var material =
+            new THREE.MeshPhongMaterial(
+                { color: 0xff0000 });
+
+        _viewer.impl.matman().addMaterial(
+            'ADN-Material',
+            material,
+            true);
+
+        var mesh =
+            new THREE.Mesh(
+                geometry,
+                material);
+
+        _viewer.impl.scene.add(mesh);
+
+        _viewer.impl.invalidate(true);
     }
 
     ///////////////////////////////////////////////////////////////////////////

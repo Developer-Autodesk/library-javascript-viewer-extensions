@@ -248,7 +248,7 @@ Autodesk.ADN.Viewing.Extension.PhysicsEmbed = function (viewer, options) {
         content.id = 'physicsDivId';
 
         var panel = new Autodesk.ADN.Viewing.Extension.PhysicsEmbed.ControlPanel(
-            _viewer.clientContainer,
+            _viewer.container,
             'Physics',
             'Physics',
             content,
