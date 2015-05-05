@@ -5,6 +5,7 @@
 // so that the properties can be indexed by search engine
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
+AutodeskNamespace("Autodesk.Viewing.Viewer");
 
 Autodesk.ADN.Viewing.Extension.SEO = function (viewer, options) {
 
