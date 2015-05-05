@@ -4,7 +4,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
-AutodeskNamespace("Autodesk.Viewing.Viewer");
 
 Autodesk.ADN.Viewing.Extension.API = function (viewer, options) {
 
