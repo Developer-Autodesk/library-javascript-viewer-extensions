@@ -10,26 +10,26 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
 
     var _self = this;
-
-    var _viewer = viewer;
-
+    
     _self.load = function () {
 
-        _viewer.addEventListener(
+        viewer.addEventListener(
             Autodesk.Viewing.SELECTION_CHANGED_EVENT,
             _self.onItemSelected);
 
         console.log('Autodesk.ADN.Viewing.Extension.BoundingBox loaded');
+
         return true;
     };
 
     _self.unload = function () {
 
-        _viewer.removeEventListener(
+        viewer.removeEventListener(
             Autodesk.Viewing.SELECTION_CHANGED_EVENT,
             _self.onItemSelected);
 
         console.log('Autodesk.ADN.Viewing.Extension.BoundingBox unloaded');
+
         return true;
     };
 
@@ -37,7 +37,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
         console.log(event);
 
-        _viewer.select([]);
+        viewer.select([]);
 
         event.nodeArray.forEach(function(node) {
 
@@ -67,8 +67,8 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
         fragIds.forEach(function(fragId) {
 
-            var mesh = _viewer.impl.getRenderProxy(
-                _viewer,
+            var mesh = viewer.impl.getRenderProxy(
+                viewer,
                 fragId);
 
             var bb = mesh.geometry.boundingBox;
@@ -133,7 +133,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
             var line = new THREE.Line(geometry, material);
 
-            _viewer.impl.scene.add(line);
+            viewer.impl.scene.add(line);
         }
     }
 
@@ -145,7 +145,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
             linewidth: 5
         });
 
-        _viewer.impl.matman().addMaterial(
+        viewer.impl.matman().addMaterial(
             'ADN-Material-Line',
             material,
             true);
@@ -190,7 +190,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
             material);
 
-        _viewer.impl.invalidate(true);
+        viewer.impl.invalidate(true);
     }
 };
 

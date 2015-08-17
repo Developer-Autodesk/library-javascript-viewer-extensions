@@ -2,21 +2,6 @@
 // Mesh Importer viewer Extension
 // by Philippe Leefsma, October 2014
 //
-
-
-    //TODO: doucument how to create the mesh json file
-
-// Usage example 
-
-/*
-
- // load the MeshImporter extension
- viewer.loadExtension('Autodesk.ADN.Viewing.Extension.MeshImporter');
-
-
-
-*/
-
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
@@ -32,11 +17,12 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
     var _importedModel = null;
 
+    var _controlId = null;
+
     var _running = false;
 
-    var _viewer = viewer;
-
     var _self = this;
+
 
     ///////////////////////////////////////////////////////////////////////////
     // load callback
@@ -44,42 +30,9 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
+        _controlId = createControl();
+
         console.log("Autodesk.ADN.Viewing.Extension.MeshImporter loaded");
-
-        _viewer = _self.viewer;
-
-        $('<div/>').
-            attr('id', 'meshImporterDivId').
-            append('<button id="meshImporterBtnId" type="button" onclick=$("#meshFileInputId").trigger("click")>Import Mesh</button>').
-            append('<input type="file" name="file" id="meshFileInputId" style="visibilty:hidden"/>').
-            appendTo('#' + _viewer.container.id);
-
-        $('#meshFileInputId').css({
-            'visibility':'hidden'
-        });
-
-        $('#meshImporterDivId').css({
-
-            'right': '5%',
-            'top': '5%',
-            'position':'absolute',
-            'visibility':'visible',
-            'z-index':'100'
-        });
-
-
-        $("#meshFileInputId").on('change',
-            function (event) {
-
-                var file = event.target.files[0];
-
-                _self.loadFromFile(file);
-
-                //TODO : change happens only once for same file
-                //replace a new file input to trigger again
-                //$('#meshFileInputId').replaceWith('<input type="file" name="file" id="meshFileInputId" style="visibilty:hidden"/>');
-
-            });
 
         return true;
     };
@@ -92,9 +45,68 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
         console.log("Autodesk.ADN.Viewing.Extension.MeshImporter unloaded");
 
-        $('#meshImporterDivId').remove();
+        $('#' + _controlId).remove();
 
         return true;
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    function createControl() {
+
+        var divId = guid();
+
+        var btnId = guid();
+
+        var fileId = guid();
+
+        var html = [
+
+            '<div id="' + divId + '">',
+            '<button  class="btn btn-info" id="' + btnId + '" type="button">Import Mesh</button>',
+            '<input type="file" name="file" id="' + fileId + '" style="visibility:hidden"/>',
+            '</div>'
+
+        ].join('\n');
+
+        $(viewer.container).append(html);
+
+        $('#' + divId).css({
+
+            'right': '5%',
+            'top': '5%',
+            'position':'absolute',
+            'visibility':'visible',
+            'z-index':'100'
+        });
+
+        $("#" + btnId).on('click',
+          function (event) {
+
+              $("#" + fileId).trigger("click")
+          });
+
+        $("#" + fileId).on('change',
+          function (event) {
+
+              var file = event.target.files[0];
+
+              if(file) {
+
+                  _self.loadFromFile(file);
+
+                  //cannot load same file twice in input
+                  //so need to recreate control
+
+                  $('#' + _controlId).remove();
+
+                  _controlId = createControl();
+              }
+          });
+
+        return divId;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -105,14 +117,14 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
         if (event.keyCode == 27) { //Escape
 
-            _viewer.impl.scene.remove(_importedModel);
+            viewer.impl.scene.remove(_importedModel);
 
-            _viewer.impl.invalidate(true);
+            viewer.impl.invalidate(true);
 
-            $("#" + _viewer.clientContainer.id).
+            $(viewer.clientContainer).
                 unbind("mousemove", _self.onMouseMove);
 
-            $("#" + _viewer.clientContainer.id).
+            $(viewer.clientContainer).
                 unbind("click", _self.onMouseClick);
 
             $(document).unbind(
@@ -142,7 +154,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
                 _importedModel = createModel(meshEntityList);
 
-                $("#" + _viewer.clientContainer.id).
+                $(viewer.clientContainer).
                     bind("mousemove", _self.onMouseMove);
             };
 
@@ -302,7 +314,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
         var material = new THREE.MeshPhongMaterial({color: color});
 
-        _viewer.impl.matman().addMaterial(
+        viewer.impl.matman().addMaterial(
             'ADN-Material-' + newGuid(),
             material,
             true);
@@ -322,9 +334,9 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
 
             _running = true;
 
-            _viewer.impl.scene.add(_importedModel);
+            viewer.impl.scene.add(_importedModel);
 
-            $("#" + _viewer.clientContainer.id).
+            $(viewer.clientContainer).
                 bind("click", _self.onMouseClick);
 
             $(document).bind(
@@ -336,7 +348,7 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
             pos.y,
             pos.z);
 
-        _viewer.impl.invalidate(true);
+        viewer.impl.invalidate(true);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -352,12 +364,12 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
             pos.y,
             pos.z);
 
-        _viewer.impl.invalidate(true);
+        viewer.impl.invalidate(true);
 
-        $("#" + _viewer.clientContainer.id).
+        $(viewer.clientContainer).
             unbind("mousemove", _self.onMouseMove);
 
-        $("#" + _viewer.clientContainer.id).
+        $(viewer.clientContainer).
             unbind("click", _self.onMouseClick);
 
         $(document).unbind(
@@ -378,14 +390,56 @@ Autodesk.ADN.Viewing.Extension.MeshImporter = function (viewer, options) {
         };
 
         var viewport =
-            _viewer.navigation.getScreenViewport();
+            viewer.navigation.getScreenViewport();
 
         var n = {
             x: (screenPoint.x - viewport.left) / viewport.width,
             y: (screenPoint.y - viewport.top) / viewport.height
         };
 
-        return _viewer.navigation.getWorldPoint(n.x, n.y);
+        return viewer.navigation.getWorldPoint(n.x, n.y);
+    }
+
+    ///////////////////////////////////////////////////////
+    // new random guid
+    //
+    ///////////////////////////////////////////////////////
+    function guid() {
+
+        var d = new Date().getTime();
+
+        var guid = 'xxxx-xxxx-xxxx-xxxx-xxxx'.replace(
+          /[xy]/g,
+          function (c) {
+              var r = (d + Math.random() * 16) % 16 | 0;
+              d = Math.floor(d / 16);
+              return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+          });
+
+        return guid;
+    };
+
+    ///////////////////////////////////////////////////////
+    // Checks if css is loaded
+    //
+    ///////////////////////////////////////////////////////
+    function isCssLoaded(name) {
+
+        for(var i=0; i < document.styleSheets.length; ++i){
+
+            var styleSheet = document.styleSheets[i];
+
+            if(styleSheet.href && styleSheet.href.indexOf(name) > -1)
+                return true;
+        };
+
+        return false;
+    }
+
+    // loads bootstrap css if needed
+    if(!isCssLoaded("bootstrap.css") && !isCssLoaded("bootstrap.min.css")) {
+
+        $('<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css"/>').appendTo('head');
     }
 };
 

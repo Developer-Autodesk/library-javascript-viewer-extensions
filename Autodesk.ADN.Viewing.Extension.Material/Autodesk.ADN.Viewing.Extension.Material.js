@@ -11,6 +11,25 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
     Autodesk.Viewing.Extension.call(this, viewer, options);
 
     ///////////////////////////////////////////////////////////////////////////
+    // generates random guid
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    function guid () {
+
+        var d = new Date().getTime();
+
+        var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
+          /[xy]/g,
+          function (c) {
+              var r = (d + Math.random() * 16) % 16 | 0;
+              d = Math.floor(d / 16);
+              return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+          });
+
+        return guid;
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
     // Private members
     //
     ///////////////////////////////////////////////////////////////////////////
@@ -18,11 +37,15 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
 
     var _material = null;
 
-    var _viewer = viewer;
+    var _textures = [];
 
     var _self = this;
 
-    var _texMaterials = [];
+    var colorPicker = guid();
+
+    var texture1 = guid();
+    var texture2 = guid();
+    var texture3 = guid();
 
     ///////////////////////////////////////////////////////////////////////////
     // load callback
@@ -30,105 +53,116 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
-        console.log("Autodesk.ADN.Viewing.Extension.Material loaded");
+        var dependencies = [
+            "uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/spectrum.js"
+        ];
 
-        _viewer = _self.viewer;
+        $('<link/>', {
+            rel: 'stylesheet',
+            type: 'text/css',
+            href: 'uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/spectrum.css'
+        }).appendTo('head');
 
-        _material = _self.addMaterial(0xf571d6);
+        require(dependencies, function() {
 
-        _texMaterials.push(_self.addTexMaterial("public/images/textures/wood.jpg"));
-        _texMaterials.push(_self.addTexMaterial("public/images/textures/steel.jpg"));
-        _texMaterials.push(_self.addTexMaterial("public/images/textures/brick.jpg"));
+            _material = addMaterial(0xf571d6);
 
-        _viewer.addEventListener(
-            Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
+            _textures.push(addTexMaterial("uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/wood.jpg"));
+            _textures.push(addTexMaterial("uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/steel.jpg"));
+            _textures.push(addTexMaterial("uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/brick.jpg"));
 
-        $('<div/>').
-            attr('id', 'colorPickerDivId').
-            append('<input type="text" class="spectrum"/>').
-            appendTo('#' + _viewer.container.id);
+            viewer.addEventListener(
+              Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+              onItemSelected);
 
-        $('#colorPickerDivId').css({
+            $('<div/>').
+              attr('id', colorPicker).
+              append('<input type="text" class="spectrum"/>').
+              appendTo(viewer.container);
 
-            'right': '25%',
-            'top': '5%',
-            'position':'absolute',
-            'visibility':'visible',
-            'z-index':'100'
-        });
+            $('#' + colorPicker).css({
 
-        $('<div/>').
-            attr('id', 'tex1DivId').
-            append('<a href=""><img width="30" height="30" src="public/images/textures/wood.jpg"/></a>').
-            appendTo('#' + _viewer.container.id);
+                'right': '25%',
+                'top': '5%',
+                'position': 'absolute',
+                'visibility': 'visible',
+                'z-index': '100'
+            });
 
-        $('#tex1DivId').css({
+            $('<div/>').
+              attr('id', texture1).
+              append('<a href=""><img width="30" height="30" src="uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/wood.jpg"/></a>').
+              appendTo(viewer.container);
 
-            'right': '22%',
-            'top': '5%',
-            'position':'absolute',
-            'visibility':'visible',
-            'z-index':'100'
-        });
+            $('#' + texture1).css({
 
-        $('#tex1DivId').click(function(e) {
-                e.preventDefault();
-                _material = _texMaterials[0];
-            }
-        );
+                'right': '22%',
+                'top': '5%',
+                'position': 'absolute',
+                'visibility': 'visible',
+                'z-index': '100'
+            });
 
-        $('<div/>').
-            attr('id', 'tex2DivId').
-            append('<a href=""><img width="30" height="30" src="public/images/textures/steel.jpg"/></a>').
-            appendTo('#' + _viewer.container.id);
+            $('#' + texture1).click(function (e) {
+                  e.preventDefault();
+                  _material = _textures[0];
+              }
+            );
 
-        $('#tex2DivId').css({
+            $('<div/>').
+              attr('id', texture2).
+              append('<a href=""><img width="30" height="30" src="uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/steel.jpg"/></a>').
+              appendTo(viewer.container);
 
-            'right': '19%',
-            'top': '5%',
-            'position':'absolute',
-            'visibility':'visible',
-            'z-index':'100'
-        });
+            $('#' + texture2).css({
 
-        $('#tex2DivId').click(function(e) {
-                e.preventDefault();
-                _material = _texMaterials[1];
-            }
-        );
+                'right': '19%',
+                'top': '5%',
+                'position': 'absolute',
+                'visibility': 'visible',
+                'z-index': '100'
+            });
 
-        $('<div/>').
-            attr('id', 'tex3DivId').
-            append('<a href=""><img width="30" height="30" src="public/images/textures/brick.jpg"/></a>').
-            appendTo('#' + _viewer.container.id);
+            $('#' + texture2).click(function (e) {
+                  e.preventDefault();
+                  _material = _textures[1];
+              }
+            );
 
-        $('#tex3DivId').css({
+            $('<div/>').
+              attr('id', texture3).
+              append('<a href=""><img width="30" height="30" src="uploads/extensions/Autodesk.ADN.Viewing.Extension.Material/brick.jpg"/></a>').
+              appendTo(viewer.container);
 
-            'right': '16%',
-            'top': '5%',
-            'position':'absolute',
-            'visibility':'visible',
-            'z-index':'100'
-        });
+            $('#' + texture3).css({
 
-        $('#tex3DivId').click(function(e) {
-                e.preventDefault();
-                _material = _texMaterials[2];
-            }
-        );
+                'right': '16%',
+                'top': '5%',
+                'position': 'absolute',
+                'visibility': 'visible',
+                'z-index': '100'
+            });
 
-        $(".spectrum").spectrum({
-            color: "#f571d6",
-            change: function(color) {
+            $('#' + texture3).click(function (e) {
+                  e.preventDefault();
+                  _material = _textures[2];
+              }
+            );
 
-                var colorHexStr = color.toHexString().
-                    replace('#', '0x');
+            $(".spectrum").spectrum({
+                color: "#f571d6",
+                change: function (color) {
 
-                var value = parseInt(colorHexStr, 16);
+                    var colorHexStr = color.toHexString().
+                      replace('#', '0x');
 
-                _material = _self.addMaterial(value);
-            }
+                    var value = parseInt(colorHexStr, 16);
+
+                    _material = addMaterial(value);
+                }
+            });
+
+            console.log("Autodesk.ADN.Viewing.Extension.Material loaded");
         });
 
         return true;
@@ -142,17 +176,15 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
 
         console.log("Autodesk.ADN.Viewing.Extension.Material unloaded");
 
-        _viewer.removeEventListener(
+        viewer.removeEventListener(
             Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
+            onItemSelected);
 
-        $('#colorPickerDivId').remove();
+        $('#' + colorPicker).remove();
 
-        $('#tex1DivId').remove();
-        $('#tex2DivId').remove();
-        $('#tex3DivId').remove();
-
-        //_self.restoreMaterials();
+        $('#' + texture1).remove();
+        $('#' + texture2).remove();
+        $('#' + texture3).remove();
 
         return true;
     };
@@ -161,65 +193,68 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
     // item selected callback
     //
     ///////////////////////////////////////////////////////////////////////////
-    _self.onItemSelected = function (event) {
+    function onItemSelected(event) {
 
-        _viewer.select([]);
+        viewer.select([]);
 
-        var fragId = event.fragIdsArray[0];
+        event.fragIdsArray.forEach(function(fragId){
 
-        if(typeof fragId !== 'undefined') {
+            var renderProxy = viewer.impl.getRenderProxy(
+              viewer.model,
+              fragId);
 
-            var fragIdsArray = (Array.isArray(fragId) ?
-                fragId :
-                [fragId]);
-
-            fragIdsArray.forEach(function(subFragId) {
-
-                var mesh = _viewer.impl.getRenderProxy(
-                    _viewer,
-                    subFragId);
-
-                _self.setMaterial(subFragId, mesh, _material);
-            });
-        }
+            setMaterial(fragId, renderProxy, _material);
+        });
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // set material
     //
     ///////////////////////////////////////////////////////////////////////////
-    _self.setMaterial = function (fragId, mesh, material) {
+     function setMaterial(fragId, renderProxy, materialName) {
 
         if(!_materialMap[fragId]) {
 
             _materialMap[fragId] = {
 
-                material: mesh.material
+                material: renderProxy.material
             };
         }
 
-        mesh.material = material;
+        var meshProxy = new THREE.Mesh(
+          renderProxy.geometry,
+          renderProxy.material);
 
-        _viewer.impl.invalidate(true);
+        meshProxy.matrix.copy(renderProxy.matrixWorld);
+        meshProxy.matrixWorldNeedsUpdate = true;
+        meshProxy.matrixAutoUpdate = false;
+        meshProxy.frustumCulled = false;
+
+        viewer.impl.addOverlay(materialName, meshProxy);
+
+        viewer.impl.invalidate(true);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // add new material
     //
     ///////////////////////////////////////////////////////////////////////////
-    _self.addMaterial = function (color) {
+    function addMaterial(color) {
 
-        var material = new THREE.MeshPhongMaterial({color: color});
+        var materialName = guid();
 
-        _viewer.impl.matman().addMaterial(
-            'ADN-Material-' + newGuid(),
-            material,
-            true);
+        var material = new THREE.MeshPhongMaterial({
+            color: color
+        });
 
-        return material;
+        viewer.impl.createOverlayScene(
+          materialName,
+          material);
+
+        return materialName;
     }
 
-    _self.addTexMaterial = function(texture) {
+    function addTexMaterial(texture) {
 
         var tex = THREE.ImageUtils.loadTexture(
             texture);
@@ -231,47 +266,33 @@ Autodesk.ADN.Viewing.Extension.Material = function (viewer, options) {
             map: tex
         });
 
-        _viewer.impl.matman().addMaterial(
-            'adn-tex-Material-' + newGuid(),
-            material,
-            true);
+        var materialName = guid();
 
-        return material;
+        viewer.impl.createOverlayScene(
+          materialName,
+          material);
+
+        return materialName;
     }
-
-    function newGuid () {
-
-        var d = new Date().getTime();
-
-        var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
-            /[xy]/g,
-            function (c) {
-                var r = (d + Math.random() * 16) % 16 | 0;
-                d = Math.floor(d / 16);
-                return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
-            });
-
-        return guid;
-    };
 
     ///////////////////////////////////////////////////////////////////////////
     // restore initial materials
     //
     ///////////////////////////////////////////////////////////////////////////
-    _self.restoreMaterials = function () {
+    function restoreMaterials() {
 
         for (var fragId in _materialMap) {
 
-            var mesh = _viewer.impl.getRenderProxy(
-                _viewer,
-                fragId);
+            var mesh = viewer.impl.getRenderProxy(
+              viewer.impl.model,
+              fragId);
 
             mesh.material = _materialMap[fragId].material;
         };
 
         _materialMap = {};
 
-        _viewer.impl.invalidate(true);
+        viewer.impl.invalidate(true);
     }
 };
 

@@ -1,22 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
-// 2D Annotation viewer Extension
-// by Philippe Leefsma, October 2014
+// Annotation viewer Extension
+// by Philippe Leefsma, March 2015
 //
-//
-//
-//   Usage example:
-
-    // var options = {
-    //     // the id of viewer container, generaly it is a <div> tag
-    //     viewerContainerId : "viewerDiv",
-    //     // the property name to displayed as label
-    //     lablePropertyName : "Mass"
-
-    // };
-    // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.Annotation',options);
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
@@ -36,8 +21,6 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
         kModeDrag: 2
     };
 
-    var annotationOption = options;
-
     var _mode = ModeEnum.kModeIddle;
 
     var _selectedMarkUpId = null;
@@ -56,11 +39,23 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
-        require([
+        var dependencies = [
+            "uploads/extensions/Autodesk.ADN.Viewing.Extension.Annotation/raphael-min.js"
+          ];
 
-            'https://rawgit.com/DmitryBaranovskiy/raphael/master/raphael-min.js'
+        require(dependencies, function() {
 
-        ], function() {
+            function activateAnnotate() {
+
+                $(_viewer.container).
+                    bind("click", _self.onMouseClick);
+
+                _viewer.addEventListener(
+                    Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+                    _self.onItemSelected);
+
+                _viewer.setPropertyPanel(null);
+            }
 
             // context menu stuff
 
@@ -106,13 +101,6 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
                 new Autodesk.ADN.Viewing.Extension.MarkUpContextMenu(
                     _self.viewer));
 
-            $("#" + _viewer.container.id).
-                bind("click", _self.onMouseClick);
-
-            _viewer.addEventListener(
-                Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-                _self.onItemSelected);
-
             _viewer.addEventListener(
                 Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
                 _self.onExplode);
@@ -121,20 +109,12 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
                 _self.overlay = overlay;
             });
 
-            _viewer.onResize = function() {
-
-                // force update
-                var view = _viewer.getCurrentView();
-
-                _viewer.setView(view);
-            }
-
-            _viewer.setPropertyPanel(null);
+            activateAnnotate();
 
             console.log("Autodesk.ADN.Viewing.Extension.Annotation loaded");
-
-            return true;
         });
+
+        return true;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -143,21 +123,19 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.unload = function () {
 
-        _viewer.onResize = null;
+        $(_viewer.container).
+          unbind("click", _self.onMouseClick);
+
+        _viewer.removeEventListener(
+          Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+          _self.onItemSelected);
+
+        _viewer.setContextMenu(null);
 
         var panel = new Autodesk.Viewing.Extensions.ViewerPropertyPanel(
             _viewer);
 
         _viewer.setPropertyPanel(panel);
-
-        _viewer.setContextMenu(null);
-
-        $("#" + _viewer.container.id).
-            unbind("click", _self.onMouseClick);
-
-        _viewer.removeEventListener(
-            Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
 
         console.log("Autodesk.ADN.Viewing.Extension.Annotation unloaded");
 
@@ -172,8 +150,8 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
         var divId = newGuid();
 
-        $("<div></div>").attr('id', divId).appendTo(
-            "#"+ annotationOption.viewerContainerId);
+        $(_viewer.container).append(
+          '<div id="' +  divId + '"></div>');
 
         $('#' + divId).css({
 
@@ -182,7 +160,6 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             'color':'#ED1111',
             'font-size':'20px',
             'visibility':'hidden',
-            'z-index':'999',
             'pointer-events':'none'
         });
 
@@ -325,7 +302,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
                     _self.updateMarkUp(markUp);
 
-                    $("#" + _viewer.container.id).
+                    $(_viewer.container).
                         bind("mousemove", _self.onMouseMove);
 
                     _viewer.addEventListener(
@@ -334,7 +311,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
                     _mode = ModeEnum.kModeDrag;
 
-                    _self.getPropertyValue(markUp.dbId, annotationOption.lablePropertyName,
+                    _self.getPropertyValue(markUp.dbId, 'label',
 
                         function (value) {
 
@@ -350,7 +327,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
 
             case ModeEnum.kModeDrag:
 
-                $("#" + _viewer.container.id).
+                $(_viewer.container).
                     unbind("mousemove", _self.onMouseMove);
 
                 var markUp = _currentMarkUp;
@@ -536,7 +513,7 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
             _viewer.getCamera());
 
         var offset = getClientOffset(
-            document.getElementById(annotationOption.viewerContainerId));
+          _viewer.container);
 
         markUp.screenPoint = screenPoint;
 
@@ -595,7 +572,6 @@ Autodesk.ADN.Viewing.Extension.Annotation = function (viewer, options) {
         overlayDiv.style.left = "0";
         overlayDiv.style.right = "0";
         overlayDiv.style.bottom = "0";
-        overlayDiv.style.zIndex = "999";
         overlayDiv.style.position = "absolute";
         overlayDiv.style.pointerEvents = "none";
 

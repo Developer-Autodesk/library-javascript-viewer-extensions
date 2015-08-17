@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+// Basic viewer extension written in ES2015
+// by Philippe Leefsma, July 2015
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class BasicES2015 extends Autodesk.Viewing.Extension {
+
+  /////////////////////////////////////////////////////////////////
+  // Class constructor
+  //
+  /////////////////////////////////////////////////////////////////
+  constructor(viewer, options) {
+
+    super(viewer, options);
+
+    console.log(BasicES2015.ExtensionId + ' Constructor');
+
+    this.viewer = viewer;
+
+    this.loadMessage = BasicES2015.ExtensionId + ' loaded';
+
+    this.unloadMessage = BasicES2015.ExtensionId + ' unloaded';
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Extension Id
+  //
+  /////////////////////////////////////////////////////////////////
+  static get ExtensionId() {
+
+    return 'Autodesk.ADN.Viewing.Extension.BasicES2015';
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Load callback
+  //
+  /////////////////////////////////////////////////////////////////
+  load() {
+
+    alert(this.loadMessage);
+
+    this.viewer.setBackgroundColor(255,0,0, 255,255, 255);
+
+    return true;
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Unload callback
+  //
+  /////////////////////////////////////////////////////////////////
+  unload() {
+
+    this.viewer.setBackgroundColor(3,4,5, 250, 250, 250);
+
+    console.log(this.unloadMessage);
+
+    return true;
+  }
+}
+
+Autodesk.Viewing.theExtensionManager.registerExtension(
+  'Autodesk.ADN.Viewing.Extension.BasicES2015',
+  BasicES2015);
+
+

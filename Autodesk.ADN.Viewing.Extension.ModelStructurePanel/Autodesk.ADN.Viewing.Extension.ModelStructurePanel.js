@@ -15,11 +15,11 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
     // base constructor
     Autodesk.Viewing.Extension.call(this, viewer, options);
 
-    var _viewer = viewer;
-
     var _self = this;
 
     var _panel = null;
+
+    var _initialModelStructurePanel = null;
 
     ///////////////////////////////////////////////////////////////////////////
     // load callback
@@ -27,12 +27,12 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
+        _initialModelStructurePanel = viewer.modelstructure;
+
         Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel =
             function (viewer, title, options) {
 
                 _self = this;
-
-                _self.viewer = viewer;
 
                 Autodesk.Viewing.UI.ModelStructurePanel.call(
                     _self,
@@ -59,7 +59,7 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
 
                 Autodesk.Viewing.UI.ModelStructurePanel.prototype.initialize.call(_self);
 
-                _self.viewer.addEventListener(
+                viewer.addEventListener(
                     Autodesk.Viewing.SELECTION_CHANGED_EVENT,
                     function (event) {
                         _self.setSelection(event.nodeArray);
@@ -82,7 +82,7 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
 
                 if (_self.ctrlDown(event)) {
 
-                    _self.viewer.isolate([node]);
+                    viewer.isolate([node]);
                 }
             };
 
@@ -92,15 +92,15 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
         Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel.prototype.
             onClick = function (node, event) {
 
-                _self.viewer.isolate([]);
+                viewer.isolate([]);
 
-                _self.viewer.select([node.dbId]);
+                viewer.select([node.dbId]);
             }
 
         _panel = new Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel(
-            _viewer);
+            viewer);
 
-        _viewer.setModelStructurePanel(_panel);
+        viewer.setModelStructurePanel(_panel);
 
         console.log("Autodesk.ADN.Viewing.Extension.ModelStructurePanel loaded");
 
@@ -113,7 +113,7 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
     ///////////////////////////////////////////////////////////////////////////
     _self.unload = function () {
 
-        _viewer.setModelStructurePanel(null);
+        viewer.setModelStructurePanel(_initialModelStructurePanel);
 
         console.log("Autodesk.ADN.Viewing.Extension.ModelStructurePanel unloaded");
 

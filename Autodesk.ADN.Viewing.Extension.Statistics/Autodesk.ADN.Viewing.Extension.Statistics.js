@@ -21,13 +21,15 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
-        console.log('Autodesk.ADN.Viewing.Extension.Statistics loaded');
+        var dependencies = [
+            "uploads/extensions/Autodesk.ADN.Viewing.Extension.Statistics/raphael-min.js",
+            "uploads/extensions/Autodesk.ADN.Viewing.Extension.Statistics/g.raphael-min.js",
+            "uploads/extensions/Autodesk.ADN.Viewing.Extension.Statistics/g.pie-min.js"
+        ];
 
-        /*require([
-            'https://rawgit.com/DmitryBaranovskiy/raphael/master/raphael-min.js',
-            'https://rawgit.com/DmitryBaranovskiy/g.raphael/master/min/g.raphael-min.js',
-            'https://rawgit.com/DmitryBaranovskiy/g.raphael/master/min/g.pie-min.js'
-        ], function() {*/
+        require(dependencies, function() {
+
+            console.log('Autodesk.ADN.Viewing.Extension.Statistics loaded');
 
             $(document).bind(
                 'keyup', _self.onKeyup);
@@ -48,7 +50,7 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
 
                 _self.loadPie(_componentMap);
             });
-        //});
+        });
 
         return true;
     };
@@ -72,7 +74,7 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     _self.onKeyup = function(event){
 
-        if (event.keyCode == 27) { //Escape
+        if (event.keyCode == 27) {
 
             _viewer.isolateById([]);
             _viewer.fitToView([]);
@@ -190,7 +192,6 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
         overlayDiv.style.left = "0";
         overlayDiv.style.width = "auto";
         overlayDiv.style.height = "90%";
-        overlayDiv.style.zIndex = "999";
         overlayDiv.style.position = "absolute";
         overlayDiv.style.overflow = "hidden";
 
@@ -201,6 +202,49 @@ Autodesk.ADN.Viewing.Extension.Statistics = function (viewer, options) {
 
         return overlay;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Get all leaf components
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    Autodesk.Viewing.Viewer3D.prototype.getAllLeafComponents =
+
+      function (callback) {
+
+          function getLeafComponentsRec(parent) {
+
+              var components = [];
+
+              if (typeof parent.children !== "undefined") {
+
+                  var children = parent.children;
+
+                  for (var i = 0; i < children.length; i++) {
+
+                      var child = children[i];
+
+                      if (typeof child.children !== "undefined") {
+
+                          var subComps = getLeafComponentsRec(child);
+
+                          components.push.apply(components, subComps);
+                      }
+                      else {
+                          components.push(child);
+                      }
+                  }
+              }
+
+              return components;
+          }
+
+          this.getObjectTree(function (result) {
+
+              var allLeafComponents = getLeafComponentsRec(result);
+
+              callback(allLeafComponents);
+          });
+      };
 };
 
 Autodesk.ADN.Viewing.Extension.Statistics.prototype =
