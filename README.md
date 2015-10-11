@@ -7,7 +7,7 @@ A collection of various JavaScript extensions for the viewer, showing what is do
 ##Dependencies
 
 Some extensions are dependent on specific files which are placed in the same directory. Dependencies need to be loaded before loading the
-extension, using a simple <script> tag in your html or dynamically using require or equivalent.
+extension, using a simple script tag in your html or dynamically using require or equivalent.
 The path of dependencies needs to be modified accordingly to your setup.
 
 ##Setup/Usage Instructions
@@ -43,7 +43,7 @@ This sample is licensed under the terms of the [MIT License](http://opensource.o
 
 ##Written by 
 
-Written by Philippe Leefsma 
+Written by [Philippe Leefsma](http://adndevblog.typepad.com/cloud_and_mobile/philippe-leefsma) 
 
 
 

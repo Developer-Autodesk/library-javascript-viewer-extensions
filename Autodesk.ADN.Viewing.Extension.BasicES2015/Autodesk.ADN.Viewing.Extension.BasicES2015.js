@@ -51,16 +51,16 @@ class BasicES2015 extends Autodesk.Viewing.Extension {
   /////////////////////////////////////////////////////////////////
   unload() {
 
-    this.viewer.setBackgroundColor(3,4,5, 250, 250, 250);
+    this.viewer.setBackgroundColor(160, 176, 184, 190,207,216);
 
-    console.log(this.unloadMessage);
+    alert(this.unloadMessage);
 
     return true;
   }
 }
 
 Autodesk.Viewing.theExtensionManager.registerExtension(
-  'Autodesk.ADN.Viewing.Extension.BasicES2015',
+  BasicES2015.ExtensionId,
   BasicES2015);
 
 

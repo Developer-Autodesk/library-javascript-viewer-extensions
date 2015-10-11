@@ -1,164 +1,228 @@
-///////////////////////////////////////////////////////////////////////////////
-// DockingPanel viewer extension
-// by Philippe Leefsma, October 2014
+/////////////////////////////////////////////////////////////////////
+// Autodesk.ADN.Viewing.Extension.DockingPanel
+// by Philippe Leefsma, May 2015
 //
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
 
 Autodesk.ADN.Viewing.Extension.DockingPanel = function (viewer, options) {
 
-    Autodesk.Viewing.Extension.call(this, viewer, options);
+  Autodesk.Viewing.Extension.call(this, viewer, options);
 
-    var _self = this;
+  var _panel = null;
 
-    var _panel = null;
+  /////////////////////////////////////////////////////////////////
+  // Extension load callback
+  //
+  /////////////////////////////////////////////////////////////////
+  this.load = function () {
 
-    var _viewer = viewer;
+    _panel = new Panel(
+      viewer.container,
+      guid());
 
-    _self.load = function () {
+    _panel.setVisible(true);
 
-        Autodesk.ADN.AdnPanel = function(
-            parentContainer,
-            id,
-            title,
-            content,
-            x, y)
-        {
-            this.content = content;
+    console.log('Autodesk.ADN.Viewing.Extension.DockingPanel loaded');
 
-            Autodesk.Viewing.UI.DockingPanel.call(
-                this,
-                parentContainer,
-                id,
-                title,
-                {shadow:true});
+    return true;
+  }
 
-            this.container.style.top = y + "px";
-            this.container.style.left = x + "px";
+  /////////////////////////////////////////////////////////////////
+  //  Extension unload callback
+  //
+  /////////////////////////////////////////////////////////////////
+  this.unload = function () {
 
-            this.container.style.width = "200px";
-            this.container.style.height = "300px";
-            this.container.style.resize = "auto";
+    _panel.setVisible(false);
 
-            /*this.createScrollContainer({
-                left: false,
-                heightAdjustment: 45,
-                marginTop:0
-            });*/
-        };
+    console.log('Autodesk.ADN.Viewing.Extension.DockingPanel unloaded');
 
-        Autodesk.ADN.AdnPanel.prototype = Object.create(
-            Autodesk.Viewing.UI.DockingPanel.prototype);
+    return true;
+  }
 
-        Autodesk.ADN.AdnPanel.prototype.constructor =
-            Autodesk.ADN.AdnPanel;
+  /////////////////////////////////////////////////////////////////
+  // Generates random guid to use as DOM id
+  //
+  /////////////////////////////////////////////////////////////////
+  function guid() {
 
-        Autodesk.ADN.AdnPanel.prototype.initialize = function()
-        {
-            // Override DockingPanel initialize() to:
-            // - create a standard title bar
-            // - click anywhere on the panel to move
+    var d = new Date().getTime();
 
-            this.title = this.createTitleBar(
-                this.titleLabel ||
-                this.container.id);
+    var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
+      /[xy]/g,
+      function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+      });
 
-            this.closer = this.createCloseButton();
+    return guid;
+  }
 
-            this.container.appendChild(this.title);
-            this.title.appendChild(this.closer);
-            this.container.appendChild(this.content);
+  /////////////////////////////////////////////////////////////////
+  // The demo Panel
+  //
+  /////////////////////////////////////////////////////////////////
+  var Panel = function(
+    parentContainer, id) {
 
-            this.initializeMoveHandlers(this.container);
-            this.initializeCloseHandler(this.closer);
-        };
+    var _thisPanel = this;
 
-        /*Autodesk.ADN.AdnPanel.prototype.setVisible =
-            function (show, skipTransition) {
+    _thisPanel.content = document.createElement('div');
 
-                console.log("show = " + show + ", skipTransition = " + skipTransition + ")");
+    Autodesk.Viewing.UI.DockingPanel.call(
+      this,
+      parentContainer,
+      id,
+      'Docking Panel Demo',
+      {shadow:true});
 
-                Autodesk.Viewing.UI.DockingPanel.prototype.
-                    setVisible.call(
-                        this,
-                        show,
-                        skipTransition);
-        };*/
+    $(_thisPanel.container).addClass('docking-panel');
 
-        var content = document.createElement('div');
+    /////////////////////////////////////////////////////////////
+    // Custom html
+    //
+    /////////////////////////////////////////////////////////////
+    var html = [
 
-        content.id = 'adnPanelId';
+      '<form class="form-inline docking-panel-controls" role="form">',
 
-        _panel = new Autodesk.ADN.AdnPanel(
-            _viewer.container,
-            'AdnStockPanelId',
-            'ADN Stocks Panel',
-            content,
-            0, 0);
+        '<button class="btn btn-info" id="' + id + '-hello-btn">',
+          '<span class="glyphicon glyphicon-comment" aria-hidden="true"> ',
+          '</span> ',
+          'Say Hello',
+        '</button>',
 
-        $('#adnPanelId').css('color', 'white');
+        '<input id="' + id +'-name" type="text" ',
+          'class="docking-panel-name" ',
+          'placeholder=" Name ...">',
 
-        _self.GetQuoteData(function(response){
+      '</form>'
+    ];
 
-            var result = '';
+    $(_thisPanel.container).append(html.join('\n'));
 
-            response.quotes.forEach(function(quote){
+    $('#' + id + '-hello-btn').click(onButtonClicked);
 
-                result += '<b>' + quote.symbol + '</b>' + ' = $' +
-                    quote.LastTradePriceOnly + '<br><br>';
-            })
+    /////////////////////////////////////////////////////////////
+    // button clicked handler
+    //
+    /////////////////////////////////////////////////////////////
+    function onButtonClicked(event) {
 
-            $('#adnPanelId').html(result);
-        })
+      event.preventDefault();
 
-        _panel.setVisible(true);
+      var name = $('#' + id + '-name').val();
 
-        console.log('Autodesk.ADN.Viewing.Extension.DockingPanel loaded');
-
-        return true;
-    };
-
-    _self.unload = function () {
-
-        _panel.setVisible(false);
-
-        _panel.uninitialize();
-
-        console.log('Autodesk.ADN.Viewing.Extension.DockingPanel unloaded');
-
-        return true;
-    };
-
-    _self.GetQuoteData = function(onSuccess) {
-
-        var url = 'http://query.yahooapis.com/v1/public/yql' +
-            '?format=json' +
-            '&env=http://datatables.org/alltables.env' +
-            '&q='
-
-        var query = 'select * from yahoo.finance.quotes where symbol in ' +
-            '("AAPL", "ADSK","FB", "GOOG", "MSFT")';
-
-        url += encodeURIComponent(query);
-
-        $.getJSON(url, function(data){
-
-            var response = {
-                quotes : data.query.results.quote
-            }
-
-            onSuccess(response);
-        });
+      if(name.length) {
+        alert('Hello ' + name + '!');
+      }
     }
+
+    /////////////////////////////////////////////////////////////
+    // setVisible override (not used in that sample)
+    //
+    /////////////////////////////////////////////////////////////
+    _thisPanel.setVisible = function(show) {
+
+      Autodesk.Viewing.UI.DockingPanel.prototype.
+        setVisible.call(this, show);
+    }
+
+    /////////////////////////////////////////////////////////////
+    // initialize override
+    //
+    /////////////////////////////////////////////////////////////
+    _thisPanel.initialize = function() {
+
+      this.title = this.createTitleBar(
+        this.titleLabel ||
+        this.container.id);
+
+      this.closer = this.createCloseButton();
+
+      this.container.appendChild(this.title);
+      this.title.appendChild(this.closer);
+      this.container.appendChild(this.content);
+
+      this.initializeMoveHandlers(this.title);
+      this.initializeCloseHandler(this.closer);
+    };
+
+    /////////////////////////////////////////////////////////////
+    // onTitleDoubleClick override
+    //
+    /////////////////////////////////////////////////////////////
+    var _isMinimized = false;
+
+    _thisPanel.onTitleDoubleClick = function (event) {
+
+      _isMinimized = !_isMinimized;
+
+      if(_isMinimized) {
+
+        $(_thisPanel.container).addClass(
+          'docking-panel-minimized');
+      }
+      else {
+        $(_thisPanel.container).removeClass(
+          'docking-panel-minimized');
+      }
+    };
+  };
+
+  /////////////////////////////////////////////////////////////
+  // Set up JS inheritance
+  //
+  /////////////////////////////////////////////////////////////
+  Panel.prototype = Object.create(
+    Autodesk.Viewing.UI.DockingPanel.prototype);
+
+  Panel.prototype.constructor = Panel;
+
+  /////////////////////////////////////////////////////////////
+  // Add needed CSS
+  //
+  /////////////////////////////////////////////////////////////
+  var css = [
+
+    'form.docking-panel-controls{',
+      'margin: 20px;',
+    '}',
+
+    'input.docking-panel-name {',
+      'height: 30px;',
+      'margin-left: 5px;',
+      'margin-bottom: 5px;',
+      'margin-top: 5px;',
+      'border-radius:5px;',
+    '}',
+
+    'div.docking-panel {',
+      'top: 0px;',
+      'left: 0px;',
+      'width: 305px;',
+      'height: 150px;',
+      'resize: none;',
+    '}',
+
+    'div.docking-panel-minimized {',
+      'height: 34px;',
+      'min-height: 34px',
+    '}'
+
+  ].join('\n');
+
+  $('<style type="text/css">' + css + '</style>').appendTo('head');
 };
 
 Autodesk.ADN.Viewing.Extension.DockingPanel.prototype =
-    Object.create(Autodesk.Viewing.Extension.prototype);
+  Object.create(Autodesk.Viewing.Extension.prototype);
 
 Autodesk.ADN.Viewing.Extension.DockingPanel.prototype.constructor =
-    Autodesk.ADN.Viewing.Extension.DockingPanel;
+  Autodesk.ADN.Viewing.Extension.DockingPanel;
 
 Autodesk.Viewing.theExtensionManager.registerExtension(
-    'Autodesk.ADN.Viewing.Extension.DockingPanel',
-    Autodesk.ADN.Viewing.Extension.DockingPanel);
-
+  'Autodesk.ADN.Viewing.Extension.DockingPanel',
+  Autodesk.ADN.Viewing.Extension.DockingPanel);

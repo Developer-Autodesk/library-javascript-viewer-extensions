@@ -15,104 +15,78 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
         viewer.addEventListener(
             Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
+            onItemSelected);
 
         console.log('Autodesk.ADN.Viewing.Extension.BoundingBox loaded');
 
         return true;
-    };
+    }
 
     _self.unload = function () {
 
         viewer.removeEventListener(
             Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-            _self.onItemSelected);
+            onItemSelected);
 
         console.log('Autodesk.ADN.Viewing.Extension.BoundingBox unloaded');
 
         return true;
-    };
-
-    _self.onItemSelected = function (event) {
-
-        console.log(event);
-
-        viewer.select([]);
-
-        event.nodeArray.forEach(function(node) {
-
-            var bb = _self.getBoundingBox(node);
-
-            drawBox(bb.min, bb.max);
-        });
     }
 
-    _self.getBoundingBox = function (node) {
+    function onItemSelected (event) {
 
-        var fragIds = (Array.isArray(node.fragIds) ?
-            node.fragIds :
-            [node.fragIds]);
+      var bBox = getModifiedWorldBoundingBox(
+        event.fragIdsArray,
+        viewer.model.getFragmentList()
+      );
 
-        var minPt = {
-            x: Number.MAX_VALUE,
-            y: Number.MAX_VALUE,
-            z: Number.MAX_VALUE
-        };
+      drawBox(bBox.min, bBox.max);
 
-        var maxPt = {
-            x: Number.MIN_VALUE,
-            y: Number.MIN_VALUE,
-            z: Number.MIN_VALUE
-        };
-
-        fragIds.forEach(function(fragId) {
-
-            var mesh = viewer.impl.getRenderProxy(
-                viewer,
-                fragId);
-
-            var bb = mesh.geometry.boundingBox;
-
-            var fragMinPt = new THREE.Vector3(
-                bb.min.x,
-                bb.min.y,
-                bb.min.z);
-
-            var fragMaxPt = new THREE.Vector3(
-                bb.max.x,
-                bb.max.y,
-                bb.max.z);
-
-            fragMinPt.applyMatrix4(mesh.matrixWorld);
-            fragMaxPt.applyMatrix4(mesh.matrixWorld);
-
-            maxPt = max(maxPt, fragMaxPt);
-            maxPt = max(maxPt, fragMinPt);
-
-            minPt = min(minPt, fragMaxPt);
-            minPt = min(minPt, fragMinPt);
-        });
-
-        return { min: minPt, max: maxPt };
+      viewer.isolate(event.dbIdArray);
+      viewer.fitToView(event.dbIdArray);
     }
 
-    function max(v1, v2) {
+//returns bounding box as it appears in the viewer
+// (transformations could be applied)
+function getModifiedWorldBoundingBox(fragIds, fragList) {
 
-        return {
-            x: Math.max(v1.x, v2.x),
-            y: Math.max(v1.y, v2.y),
-            z: Math.max(v1.z, v2.z)
-        };
-    }
+    var fragbBox = new THREE.Box3();
+    var nodebBox = new THREE.Box3();
 
-    function min(v1, v2) {
+    fragIds.forEach(function(fragId) {
 
-        return {
-            x: Math.min(v1.x, v2.x),
-            y: Math.min(v1.y, v2.y),
-            z: Math.min(v1.z, v2.z)
-        };
-    }
+        fragList.getWorldBounds(fragId, fragbBox);
+        nodebBox.union(fragbBox);
+    });
+
+    return nodebBox;
+}
+
+// Returns bounding box as loaded in the file
+// (no explosion nor transformation)
+function getOriginalWorldBoundingBox(fragIds, fragList) {
+
+    var fragBoundingBox = new THREE.Box3();
+    var nodeBoundingBox = new THREE.Box3();
+
+    var fragmentBoxes = fragList.boxes;
+
+    fragIds.forEach(function(fragId) {
+
+        var boffset = fragId * 6;
+
+        fragBoundingBox.min.x = fragmentBoxes[boffset];
+        fragBoundingBox.min.y = fragmentBoxes[boffset+1];
+        fragBoundingBox.min.z = fragmentBoxes[boffset+2];
+        fragBoundingBox.max.x = fragmentBoxes[boffset+3];
+        fragBoundingBox.max.y = fragmentBoxes[boffset+4];
+        fragBoundingBox.max.z = fragmentBoxes[boffset+5];
+
+        nodeBoundingBox.union(fragBoundingBox);
+    });
+
+    return nodeBoundingBox;
+}
 
     function drawLines(coordsArray, material) {
 
@@ -141,8 +115,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
         var material = new THREE.LineBasicMaterial({
             color: 0xffff00,
-            //opacity: 1.0,
-            linewidth: 5
+            linewidth: 2
         });
 
         viewer.impl.matman().addMaterial(
@@ -190,7 +163,7 @@ Autodesk.ADN.Viewing.Extension.BoundingBox = function (viewer, options) {
 
             material);
 
-        viewer.impl.invalidate(true);
+        viewer.impl.sceneUpdated(true);
     }
 };
 

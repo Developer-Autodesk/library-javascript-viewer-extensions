@@ -153,16 +153,16 @@ Autodesk.ADN.Viewing.Extension.MetaProperties = function (viewer, options) {
         value: 'Click to download ...',
         category: 'Meta Properties',
         dataType: 'file',
-        href: 'img/favicon.ico',
-        filename: 'favicon.ico'
+        href: 'img/favicon.png',
+        filename: 'favicon.png'
       };
 
       var imgProp = {
         name: 'Image Property',
         category: 'Meta Properties',
         dataType: 'img',
-        href: 'img/favicon.ico',
-        filename: 'favicon.ico'
+        href: 'img/favicon.png',
+        filename: 'favicon.png'
       };
 
       _panel.addMetaProperty(textProp);

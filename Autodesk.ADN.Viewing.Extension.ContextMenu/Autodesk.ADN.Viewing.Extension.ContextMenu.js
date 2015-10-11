@@ -39,7 +39,7 @@ Autodesk.ADN.Viewing.Extension.ContextMenu = function (viewer, options) {
                   menu.push({
                       title: "Node-specific Menu Item [dbId: " + _selectedId + "]",
                       target: function () {
-                          console.log("Node-specific Menu Item clicked [dbId: " + _selectedId + "]");
+                          alert('Awesome node [' + _selectedId + '] was selected!');
                       }
                   });
               }
@@ -48,7 +48,7 @@ Autodesk.ADN.Viewing.Extension.ContextMenu = function (viewer, options) {
                   menu.push({
                       title: "Zero-selection Menu Item",
                       target: function () {
-                          console.log("Zero-selection Menu Item clicked");
+                          alert('Awesome no node selected!');
                       }
                   });
               }

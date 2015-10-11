@@ -27,8 +27,6 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
     ///////////////////////////////////////////////////////////////////////////
     _self.load = function () {
 
-        _initialModelStructurePanel = viewer.modelstructure;
-
         Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel =
             function (viewer, title, options) {
 
@@ -40,8 +38,6 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
                     'AdnModelStructurePanel',
                     title,
                     options);
-
-                _self.isMac = (navigator.userAgent.search("Mac OS") !== -1);
             };
 
         Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel.prototype =
@@ -74,27 +70,14 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
             }
 
         /**
-         * Override onHover to isolate the given node
-         * when the control modifier is pressed
-         */
-        Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel.prototype.
-            onHover = function (node, event) {
-
-                if (_self.ctrlDown(event)) {
-
-                    viewer.isolate([node]);
-                }
-            };
-
-        /**
          * Override onClick to select the given node
          */
         Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel.prototype.
-            onClick = function (node, event) {
+            onClick = function (nodeId, event) {
 
-                viewer.isolate([]);
+                viewer.isolate();
 
-                viewer.select([node.dbId]);
+                viewer.select(nodeId);
             }
 
         _panel = new Autodesk.ADN.Viewing.Extension.AdnModelStructurePanel(
@@ -113,7 +96,17 @@ Autodesk.ADN.Viewing.Extension.ModelStructurePanel = function (viewer, options) 
     ///////////////////////////////////////////////////////////////////////////
     _self.unload = function () {
 
-        viewer.setModelStructurePanel(_initialModelStructurePanel);
+        //TODO: cannot unload properly ...
+        //viewer.showModelStructurePanel(false);
+        //
+        //var options = {
+        //    docStructureConfig: viewer.config.docStructureConfig
+        //};
+        //
+        //var panel = new Autodesk.Viewing.UI.ModelStructurePanel(
+        //  viewer, 'Browser', options);
+        //
+        //viewer.setModelStructurePanel(panel);
 
         console.log("Autodesk.ADN.Viewing.Extension.ModelStructurePanel unloaded");
 

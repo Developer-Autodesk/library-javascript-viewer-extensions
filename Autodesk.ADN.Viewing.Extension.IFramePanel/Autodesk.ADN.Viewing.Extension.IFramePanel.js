@@ -47,14 +47,12 @@ Autodesk.ADN.Viewing.Extension.IFramePanel = function (viewer, options) {
                  marginTop:0
             });
 
-
             var html = [
                 '<iframe class="iframe-panel" src="http://adndevblog.typepad.com/cloud_and_mobile">',
                 '</iframe>',
             ].join('\n');
 
             $(this.scrollContainer).append(html);
-
         };
 
         Autodesk.ADN.Viewing.Extension.IFramePanel.Panel.prototype =

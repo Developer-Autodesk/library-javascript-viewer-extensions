@@ -77,7 +77,10 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
         ///////////////////////////////////////////////////////////////////////////
         function onCameraChanged() {
 
-            _transformControlTx.update();
+            if(_transformControlTx) {
+
+                _transformControlTx.update();
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////////
