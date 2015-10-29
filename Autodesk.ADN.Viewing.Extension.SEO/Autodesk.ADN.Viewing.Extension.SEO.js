@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // viewer extension enable SEO
 // by Daniel Du
-// This extension ouputs the propertier values into a hidden div tag
+// This extension ouputs the properties values into a hidden div tag
 // so that the properties can be indexed by search engine
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
