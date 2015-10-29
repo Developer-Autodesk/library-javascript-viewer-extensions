@@ -39,7 +39,7 @@ Please refer to [this blog post](http://adndevblog.typepad.com/cloud_and_mobile/
 
 ##Description
 
-Here is a quick description of what each extension is doing:
+Here is a quick description of what each extension is doing. Click on each extension name to test them directly on the [gallery](http://viewer.autodesk.io/node/gallery/#/home)
 
 * **Autodesk.ADN.Viewing.Extension.Annotation**
 
@@ -73,7 +73,7 @@ A basic viewer tool that just dumps events in the console, useful for testing an
 
 A basic docking panel demo.
 
-* **Autodesk.ADN.Viewing.Extension.EventWatcher**
+* **[Autodesk.ADN.Viewing.Extension.EventWatcher](http://viewer.autodesk.io/node/gallery/embed?id=560c6c57611ca14810e1b2bf&extIds=Autodesk.ADN.Viewing.Extension.EventWatcher)**
 
 Creates a panel which lets user activates any event available in the API. Output event arguments to a section.
 
