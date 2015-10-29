@@ -41,7 +41,7 @@ Please refer to [this blog post](http://adndevblog.typepad.com/cloud_and_mobile/
 
 Here is a quick description of what each extension is doing:
 
-* Autodesk.ADN.Viewing.Extension.Annotation
+* **Autodesk.ADN.Viewing.Extension.Annotation**
 
 Creates 2D annotations for selected component using its label. Uses CAMERA_CHANGED_EVENT to update position of the 2D marker when view is updated.
 
