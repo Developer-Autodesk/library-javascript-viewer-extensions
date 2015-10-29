@@ -73,7 +73,7 @@ A basic viewer tool that just dumps events in the console, useful for testing an
 
 A basic docking panel demo.
 
-* **[Autodesk.ADN.Viewing.Extension.EventWatcher](http://viewer.autodesk.io/node/gallery/embed?id=560c6c57611ca14810e1b2bf&extIds=Autodesk.ADN.Viewing.Extension.EventWatcher)**
+* **[Autodesk.ADN.Viewing.Extension.EventWatcher](http://viewer.autodesk.io/node/gallery/embed?id=560c6c57611ca14810e1b2bf&extIds=Autodesk.ADN.Viewing.Extension.EventWatcher){:target="_blank"}**
 
 Creates a panel which lets user activates any event available in the API. Output event arguments to a section.
 
