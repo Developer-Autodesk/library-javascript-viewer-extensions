@@ -37,147 +37,149 @@ Please refer to [this sample](https://github.com/Developer-Autodesk/tutorial-asp
 
 Please refer to [this blog post](http://adndevblog.typepad.com/cloud_and_mobile/2014/10/how-to-write-custom-extensions-for-the-large-model-viewer.html) for detail.
 
-* Here is a quick description of what each extension is doing:
+##Description
 
-    Autodesk.ADN.Viewing.Extension.Annotation
+Here is a quick description of what each extension is doing:
 
-        Creates 2D annotations for selected component using its label. Uses CAMERA_CHANGED_EVENT to update position of the 2D marker when view is updated.
+* Autodesk.ADN.Viewing.Extension.Annotation
 
-    Autodesk.ADN.Viewing.Extension.Basic
+Creates 2D annotations for selected component using its label. Uses CAMERA_CHANGED_EVENT to update position of the 2D marker when view is updated.
 
-        A basic Hello World extension that displays an alert dialog upon loading and unloading.
+* Autodesk.ADN.Viewing.Extension.Basic
 
-    Autodesk.ADN.Viewing.Extension.BasicES2015
+A basic Hello World extension that displays an alert dialog upon loading and unloading.
 
-        A Hello World extension but written using ES6/ES2015 syntax. Needs transpiling with a tool like Babel or Traceur before being used with the viewer.
+* Autodesk.ADN.Viewing.Extension.BasicES2015
 
-    Autodesk.ADN.Viewing.Extension.BoundingBox
+A Hello World extension but written using ES6/ES2015 syntax. Needs transpiling with a tool like Babel or Traceur before being used with the viewer.
 
-        Displays a bounding box around the selected component.
+* Autodesk.ADN.Viewing.Extension.BoundingBox
 
-    Autodesk.ADN.Viewing.Extension.Chart
+Displays a bounding box around the selected component.
 
-        Displays a PieChart and a dropdown menu listing all available model properties. When a pie is selected in the chart, isolates the specific components.
+* Autodesk.ADN.Viewing.Extension.Chart
 
-    Autodesk.ADN.Viewing.Extension.ContextMenu
+Displays a PieChart and a dropdown menu listing all available model properties. When a pie is selected in the chart, isolates the specific components.
 
-        Illustrates how to customize the viewer context menu for zero-selection menu or item specific menu.
+* Autodesk.ADN.Viewing.Extension.ContextMenu
 
-    Autodesk.ADN.Viewing.Extension.CustomTool
+Illustrates how to customize the viewer context menu for zero-selection menu or item specific menu.
 
-        A basic viewer tool that just dumps events in the console, useful for testing and debugging or using as a tool boilerplate.
+* Autodesk.ADN.Viewing.Extension.CustomTool
 
-    Autodesk.ADN.Viewing.Extension.DockingPanel
+A basic viewer tool that just dumps events in the console, useful for testing and debugging or using as a tool boilerplate.
 
-        A basic docking panel demo.
+* Autodesk.ADN.Viewing.Extension.DockingPanel
 
-    Autodesk.ADN.Viewing.Extension.EventWatcher
+A basic docking panel demo.
 
-        Creates a panel which lets user activates any event available in the API. Output event arguments to a section.
+* Autodesk.ADN.Viewing.Extension.EventWatcher
 
-    Autodesk.ADN.Viewing.Extension.Explorer
+Creates a panel which lets user activates any event available in the API. Output event arguments to a section.
 
-        Creates a camera animation using a custom tool, rotating eye position around the model.
+* Autodesk.ADN.Viewing.Extension.Explorer
 
-    Autodesk.ADN.Viewing.Extension.GeometrySelector
+Creates a camera animation using a custom tool, rotating eye position around the model.
 
-        Illustrates how to snap geometry: vertices, edges, faces and how to create selection commands to let user pick geometry on the model.
+* Autodesk.ADN.Viewing.Extension.GeometrySelector
 
-    Autodesk.ADN.Viewing.Extension.Hotkeys
+Illustrates how to snap geometry: vertices, edges, faces and how to create selection commands to let user pick geometry on the model.
 
-        Creates hotkeys to switch viewer to fullscreen.
+* Autodesk.ADN.Viewing.Extension.Hotkeys
 
-    Autodesk.ADN.Viewing.Extension.IFramePanel
+Creates hotkeys to switch viewer to fullscreen.
 
-        Creates a simple docking panel containing an iframe.
+* Autodesk.ADN.Viewing.Extension.IFramePanel
 
-    Autodesk.ADN.Viewing.Extension.Layers
+Creates a simple docking panel containing an iframe.
 
-        Iterates through layers. Valid only for 2D drawings.
+* Autodesk.ADN.Viewing.Extension.Layers
 
-    Autodesk.ADN.Viewing.Extension.Material
+Iterates through layers. Valid only for 2D drawings.
 
-        Changes material of selected component. Supports color and textures.
+* Autodesk.ADN.Viewing.Extension.Material
 
-    Autodesk.ADN.Viewing.Extension.Measure
+Changes material of selected component. Supports color and textures.
 
-        A wrapper around the Autodesk.Measure extension to enable/disable it from the gallery.
+* Autodesk.ADN.Viewing.Extension.Measure
 
-    Autodesk.ADN.Viewing.Extension.MeshData
+A wrapper around the Autodesk.Measure extension to enable/disable it from the gallery.
 
-        Access mesh data of selected component, vertices and edges to represent them graphically.
+* Autodesk.ADN.Viewing.Extension.MeshData
 
-    Autodesk.ADN.Viewing.Extension.MeshImporter
+Access mesh data of selected component, vertices and edges to represent them graphically.
 
-        Imports custom json into the viewer and creates three.js meshes from it.
+* Autodesk.ADN.Viewing.Extension.MeshImporter
 
-    Autodesk.ADN.Viewing.Extension.MetaProperties
+Imports custom json into the viewer and creates three.js meshes from it.
 
-        Adds some extra hardcoded properties to viewer property panel.
+* Autodesk.ADN.Viewing.Extension.MetaProperties
 
-    Autodesk.ADN.Viewing.Extension.ModelLoader
+Adds some extra hardcoded properties to viewer property panel.
 
-        Loads extra models inside current one. Designed to work on the gallery.
+* Autodesk.ADN.Viewing.Extension.ModelLoader
 
-    Autodesk.ADN.Viewing.Extension.ModelStructure
+Loads extra models inside current one. Designed to work on the gallery.
 
-        Dumps model structure to browser console.
+* Autodesk.ADN.Viewing.Extension.ModelStructure
 
-    Autodesk.ADN.Viewing.Extension.ModelStructurePanel
+Dumps model structure to browser console.
 
-        Custom model structure panel behavior.
+* Autodesk.ADN.Viewing.Extension.ModelStructurePanel
 
-    Autodesk.ADN.Viewing.Extension.Move
+Custom model structure panel behavior.
 
-        Transforms selected component based on mouse position.
+* Autodesk.ADN.Viewing.Extension.Move
 
-    Autodesk.ADN.Viewing.Extension.Physics
+Transforms selected component based on mouse position.
 
-        Realtime physics. See [physics.autodesk.io](http://physics.autodesk.io) for full sample.
+* Autodesk.ADN.Viewing.Extension.Physics
 
-    Autodesk.ADN.Viewing.Extension.PropertyDump
+Realtime physics. See [physics.autodesk.io](http://physics.autodesk.io) for full sample.
 
-        Dumps properties for selected component in browser console.
+* Autodesk.ADN.Viewing.Extension.PropertyDump
 
-    Autodesk.ADN.Viewing.Extension.PropertyListPanel
+Dumps properties for selected component in browser console.
 
-        Custom panel derived from property list panel
+* Autodesk.ADN.Viewing.Extension.PropertyListPanel
 
-    Autodesk.ADN.Viewing.Extension.PropertyPanel
+Custom panel derived from property list panel
 
-        Inserts custom data into viewer property panel.
+* Autodesk.ADN.Viewing.Extension.PropertyPanel
 
-    Autodesk.ADN.Viewing.Extension.PropertyTranslator
+Inserts custom data into viewer property panel.
 
-        Uses microsoft translation API to translate property panel values on the fly.
+* Autodesk.ADN.Viewing.Extension.PropertyTranslator
 
-    Autodesk.ADN.Viewing.Extension.SEO
+Uses microsoft translation API to translate property panel values on the fly.
 
-        Ouputs the properties values into a hidden div tag so that the properties can be indexed by search engine
+* Autodesk.ADN.Viewing.Extension.SEO
 
-    Autodesk.ADN.Viewing.Extension.ScreenShotManager
+Ouputs the properties values into a hidden div tag so that the properties can be indexed by search engine
 
-        Creates a panel that lets you manage screenshots taken with the API.
+* Autodesk.ADN.Viewing.Extension.ScreenShotManager
 
-    Autodesk.ADN.Viewing.Extension.Section
+Creates a panel that lets you manage screenshots taken with the API.
 
-        A wrapper around the Autodesk.Section extension to enable/disable it from the gallery.
+* Autodesk.ADN.Viewing.Extension.Section
 
-    Autodesk.ADN.Viewing.Extension.Toolbar
+A wrapper around the Autodesk.Section extension to enable/disable it from the gallery.
 
-        Various toolbar controls customization example.
+* Autodesk.ADN.Viewing.Extension.Toolbar
 
-    Autodesk.ADN.Viewing.Extension.TransformTool
+Various toolbar controls customization example.
 
-        A 3d controls that lets user precisely move components around along specific plane or axis.
+* Autodesk.ADN.Viewing.Extension.TransformTool
 
-    Autodesk.ADN.Viewing.Extension.UIComponent
+A 3d controls that lets user precisely move components around along specific plane or axis.
 
-        Illustrates on to create a docking panel more advanced than the basic docking panel extension.
+* Autodesk.ADN.Viewing.Extension.UIComponent
 
-    Autodesk.ADN.Viewing.Extension.Workshop
+Illustrates on to create a docking panel more advanced than the basic docking panel extension.
 
-        A demo extension which illustrates several concepts of the API. See the complete [tutorial](https://github.com/Developer-Autodesk/tutorial-getting.started-view.and.data) for more details.
+* Autodesk.ADN.Viewing.Extension.Workshop
+
+A demo extension which illustrates several concepts of the API. See the complete [tutorial](https://github.com/Developer-Autodesk/tutorial-getting.started-view.and.data) for more details.
 
 ## License
 
