@@ -3,13 +3,19 @@
 
 //   Usage example:
 
-    // // Let's load the Basic extension
-    // var options = {
-        
-    //     //no options needed for this sample.
+    // // Let's load the extension
 
-    // };
-    // viewer.loadExtension('Autodesk.ADN.Viewing.Extension.AxisHelper',options);
+     // viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, function(){
+     //    var options = {
+            
+     //        //no options needed for this sample.
+
+     //    };
+        
+     //    viewer.loadExtension('Autodesk.ADN.Viewing.Extension.AxisHelper',options);
+
+     // });
+    
 
 
 
@@ -28,30 +34,20 @@ Autodesk.ADN.Viewing.Extension.AxisHelper = function (viewer, options) {
 
         console.log('Autodesk.ADN.Viewing.Extension.AxisHelper loaded');
 
-        viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded);
+        addAixsHelper();
 
+        //workaround
+        //have to call this to show up the axis
+        viewer.restoreState(viewer.getState());
 
         return true;
     };
 
 
-    var onGeometryLoaded = function(event) {
-
-         console.log('Autodesk.Viewing.GEOMETRY_LOADED_EVENT');
-
-            addAixsHelper();
-
-            //have to call this to show up the axis
-            viewer.fitToView();
-
-
-    };
 
     _self.unload = function () {
 
         removeAixsHelper();
-
-        viewer.removeEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onGeometryLoaded)
 
         console.log('Autodesk.ADN.Viewing.Extension.AxisHelper unloaded');
         return true;
@@ -74,10 +70,10 @@ Autodesk.ADN.Viewing.Extension.AxisHelper = function (viewer, options) {
         //make the size is bigger than the max bounding box 
         //so that it is visible 
         var size = Math.max(xdiff,ydiff,zdiff) * 1.2; 
-        console.log('axix size :' + size);
+        //console.log('axix size :' + size);
 
 
-        // x-axis is read
+        // x-axis is red
         var material_X_Axis = new THREE.LineBasicMaterial({
             color: 0xff0000,  //red 
             linewidth: 2
@@ -92,7 +88,7 @@ Autodesk.ADN.Viewing.Extension.AxisHelper = function (viewer, options) {
         _axisLines.push(xLine);
 
 
-        // x-axis is green
+        // y-axis is green
         var material_Y_Axis = new THREE.LineBasicMaterial({
             color: 0x00ff00,  //green 
             linewidth: 2
@@ -107,6 +103,7 @@ Autodesk.ADN.Viewing.Extension.AxisHelper = function (viewer, options) {
         _axisLines.push(yLine);
 
 
+        // z-axis is blue
         var material_Z_Axis = new THREE.LineBasicMaterial({
             color: 0x0000ff,  //blue 
             linewidth: 2
@@ -152,7 +149,7 @@ Autodesk.ADN.Viewing.Extension.AxisHelper = function (viewer, options) {
             viewer.impl.scene.remove(line);
         });
 
-        //remote materials
+        //remove materials
         delete viewer.impl.matman().materials.material_X_Axis;
         delete viewer.impl.matman().materials.material_Y_Axis;
         delete viewer.impl.matman().materials.material_Z_Axis;
