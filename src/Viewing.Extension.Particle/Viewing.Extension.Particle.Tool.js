@@ -3,7 +3,7 @@ import Vector from './ParticleSystem/Vector'
 import EventsEmitter from 'EventsEmitter'
 import Toolkit from 'ViewerToolkit'
 
-export default class ParticleTool extends EventsEmitter{
+export default class ParticleTool extends EventsEmitter {
 
   /////////////////////////////////////////////////////////////////
   // Class constructor

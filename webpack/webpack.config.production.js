@@ -8,6 +8,15 @@ module.exports = {
     'Autodesk.ADN.Viewing.Extension.BasicES2015':
       './src/Autodesk.ADN.Viewing.Extension.BasicES2015/Autodesk.ADN.Viewing.Extension.BasicES2015.js',
 
+    'Viewing.Extension.VisualReport':
+      './src/Viewing.Extension.VisualReport/Viewing.Extension.VisualReport.js',
+
+    'Viewing.Extension.StateManager':
+      './src/Viewing.Extension.StateManager/Viewing.Extension.StateManager.js',
+
+    'Viewing.Extension.Markup3D':
+      './src/Viewing.Extension.Markup3D/Viewing.Extension.Markup3D.js',
+
     'Autodesk.ADN.Viewing.Extension.ModelLoader':
       './src/Autodesk.ADN.Viewing.Extension.ModelLoader/Autodesk.ADN.Viewing.Extension.ModelLoader.js',
 
@@ -97,9 +106,16 @@ module.exports = {
         loader: "style-loader!css-loader"
       },
       {
-        test: /\.ts$/,
-        loader: 'typescript-loader',
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+        ]
       }
     ]
   }

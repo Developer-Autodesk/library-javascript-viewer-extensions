@@ -14,6 +14,8 @@ export default class SwitchButton extends EventsEmitter {
 
     super();
 
+    addCSS();
+
     var _this = this;
 
     var labelId = guid();
@@ -21,14 +23,14 @@ export default class SwitchButton extends EventsEmitter {
     this._inputId = guid();
 
     var html = `
-        <p class="onoffswitch">
+        <div class="onoffswitch">
           <input id="${this._inputId}" type="checkbox" name="onoffswitch"
             class="onoffswitch-checkbox" ${checked?"checked":""}>
           <label id="${labelId}" class="onoffswitch-label">
             <span class="onoffswitch-inner"></span>
             <span class="onoffswitch-switch"></span>
           </label>
-        </p>
+        </div>
       `;
 
     $(container).append(html);
@@ -53,11 +55,15 @@ export default class SwitchButton extends EventsEmitter {
   }
 }
 
-function guid() {
+/////////////////////////////////////////////////////////////
+//
+//
+/////////////////////////////////////////////////////////////
+function guid(format='xxxx-xxxx-xxxx') {
 
   var d = new Date().getTime();
 
-  var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
+  var guid = format.replace(
     /[xy]/g,
     function (c) {
       var r = (d + Math.random() * 16) % 16 | 0;
@@ -68,8 +74,13 @@ function guid() {
   return guid;
 }
 
-//https://proto.io/freebies/onoff/
-var css = `
+/////////////////////////////////////////////////////////////
+// https://proto.io/freebies/onoff/
+//
+/////////////////////////////////////////////////////////////
+function addCSS(id) {
+
+  var css = `
 
   .onoffswitch {
     position: relative; width: 50px;
@@ -116,6 +127,9 @@ var css = `
   .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px;
   }
-`;
+  `;
 
-$('<style type="text/css">' + css + '</style>').appendTo('head');
+  $('<style type="text/css">' + css + '</style>').appendTo('head');
+}
+
+

@@ -6,7 +6,7 @@ export default class ViewerToolkit {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  static guid(format = 'xxxx-xxxx-xxxx') {
+  static guid(format = 'xxxxxxxxxxxx') {
 
     var d = new Date().getTime();
 
@@ -156,13 +156,17 @@ export default class ViewerToolkit {
   //
   //
   /////////////////////////////////////////////////////////////////
-  static getLeafNodes(instanceTree, dbId) {
+  static getLeafNodes(model, dbId) {
 
     return new Promise(async(resolve, reject)=>{
 
       try{
 
         var leafIds = [];
+
+        var instanceTree = model.getData().instanceTree;
+
+        dbId = dbId || instanceTree.getRootId();
 
         function _getLeafNodesRec(id){
 
@@ -203,7 +207,7 @@ export default class ViewerToolkit {
         var instanceTree = model.getData().instanceTree;
 
         var leafIds = await ViewerToolkit.getLeafNodes(
-          instanceTree,dbId);
+          model, dbId);
 
         var fragIds = [];
 
@@ -254,6 +258,109 @@ export default class ViewerToolkit {
         });
 
         return resolve(nodebBox);
+      }
+      catch(ex){
+
+        return reject(ex);
+      }
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Gets properties from component
+  //
+  /////////////////////////////////////////////////////////////////
+  static getProperties(model, dbId) {
+
+    return new Promise(async(resolve, reject)=>{
+
+      try{
+
+        model.getProperties(dbId, function(result) {
+
+          if (result.properties);
+            return resolve(
+              result.properties);
+
+          return reject('No Properties');
+        });
+      }
+      catch(ex){
+
+          return reject(ex);
+      }
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////////
+  static getProperty(model, dbId, displayName) {
+
+    return new Promise(async(resolve, reject)=>{
+
+      try{
+
+        model.getProperties(dbId, function(result){
+
+          if (result.properties) {
+
+            result.properties.forEach((prop)=>{
+
+              if(displayName == prop.displayName){
+                return resolve(prop);
+              }
+            });
+
+            reject(new Error('Not Found'));
+          }
+          else {
+
+            reject(new Error('Error getting properties'));
+          }
+        });
+      }
+      catch(ex){
+
+        return reject(ex);
+      }
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Gets all existing properties from component  dbIds
+  //
+  /////////////////////////////////////////////////////////////////
+  static getPropertyList(model, dbIds) {
+
+    return new Promise(async(resolve, reject)=>{
+
+      try{
+
+        var propertyTasks = dbIds.map((dbId)=>{
+
+          return ViewerToolkit.getProperties(model, dbId);
+        });
+
+        var propertyResults = await Promise.all(
+          propertyTasks
+        );
+
+        var properties = [];
+
+        propertyResults.forEach((propertyResult)=>{
+
+          propertyResult.forEach((prop)=>{
+
+            if(properties.indexOf(prop.displayName) < 0){
+
+              properties.push(prop.displayName);
+            }
+          });
+        });
+
+        return resolve(properties.sort());
       }
       catch(ex){
 
@@ -355,42 +462,6 @@ export default class ViewerToolkit {
     viewer.impl.sceneUpdated(true);
 
     return lines;
-  }
-
-  /////////////////////////////////////////////////////////////////
-  //
-  //
-  /////////////////////////////////////////////////////////////////
-  static getProperty(model, dbId, displayName) {
-
-    return new Promise(async(resolve, reject)=>{
-
-      try{
-  
-        model.getProperties(dbId, function(result){
-
-          if (result.properties) {
-
-            result.properties.forEach((prop)=>{
-
-              if(displayName == prop.displayName){
-                return resolve(prop);
-              }
-            });
-
-            reject(new Error('Not Found'));
-          }
-          else {
-
-            reject(new Error('Error getting properties'));
-          }
-        });
-      }
-      catch(ex){
-
-        return reject(ex);
-      }
-    });
   }
 
   /////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@ export default class ToolPanelBase extends
   //
   //
   ///////////////////////////////////////////////////////////////////
-  static guid(format = 'xxxx-xxxx-xxxx-xxxx') {
+  static guid(format = 'xxxxxxxxxx') {
 
     var d = new Date().getTime();
 

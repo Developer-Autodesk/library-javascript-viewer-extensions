@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class BasicES2015 extends Autodesk.Viewing.Extension{
+class BasicES2015 extends Autodesk.Viewing.Extension {
 
   /////////////////////////////////////////////////////////////////
   // Class constructor
@@ -34,7 +34,7 @@ class BasicES2015 extends Autodesk.Viewing.Extension{
   /////////////////////////////////////////////////////////////////
   load() {
 
-    alert("BasicES2015 Loaded");
+    alert("BasicES2015 extension Loaded");
 
     this.viewer.setBackgroundColor(
       255,0,0,

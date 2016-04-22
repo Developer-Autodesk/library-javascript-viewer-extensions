@@ -32,6 +32,9 @@ export default class GraphicMarker extends EventsEmitter {
       'overflow': 'visible',
       'display': 'none'
     });
+
+    this.onTrackerModifiedHandler =
+      (screenPoint)=> this.onTrackerModified(screenPoint);
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -87,16 +90,10 @@ export default class GraphicMarker extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////
   activateLock3d(viewer) {
 
-    this._tracker = new PointTracker(
-      viewer, (screenPoint)=> {
+    this._tracker = new PointTracker(viewer);
 
-        var $container = $(`#${this._markerId}`);
-
-        $container.css({
-          'left': screenPoint.x - $container.width()/2,
-          'top': screenPoint.y -  $container.height()/2
-        });
-      });
+    this._tracker.on('modified',
+      this.onTrackerModifiedHandler);
 
     this._tracker.activate();
   }
@@ -105,11 +102,27 @@ export default class GraphicMarker extends EventsEmitter {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  setPosition2d(position) {
+  onTrackerModified(screenPoint) {
+
+    var $container = $(`#${this._markerId}`);
+
+    $container.css({
+      'left': screenPoint.x - $container.width()/2,
+      'top': screenPoint.y -  $container.height()/2
+    });
+
+    this.emit('tracker.modified', screenPoint);
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  setScreenPoint(screenPoint) {
 
     $(`#${this._markerId}`).css({
-      'left': position.x,
-      'top': position.y
+      'left': screenPoint.x,
+      'top': screenPoint.y
     });
   }
 
@@ -117,7 +130,7 @@ export default class GraphicMarker extends EventsEmitter {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  getPosition2d() {
+  getScreenPoint() {
 
     return {
       x: $(`#${this._markerId}`).left(),
@@ -129,10 +142,23 @@ export default class GraphicMarker extends EventsEmitter {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  setPosition3d(position) {
+  getWorldPoint() {
 
     if(this._tracker) {
-      this._tracker.setWorldPoint(position);
+      return this._tracker.getWorldPoint();
+    }
+
+    return null;
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  setWorldPoint(worldPoint) {
+
+    if(this._tracker) {
+      this._tracker.setWorldPoint(worldPoint);
     }
   }
 
@@ -151,11 +177,11 @@ export default class GraphicMarker extends EventsEmitter {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  guid() {
+  guid(format='xxxxxxxxxxxx') {
 
     var d = new Date().getTime();
 
-    var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
+    var guid = format.replace(
       /[xy]/g,
       function (c) {
         var r = (d + Math.random() * 16) % 16 | 0;

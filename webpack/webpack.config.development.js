@@ -1,5 +1,5 @@
-var path = require('path');
-var webpack = require('webpack');
+var webpack = require('webpack')
+var path = require('path')
 
 module.exports = {
 
@@ -9,6 +9,15 @@ module.exports = {
 
     'Autodesk.ADN.Viewing.Extension.BasicES2015':
       './src/Autodesk.ADN.Viewing.Extension.BasicES2015/Autodesk.ADN.Viewing.Extension.BasicES2015.js',
+
+    'Viewing.Extension.VisualReport':
+      './src/Viewing.Extension.VisualReport/Viewing.Extension.VisualReport.js',
+
+    'Viewing.Extension.StateManager':
+      './src/Viewing.Extension.StateManager/Viewing.Extension.StateManager.js',
+
+    'Viewing.Extension.Markup3D':
+      './src/Viewing.Extension.Markup3D/Viewing.Extension.Markup3D.js',
 
     'Autodesk.ADN.Viewing.Extension.ModelLoader':
       './src/Autodesk.ADN.Viewing.Extension.ModelLoader/Autodesk.ADN.Viewing.Extension.ModelLoader.js',
@@ -77,6 +86,7 @@ module.exports = {
   },
 
   module: {
+
     loaders: [
       {
         test: /\.jsx?$/,

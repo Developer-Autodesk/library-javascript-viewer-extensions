@@ -1,20 +1,23 @@
 /////////////////////////////////////////////////////////////////
-//
-//
+// PointTracker: Tracks a 3D point in world coordinates
+// and returns 2D screen coordinates
+// By Philippe Leefsma, April 2016
 /////////////////////////////////////////////////////////////////
-export default class ScreenPointTracker {
+import EventsEmitter from 'EventsEmitter'
 
-  constructor(viewer, onChange) {
+export default class PointTracker extends EventsEmitter {
+
+  constructor(viewer) {
+
+    super();
 
     this._viewer = viewer;
-
-    this._onChange = onChange;
 
     this.worldPoint = new THREE.Vector3();
 
     //used to bind 'this' inside event hander
-    this.cameraChangedHandler =
-      (event)=>{this.onCameraChanged(event)};
+    this.cameraChangedHandler = (event)=>
+      this.onCameraChanged(event);
   }
 
   /////////////////////////////////////////////////////////////////
@@ -54,7 +57,7 @@ export default class ScreenPointTracker {
       this.worldPoint,
       this._viewer.navigation.getCamera());
 
-    this._onChange(screenPoint);
+    this.emit('modified', screenPoint);
   }
 
   /////////////////////////////////////////////////////////////////
@@ -98,7 +101,7 @@ export default class ScreenPointTracker {
       this.worldPoint,
       this._viewer.navigation.getCamera());
 
-    this._onChange(screenPoint);
+    this.emit('modified', screenPoint);
   }
 
   ///////////////////////////////////////////////////////////////////////////

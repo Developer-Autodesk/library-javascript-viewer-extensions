@@ -24,26 +24,26 @@ Autodesk.ADN.Viewing.Extension.ModelStructure = function (viewer, options) {
     console.log(modelTree);
 
 
-var matches = [];
+    var matches = [];
 
-// Creates a thunk for our task
-// We look for all components which have a
-// property named 'Material' and returns a list
-// of matches containing dbId and the prop value
-var taskThunk = function(model, dbId) {
+    // Creates a thunk for our task
+    // We look for all components which have a
+    // property named 'Material' and returns a list
+    // of matches containing dbId and the prop value
+    var taskThunk = function(model, dbId) {
 
-  return hasPropertyTask(
-    model, dbId, 'Material', matches);
-}
+      return hasPropertyTask(
+        model, dbId, 'Material', matches);
+    }
 
-var taskResults = executeTaskOnModelTree(
-  viewer.model, taskThunk);
+    var taskResults = executeTaskOnModelTree(
+      viewer.model, taskThunk);
 
-Promise.all(taskResults).then(function(){
+    Promise.all(taskResults).then(function(){
 
-  console.log('Found ' + matches.length + ' matches');
-  console.log(matches);
-});
+      console.log('Found ' + matches.length + ' matches');
+      console.log(matches);
+    });
 
     return true;
   }
