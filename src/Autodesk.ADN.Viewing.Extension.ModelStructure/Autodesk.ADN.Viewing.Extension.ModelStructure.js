@@ -114,7 +114,7 @@ Autodesk.ADN.Viewing.Extension.ModelStructure = function (viewer, options) {
           var childNode = {
             dbId: childId,
             name: instanceTree.getNodeName(childId)
-          }
+          };
 
           node.children.push(childNode);
 
@@ -130,7 +130,7 @@ Autodesk.ADN.Viewing.Extension.ModelStructure = function (viewer, options) {
     var rootNode = {
       dbId: rootId,
       name: instanceTree.getNodeName(rootId)
-    }
+    };
 
     _buildModelTreeRec(rootNode);
 

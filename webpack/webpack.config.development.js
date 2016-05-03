@@ -70,8 +70,8 @@ module.exports = {
     }),
 
     new webpack.ProvidePlugin({
-      _ : "underscore",
       jQuery: "jquery",
+      _ : "lodash",
       $: "jquery"
     })
   ],

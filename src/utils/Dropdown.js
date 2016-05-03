@@ -10,6 +10,7 @@ export default class Dropdown extends EventsEmitter {
   // opts = {
   //   container: viewer.container,
   //   title: 'Material',
+  //   prompt: 'Select from list'
   //   pos: {
   //    top: 10,
   //    left: 10
@@ -53,9 +54,11 @@ export default class Dropdown extends EventsEmitter {
 
     $('#' + this.dropdownId).css(opts.pos);
 
-    $('#' + this.labelId).text(
-      opts.title + ': ' +
-      opts.menuItems[opts.selectedItemIdx || 0].name);
+
+    var text = opts.prompt ||  opts.title + ': ' +
+     opts.menuItems[opts.selectedItemIdx || 0].name;
+
+    $('#' + this.labelId).text(text);
 
     opts.menuItems.forEach((menuItem)=> {
 
@@ -140,10 +143,6 @@ function guid(format='xxxx-xxxx-xxxx') {
 //
 /////////////////////////////////////////////////////////////
 var css = `
-  
-  .lmv-dropdown {
-    position: absolute;
-  }
 
   .lmv-dropdown .btn {
      background-color: #3C3F40;
@@ -158,9 +157,13 @@ var css = `
   
   .scrollable-menu {
     height: auto;
-    max-height: 300px;
+    max-height: 250px;
     overflow-x: hidden;
     overflow-y: scroll;
+  }
+
+  .lmv-dropdown .caret{
+    border-top:4px solid white;
   }
 `;
 

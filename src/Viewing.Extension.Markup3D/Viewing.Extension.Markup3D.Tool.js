@@ -73,8 +73,12 @@ export default class Markup3DTool extends EventsEmitter {
     this.currentMarkup = null;
 
     this.viewer.removeEventListener(
-      Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+      Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
       this.onSelectionChangedHandler);
+
+    this.viewer.removeEventListener(
+      Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
+      this.onExplodeHandler);
   }
 
   /////////////////////////////////////////////////////////////////
@@ -209,7 +213,7 @@ export default class Markup3DTool extends EventsEmitter {
   }
 
   /////////////////////////////////////////////////////////////////
-  //
+  // Inject markups data into state
   //
   /////////////////////////////////////////////////////////////////
   getState(viewerState) {
@@ -233,7 +237,7 @@ export default class Markup3DTool extends EventsEmitter {
   }
 
   /////////////////////////////////////////////////////////////////
-  //
+  // Restore markup data from state
   //
   /////////////////////////////////////////////////////////////////
   restoreState(viewerState, immediate) {

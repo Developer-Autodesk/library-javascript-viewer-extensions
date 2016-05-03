@@ -60,6 +60,7 @@ class Markup3DExtension extends ExtensionBase {
 
   /////////////////////////////////////////////////////////////////
   //
+  //  From viewer.getState:
   //  Allow extensions to inject their state data
   //
   //  for (var extensionName in viewer.loadedExtensions) {
@@ -75,6 +76,7 @@ class Markup3DExtension extends ExtensionBase {
 
   /////////////////////////////////////////////////////////////////
   //
+  //    From viewer.restoreState:
   //    Allow extensions to restore their data
   //
   //    for (var extensionName in viewer.loadedExtensions) {

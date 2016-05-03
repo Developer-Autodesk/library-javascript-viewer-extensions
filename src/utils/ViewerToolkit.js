@@ -370,6 +370,77 @@ export default class ViewerToolkit {
   }
 
   /////////////////////////////////////////////////////////////////
+  // Maps components by property
+  //
+  /////////////////////////////////////////////////////////////////
+  static mapComponentsByProp(model, propName, components) {
+
+    return new Promise(async(resolve, reject)=>{
+
+      try{
+
+        var propertyTasks = components.map((dbId)=>{
+
+          return new Promise(async(_resolve, _reject)=>{
+
+            try {
+
+              var result = await ViewerToolkit.getProperty(
+                model, dbId, propName);
+
+              result.dbId = dbId;
+
+              return _resolve(result);
+            }
+            catch (ex){
+
+              if(ex.message == 'Not Found'){
+
+                var result = {
+                  displayValue: 'Not Available'
+                };
+
+                result.dbId = dbId;
+
+                return _resolve(result);
+              }
+
+              return _reject(ex);
+            }
+          });
+        });
+
+        var propertyResults = await Promise.all(propertyTasks);
+
+        var componentsMap = {};
+
+        propertyResults.forEach((result)=>{
+
+          var value = result.displayValue;
+
+          if(typeof value == 'string'){
+
+            value = value.split(':')[0];
+          }
+
+          if (!componentsMap[value]) {
+
+            componentsMap[value] = [];
+          }
+
+          componentsMap[value].push(result.dbId);
+        });
+
+        return resolve(componentsMap);
+      }
+      catch(ex){
+
+        return reject(ex);
+      }
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
@@ -478,5 +549,74 @@ export default class ViewerToolkit {
       model.getFragmentList().setMaterial(
         fragId, material);
     });
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Recursively builds the model tree
+  //
+  /////////////////////////////////////////////////////////////////
+  static buildModelTree(model){
+
+    //builds model tree recursively
+    function _buildModelTreeRec(node){
+
+      instanceTree.enumNodeChildren(node.dbId,
+        function(childId) {
+
+          node.children = node.children || [];
+
+          var childNode = {
+            dbId: childId,
+            name: instanceTree.getNodeName(childId)
+          }
+
+          node.children.push(childNode);
+
+          _buildModelTreeRec(childNode);
+        });
+    }
+
+    //get model instance tree and root component
+    var instanceTree = model.getData().instanceTree;
+
+    var rootId = instanceTree.getRootId();
+
+    var rootNode = {
+      dbId: rootId,
+      name: instanceTree.getNodeName(rootId)
+    }
+
+    _buildModelTreeRec(rootNode);
+
+    return rootNode;
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Recursively execute task on model tree
+  //
+  /////////////////////////////////////////////////////////////////
+  static executeTaskOnModelTree(model, task) {
+
+    var taskResults = [];
+
+    function _executeTaskOnModelTreeRec(dbId){
+
+      instanceTree.enumNodeChildren(dbId,
+        function(childId) {
+
+          taskResults.push(task(model, childId));
+
+          _executeTaskOnModelTreeRec(childId);
+        });
+    }
+
+    //get model instance tree and root component
+    var instanceTree = model.getData().instanceTree;
+
+    var rootId = instanceTree.getRootId();
+
+    _executeTaskOnModelTreeRec(rootId);
+
+    return taskResults;
   }
 }

@@ -3,7 +3,7 @@
 // By Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////
-import EventsEmitter from 'EventsEmitter';
+import EventsEmitter from 'EventsEmitter'
 
 export default class TabManager extends EventsEmitter {
 
@@ -51,16 +51,20 @@ export default class TabManager extends EventsEmitter {
     var containerHtml = `
 
       <div id="${tabId}">
+        ${tabInfo.html}
       </div>
     `;
 
     $('#' + this.containerId).append(containerHtml);
 
+    if(tabInfo.active)
+      this.setActiveTab(tabId);
+
     $('#' + tabHeaderId).click((e)=>{
 
-      var targetDivId = $(e.target).attr('target');
+      var id = $(e.target).attr('target');
 
-      this.setActiveTab(targetDivId);
+      this.setActiveTab(id);
     });
 
     return tabId;
@@ -83,9 +87,8 @@ export default class TabManager extends EventsEmitter {
         $(element).removeClass('active');
         $('#' + id).css('display', 'none');
 
-        _this.emit('tab.visibility', {
+        _this.emit('tab.visible', {
           id: id,
-          visible: false,
           name: $(element).text()
         });
       }
@@ -93,12 +96,6 @@ export default class TabManager extends EventsEmitter {
 
         $(element).addClass('active');
         $('#' + id).css('display', 'block');
-
-        _this.emit('tab.visibility', {
-          id: id,
-          visible: true,
-          name: $(element).text()
-        });
       }
     });
   }
@@ -133,10 +130,11 @@ var css = `
     padding:5px;
     font-family:verdana;
     font-size:13px;
-    background-color: #EEEEEE;
+    background-color: #E8E8E8;
     display:none;
     height: calc(100% - 42px);
     border-radius: 5px;
+    overflow: hidden;
   }
 
   .tabs{
@@ -172,8 +170,8 @@ var css = `
   }
 
   .tabs a.active{
-    background-color: #EEEEEE;
-    border-bottom:1px solid #EEEEEE;
+    background-color: #E8E8E8;
+    border-bottom:1px solid #E8E8E8;
   }
 `;
 
