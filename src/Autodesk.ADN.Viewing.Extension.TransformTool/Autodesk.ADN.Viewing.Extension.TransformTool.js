@@ -234,12 +234,12 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
         ///////////////////////////////////////////////////////////////////////////
         this.getNames = function() {
 
-            return ['Dotty.Viewing.Tool.TransformTool'];
+            return ['Autodesk.ADN.Viewing.Tool.TransformTool'];
         };
 
         this.getName = function() {
 
-            return 'Dotty.Viewing.Tool.TransformTool';
+            return 'Autodesk.ADN.Viewing.Tool.TransformTool';
         };
 
         ///////////////////////////////////////////////////////////////////////////
@@ -253,7 +253,7 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
             var bbox = viewer.model.getBoundingBox();
 
             viewer.impl.createOverlayScene(
-              'Dotty.Viewing.Tool.TransformTool');
+              'Autodesk.ADN.Viewing.Tool.TransformTool');
 
             _transformControlTx = new THREE.TransformControls(
               viewer.impl.camera,
@@ -266,7 +266,7 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
             _transformControlTx.visible = false;
 
             viewer.impl.addOverlay(
-              'Dotty.Viewing.Tool.TransformTool',
+              'Autodesk.ADN.Viewing.Tool.TransformTool',
               _transformControlTx);
 
             _transformMesh = createTransformMesh();
@@ -289,7 +289,7 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
         this.deactivate = function() {
 
             viewer.impl.removeOverlay(
-              'Dotty.Viewing.Tool.TransformTool',
+              'Autodesk.ADN.Viewing.Tool.TransformTool',
               _transformControlTx);
 
             _transformControlTx.removeEventListener(
@@ -299,7 +299,7 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
             _transformControlTx = null;
 
             viewer.impl.removeOverlayScene(
-              'Dotty.Viewing.Tool.TransformTool');
+              'Autodesk.ADN.Viewing.Tool.TransformTool');
 
             viewer.removeEventListener(
               Autodesk.Viewing.CAMERA_CHANGE_EVENT,

@@ -440,6 +440,35 @@ export default class ViewerToolkit {
     });
   }
 
+  /////////////////////////////////////////////////////////////
+  // Runs recursively the argument task on each node
+  // of the data tree
+  //
+  /////////////////////////////////////////////////////////////
+  static runTaskOnDataTree(root, taskFunc) {
+
+    var tasks = [];
+
+    var runTaskOnDataTreeRec = (node, parent=null)=> {
+
+      if (node.children) {
+
+        node.children.forEach((childNode)=> {
+
+          runTaskOnDataTreeRec(childNode, node);
+        });
+      }
+
+      var task = taskFunc(node, parent);
+
+      tasks.push(task);
+    }
+
+    runTaskOnDataTreeRec(root);
+
+    return Promise.all(tasks);
+  }
+
   /////////////////////////////////////////////////////////////////
   //
   //

@@ -3,6 +3,7 @@
 // by Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////////////
+import CircleGraph from './CircleGraph/CircleGraph'
 import ForceGraph from './ForceGraph/ForceGraph'
 import './Viewing.Extension.VisualReport.css'
 import PieChart from './PieChart/PieChart'
@@ -90,6 +91,13 @@ export default class VisualReportPanel extends ToolPanelBase{
     this.forceTabId = this.TabManager.addTab({
       name: 'Force Graph',
       html: `<p class="d3 d3-force c${this.forceGraphSelector}"></p>`
+    });
+
+    this.circleGraphSelector = ToolPanelBase.guid();
+
+    this.circleTabId = this.TabManager.addTab({
+      name: 'Circle Graph',
+      html: `<p class="d3 d3-circle c${this.circleGraphSelector}"></p>`
     });
   }
 
@@ -227,9 +235,11 @@ export default class VisualReportPanel extends ToolPanelBase{
 
       this.viewer.fitToView(e.dbId);
       this.viewer.isolate(e.dbId);
-
-      console.log(e)
     });
+
+    this.circleGraph = new CircleGraph(
+      '.c' + this.circleGraphSelector,
+      dataTree);
 
     this.viewer.impl.invalidate(
       true, false, false);
@@ -265,35 +275,6 @@ export default class VisualReportPanel extends ToolPanelBase{
   }
 
   /////////////////////////////////////////////////////////////
-  // Runs recursively the argument task on each node
-  // of the data tree
-  //
-  /////////////////////////////////////////////////////////////
-  async runTaskOnDataTree(root, taskFunc) {
-
-    var tasks = [];
-
-    var runTaskOnDataTreeRec = (node)=> {
-
-      if (node.children) {
-
-        node.children.forEach((childNode)=> {
-
-          runTaskOnDataTreeRec(childNode);
-        });
-      }
-
-      var task = taskFunc(node);
-
-      tasks.push(task);
-    }
-
-    runTaskOnDataTreeRec(root);
-
-    return await Promise.all(tasks);
-  }
-
-  /////////////////////////////////////////////////////////////
   // Builds a custom data tree formatted for the force graph
   // based on viewer input property
   //
@@ -305,11 +286,13 @@ export default class VisualReportPanel extends ToolPanelBase{
     var root = await ViewerToolkit.buildModelTree(
       model);
 
-    var taskFunc = (node)=> {
+    var taskFunc = (node, parent)=> {
 
       return new Promise(async(resolve, reject)=> {
 
         try {
+
+          node.parent = parent;
 
           var prop = await ViewerToolkit.getProperty(
             model, node.dbId, propName);
@@ -333,7 +316,7 @@ export default class VisualReportPanel extends ToolPanelBase{
       });
     }
 
-    await this.runTaskOnDataTree(
+    await ViewerToolkit.runTaskOnDataTree(
       root, taskFunc);
 
     this.normalize(root);

@@ -28,21 +28,45 @@ export default class ParticleTool extends EventsEmitter {
       maxParticles: 3000
     });
 
-    this.particleSystem.on(
-      'particle.new',
-      this.onNewParticle.bind(this));
+    this.onNewParticleHandler = (e)=>{
 
-    this.particleSystem.on(
-      'particle.recycle',
-      this.onRecycleParticle.bind(this));
+      this.onNewParticle(e);
+    };
 
-    this.particleSystem.on(
-      'particle.filter',
-      this.onFilterParticle.bind(this));
+    this.particleSystem.on('particle.new', (e)=>{
 
-    this.particleSystem.on(
-      'particle.destroy',
-      this.onDestroyParticle.bind(this));
+      this.onNewParticleHandler(e)
+    });
+
+    this.onRecycleParticleHandler = (e)=>{
+
+      this.onRecycleParticle(e);
+    };
+
+    this.particleSystem.on('particle.recycle', (e)=>{
+
+      this.onRecycleParticleHandler(e)
+    });
+
+    this.onFilterParticleHandler = (e)=>{
+
+      return this.onFilterParticle(e);
+    };
+
+    this.particleSystem.on('particle.filter', (e)=>{
+
+      return this.onFilterParticleHandler(e)
+    });
+
+    this.onDestroyParticleHandler = (e)=>{
+
+      return this.onDestroyParticle(e);
+    };
+
+    this.particleSystem.on('particle.destroy', (e)=>{
+
+      return this.onDestroyParticleHandler(e)
+    });
   }
 
   /////////////////////////////////////////////////////////////////

@@ -91,4 +91,7 @@
     height: 100%;
 }
 
+.visual-report .tabs div {
+    max-height: 569px;
+}
 

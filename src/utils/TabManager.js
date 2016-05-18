@@ -20,7 +20,7 @@ export default class TabManager extends EventsEmitter {
     this.tabsHeaderId = this.guid();
 
     var html = `
-      <div id="${this.containerId}" class="${this.class} tabs">
+      <div id="${this.containerId}" class="c${this.class} tabs">
         <ul id="${this.tabsHeaderId}">
         </ul>
       </div>
@@ -78,7 +78,7 @@ export default class TabManager extends EventsEmitter {
 
     var _this = this;
 
-    $(`.${this.class} .tab-link`).each((idx, element)=>{
+    $(`.c${this.class} .tab-link`).each((idx, element)=>{
 
       var id = $(element).attr('target');
 

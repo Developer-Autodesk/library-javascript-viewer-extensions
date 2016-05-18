@@ -14,8 +14,6 @@ export default class SwitchButton extends EventsEmitter {
 
     super();
 
-    addCSS();
-
     var _this = this;
 
     var labelId = guid();
@@ -23,14 +21,14 @@ export default class SwitchButton extends EventsEmitter {
     this._inputId = guid();
 
     var html = `
-        <div class="onoffswitch">
+        <p class="onoffswitch">
           <input id="${this._inputId}" type="checkbox" name="onoffswitch"
             class="onoffswitch-checkbox" ${checked?"checked":""}>
           <label id="${labelId}" class="onoffswitch-label">
             <span class="onoffswitch-inner"></span>
             <span class="onoffswitch-switch"></span>
           </label>
-        </div>
+        </p>
       `;
 
     $(container).append(html);
@@ -53,17 +51,25 @@ export default class SwitchButton extends EventsEmitter {
 
     return  $('#' + this._inputId)[0].checked;
   }
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  setChecked(checked) {
+
+    $('#' + this._inputId).prop(
+      'checked', checked);
+
+    this.emit('checked', checked);
+  }
 }
 
-/////////////////////////////////////////////////////////////
-//
-//
-/////////////////////////////////////////////////////////////
-function guid(format='xxxx-xxxx-xxxx') {
+function guid() {
 
   var d = new Date().getTime();
 
-  var guid = format.replace(
+  var guid = 'xxxx-xxxx-xxxx-xxxx'.replace(
     /[xy]/g,
     function (c) {
       var r = (d + Math.random() * 16) % 16 | 0;
@@ -74,13 +80,8 @@ function guid(format='xxxx-xxxx-xxxx') {
   return guid;
 }
 
-/////////////////////////////////////////////////////////////
-// https://proto.io/freebies/onoff/
-//
-/////////////////////////////////////////////////////////////
-function addCSS(id) {
-
-  var css = `
+//https://proto.io/freebies/onoff/
+var css = `
 
   .onoffswitch {
     position: relative; width: 50px;
@@ -127,9 +128,6 @@ function addCSS(id) {
   .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px;
   }
-  `;
+`;
 
-  $('<style type="text/css">' + css + '</style>').appendTo('head');
-}
-
-
+$('<style type="text/css">' + css + '</style>').appendTo('head');

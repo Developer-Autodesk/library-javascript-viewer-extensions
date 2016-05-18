@@ -42,6 +42,8 @@ export default class ToolPanelBase extends
       title,
       Object.assign(defaultOptions, options));
 
+    this._dialogResult = 'CANCEL';
+
     this._events = {};
 
     this._isVisible = false;
@@ -83,7 +85,17 @@ export default class ToolPanelBase extends
   // setVisible override
   //
   /////////////////////////////////////////////////////////////
-  setVisible(show) {
+  setVisible(show = false) {
+
+    if(show !== this._isVisible){
+
+      if(typeof this._events !== 'undefined') {
+
+        this.emit((show ? 'open' : 'close'), {
+          result: this._dialogResult
+        });
+      }
+    }
 
     this._isVisible = show;
 

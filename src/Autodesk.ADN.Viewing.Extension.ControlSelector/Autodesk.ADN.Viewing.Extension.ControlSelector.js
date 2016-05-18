@@ -91,10 +91,10 @@ Autodesk.ADN.Viewing.Extension.ControlSelector = function (viewer, options) {
   function createToolbar(buttonId) {
 
     var toolbar = new Autodesk.Viewing.UI.ToolBar(
-      'dotty-viewing-extension-uisettings-toolbar');
+      'adn-viewing-extension-uisettings-toolbar');
 
     var ctrlGroup = new Autodesk.Viewing.UI.ControlGroup(
-      'dotty-viewing-extension-uisettings-controlgroup');
+      'adn-viewing-extension-uisettings-controlgroup');
 
     var button = createButton(
       buttonId,
@@ -165,7 +165,7 @@ Autodesk.ADN.Viewing.Extension.ControlSelector = function (viewer, options) {
     $('.adsk-control-group').each(function(){
 
       if(!$(this).hasClass('adsk-hidden') && this.id !==
-        'dotty-viewing-extension-uisettings-controlgroup') {
+        'adn-viewing-extension-uisettings-controlgroup') {
 
         $(this).find('>.adsk-button').each(function(){
 
@@ -233,7 +233,7 @@ Autodesk.ADN.Viewing.Extension.ControlSelector = function (viewer, options) {
       $('.adsk-control-group').each(function(){
 
         if(!$(this).hasClass('adsk-hidden') && this.id !==
-            'dotty-viewing-extension-uisettings-controlgroup') {
+            'adn-viewing-extension-uisettings-controlgroup') {
 
           $(this).find('>.adsk-button').each(function(){
 
