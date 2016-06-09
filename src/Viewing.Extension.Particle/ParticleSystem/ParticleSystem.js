@@ -52,13 +52,12 @@ export default class ParticleSystem extends EventsEmitter {
   destroy() {
 
     this.particles.forEach((particle)=>{
+
       this.emit('particle.destroy', particle);
     });
 
     this.recycleBin = [];
     this.particles = [];
-    this.emitters = [];
-    this.fields = [];
   }
 
   ///////////////////////////////////////////////////////////////////

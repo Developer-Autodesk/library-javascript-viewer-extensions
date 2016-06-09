@@ -18,7 +18,7 @@
 
 .markup .switch-container {
     float: left;
-    margin-right: 10px;
+    margin-right: 28px;
 }
 
 .markup .dropdown-mode-container {
@@ -28,7 +28,7 @@
 }
 
 .markup .input {
-    height: 16px;
+    height: 14px;
     margin-left: 2px;
     margin-top: 0px;
     border-radius:5px;
@@ -39,7 +39,7 @@
 .markup .styles {
     width: calc(100% - 84px);
     margin-left: 6px;
-    height: 23px;
+    height: 20px;
 }
 
 .markup .btn {
@@ -60,7 +60,7 @@
 }
 
 .markup .btn-row {
-    width: 62px;
+    width: 63px;
 }
 
 .markup .btn-span-list {

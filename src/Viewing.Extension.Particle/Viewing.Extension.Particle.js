@@ -6,11 +6,13 @@
 import TransformTool from 'Viewing.Extension.Transform.Tool'
 import ParticlePanel from 'Viewing.Extension.Particle.Panel'
 import ParticleTool from 'Viewing.Extension.Particle.Tool'
+import ExtensionBase from 'ExtensionBase'
+import SwitchButton from 'SwitchButton'
 import Toolkit from 'ViewerToolkit'
 import FPS from './fpsmeter'
 import dat from 'dat-gui'
 
-class ParticleExtension extends Autodesk.Viewing.Extension {
+class ParticleExtension extends ExtensionBase {
 
   /////////////////////////////////////////////////////////////////
   // Class constructor
@@ -27,7 +29,7 @@ class ParticleExtension extends Autodesk.Viewing.Extension {
     this.particlePanel = null;
 
     this.particleTool = new ParticleTool(
-      this.viewer);
+      this.viewer, options);
 
     this.viewer.toolController.registerTool(
       this.particleTool);
@@ -151,6 +153,23 @@ class ParticleExtension extends Autodesk.Viewing.Extension {
         this.particleTool.onObjectModified(event);
       });
 
+      this.particlePanel.on('maxParticles.changed',(value)=>{
+
+        if(value > 0) {
+
+          if(!this.particleTool.active){
+
+            this.viewer.toolController.activateTool(
+              this.particleTool.getName());
+          }
+        }
+        else {
+
+          this.viewer.toolController.deactivateTool(
+            this.particleTool.getName());
+        }
+      });
+
       this.onTxChange =
         this.onTxChange.bind(this);
 
@@ -174,8 +193,11 @@ class ParticleExtension extends Autodesk.Viewing.Extension {
       this.viewer.toolController.activateTool(
         this.transformTool.getName());
 
-      this.viewer.toolController.activateTool(
-        this.particleTool.getName());
+      if(this._options.autoStart){
+
+        this.viewer.toolController.activateTool(
+          this.particleTool.getName());
+      }
 
       this.particlePanel.setVisible(true);
     });

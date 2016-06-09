@@ -1,5 +1,5 @@
 
-import ToolPanelBase from 'ToolPanelBase';
+import ToolPanelBase from 'ToolPanelBase'
 import './Viewing.Extension.Particle.css'
 import dat from 'dat-gui'
 
@@ -30,13 +30,19 @@ export default class ParticlePanel extends ToolPanelBase {
     guiContainer.appendChild(
       gui.domElement);
 
-    var f = gui.addFolder('Particle System Properties');
+    var folder = gui.addFolder('Particle System Properties');
 
-    f.add(particleTool.particleSystem,
-      'maxParticles', 10, 10000).name(
-        'Maximum Particles');
+    this.maxParticleCtrl = folder.add(
+      particleTool.particleSystem,
+      'maxParticles', 0, 10000).name(
+        'Max Particles');
 
-    var nbParticleTypes = f.add(particleTool,
+    this.maxParticleCtrl.onFinishChange( (value) => {
+
+      this.emit('maxParticles.changed', value)
+    })
+
+    var nbParticleTypes = folder.add(particleTool,
       'nbParticleTypes', 1, 200).name(
         'Particle Types');
 
@@ -45,7 +51,7 @@ export default class ParticlePanel extends ToolPanelBase {
         Math.max(1,Math.floor(nbTypes)));
     });
 
-    f.open();
+    folder.open();
 
     setTimeout(()=> {
       gui.domElement.style.width = '100%';

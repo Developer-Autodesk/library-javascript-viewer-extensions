@@ -9,9 +9,11 @@ export default class ParticleTool extends EventsEmitter {
   // Class constructor
   //
   /////////////////////////////////////////////////////////////////
-  constructor(viewer){
+  constructor(viewer, opts = {}){
 
     super();
+
+    this.active = false
 
     this.viewer = viewer;
 
@@ -25,7 +27,7 @@ export default class ParticleTool extends EventsEmitter {
         this.nbParticleTypes);
 
     this.particleSystem = new ParticleSystem({
-      maxParticles: 3000
+      maxParticles: opts.maxParticles || 3000
     });
 
     this.onNewParticleHandler = (e)=>{
@@ -93,6 +95,10 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   activate() {
 
+    console.log(this.getName() + ' activated')
+
+    this.active = true
+
     this.t_last = 0;
   }
 
@@ -101,6 +107,10 @@ export default class ParticleTool extends EventsEmitter {
   //
   /////////////////////////////////////////////////////////////////
   deactivate() {
+
+    console.log(this.getName() + ' deactivated')
+
+    this.active = false
 
     this.particleSystem.destroy();
 

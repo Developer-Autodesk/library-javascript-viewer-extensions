@@ -8,77 +8,83 @@ export default class Markup3DTool extends EventsEmitter {
   // Class constructor
   //
   /////////////////////////////////////////////////////////////////
-  constructor(viewer){
+  constructor (viewer) {
 
-    super();
+    super()
 
-    this.viewer = viewer;
+    this.viewer = viewer
+
+    this.active = false
 
     this.onSelectionChangedHandler =
-      (e) => this.onSelectionChanged(e);
+      (e) => this.onSelectionChanged(e)
 
     this.onExplodeHandler =
-      (e) => this.onExplode(e);
+      (e) => this.onExplode(e)
 
     this.onStartDragHandler =
-      (e) => this.onStartDrag(e);
+      (e) => this.onStartDrag(e)
 
     this.onEndDragHandler =
-      (e) => this.onEndDrag(e);
+      (e) => this.onEndDrag(e)
   }
 
   /////////////////////////////////////////////////////////////////
   // Tool names
   //
   /////////////////////////////////////////////////////////////////
-  getNames() {
+  getNames () {
 
-    return ["Viewing.Extension.Markup3D.Tool"];
+    return ['Viewing.Extension.Markup3D.Tool']
   }
 
   /////////////////////////////////////////////////////////////////
   // Tool name
   //
   /////////////////////////////////////////////////////////////////
-  getName() {
+  getName () {
 
-    return "Viewing.Extension.Markup3D.Tool";
+    return 'Viewing.Extension.Markup3D.Tool'
   }
 
   /////////////////////////////////////////////////////////////////
   // Activate Tool
   //
   /////////////////////////////////////////////////////////////////
-  activate() {
-  
-    this.MarkupCollection = {};
+  activate () {
+
+    this.active = true
+
+    this.MarkupCollection = {}
     
-    this.currentMarkup = null;
+    this.currentMarkup = null
 
     this.viewer.addEventListener(
       Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
-      this.onSelectionChangedHandler);
+      this.onSelectionChangedHandler)
 
     this.viewer.addEventListener(
       Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
-      this.onExplodeHandler);
+      this.onExplodeHandler)
   }
 
   /////////////////////////////////////////////////////////////////
   // Deactivate tool
   //
   /////////////////////////////////////////////////////////////////
-  deactivate() {
+  deactivate () {
 
-    this.currentMarkup = null;
+    this.active = false
+
+    this.currentMarkup = null
 
     this.viewer.removeEventListener(
       Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
-      this.onSelectionChangedHandler);
+      this.onSelectionChangedHandler)
 
     this.viewer.removeEventListener(
       Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
-      this.onExplodeHandler);
+      this.onExplodeHandler)
   }
 
   /////////////////////////////////////////////////////////////////

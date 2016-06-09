@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "npm run build-prod",
     "build-dev": "webpack --watch --progress --colors --config ./webpack/webpack.config.development.js",
-    "build-prod": "webpack --config ./webpack/webpack.config.production.js"
+    "build-prod": "webpack --progress --colors --config ./webpack/webpack.config.production.js"
   },
   "author": "Philippe Leefsma",
   "dependencies": {
@@ -29,8 +29,10 @@
     "inspire-tree": "^1.2.6",
     "jquery": "^2.2.0",
     "lodash": "^4.11.1",
+    "randomcolor": "^0.4.4",
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
+    "smoothie": "^1.27.0",
     "snapsvg": "0.4.0",
     "socket.io-client": "1.4.5",
     "style-loader": "^0.13.0",

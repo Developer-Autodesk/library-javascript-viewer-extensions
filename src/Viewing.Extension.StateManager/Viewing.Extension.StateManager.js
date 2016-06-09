@@ -3,114 +3,9 @@
 // By Philippe Leefsma, April 2016
 /////////////////////////////////////////////////////////////////
 import StateManagerPanel from './Viewing.Extension.StateManager.Panel'
+import StatesAPI from './Viewing.Extension.StateManager.API'
 import ViewerToolkit from 'ViewerToolkit'
 import ExtensionBase from 'ExtensionBase'
-
-////////////////////////////////////////////////////////////////
-// StateManager API
-//
-/////////////////////////////////////////////////////////////////
-class StatesAPI {
-
-  ///////////////////////////////////////////////////////////////
-  // Class constructor
-  //
-  ///////////////////////////////////////////////////////////////
-  constructor(apiUrl) {
-
-    this._apiUrl = apiUrl;
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  async getSequence(modelId) {
-
-    var url = this._apiUrl +
-      `/models/${modelId}/states/sequence`;
-
-    var res = await fetch(url);
-
-    return res.json();
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  async getStates(modelId) {
-
-    var url = this._apiUrl +
-      `/models/${modelId}/states`;
-
-    var res = await fetch(url);
-
-    return res.json();
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  async post(url, payload) {
-
-    var res = await fetch(url, {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload || {})
-    });
-
-    return res.json();
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  async saveSequence(modelId, sequence) {
-
-    var payload = {
-      sequence: sequence
-    }
-
-    var url = this._apiUrl +
-      `/models/${modelId}/states/sequence`;
-
-    return this.post(url, payload);
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  async addState(modelId, state) {
-
-    var payload = {
-      state: state
-    }
-
-    var url = this._apiUrl +
-      `/models/${modelId}/states`;
-
-    return this.post(url, payload);
-  }
-
-  ///////////////////////////////////////////////////////////////
-  //
-  //
-  ///////////////////////////////////////////////////////////////
-  removeState(modelId, stateId) {
-
-    var url = this._apiUrl +
-      `/models/${modelId}/states/${stateId}/remove`;
-
-    return this.post(url);
-  }
-}
 
 class StateManagerExtension extends ExtensionBase {
 
@@ -122,8 +17,11 @@ class StateManagerExtension extends ExtensionBase {
 
     super(viewer, options);
 
-    this._api = new StatesAPI(
-      options.apiUrl);
+    if(this._options.apiUrl) {
+
+      this._api = new StatesAPI(
+        options.apiUrl);
+    }
   }
 
   /////////////////////////////////////////////////////////////////
@@ -165,10 +63,10 @@ class StateManagerExtension extends ExtensionBase {
       this._viewer.container,
       this._control.container);
 
-    this._panel.on('state.add', (state)=>{
+    this._panel.on('state.add', (state) => {
 
       return this.onAddStateHandler(state);
-    });
+    })
 
     this._panel.on('state.restore', (state)=>{
 
@@ -185,31 +83,56 @@ class StateManagerExtension extends ExtensionBase {
       return this.onSaveSequenceHandler(sequence);
     });
 
-    this._options.parentControl.addControl(
+    this.parentControl = this._options.parentControl;
+
+    if(!this.parentControl){
+
+      var viewerToolbar = this._viewer.getToolbar(true);
+
+      this.parentControl = new Autodesk.Viewing.UI.ControlGroup(
+        'state-manager');
+
+      viewerToolbar.addControl(this.parentControl);
+    }
+
+    this.parentControl.addControl(
       this._control);
 
-    this._api.getSequence(this._options.model._id).then(
-      async(sequence)=>{
+    if(this._api) {
 
-      var states = await this._api.getStates(
-        this._options.model._id);
+      this._api.getSequence(this._options.model._id).then(
+        async(sequence) => {
 
-      sequence.forEach((stateId)=>{
+        var states = await this._api.getStates(
+          this._options.model._id);
 
-        states.forEach((state)=>{
+        sequence.forEach((stateId) => {
+
+        states.forEach((state) => {
 
           if(state.guid == this._options.stateId){
 
             this._viewer.restoreState(state, false);
           }
 
-          if(state.guid == stateId){
+          if (state.guid == stateId) {
 
             this._panel.addItem(state);
           }
-        });
-      });
-    });
+        })
+      })
+     })
+    }
+
+    if(this._options.homeState) {
+
+      var state = this._viewer.getState()
+
+      state.name = "Home"
+      state.readonly = true
+
+      this._panel.addItem(state)
+    }
 
     this._panel.setVisible(
       this._options.showPanel);
@@ -225,6 +148,9 @@ class StateManagerExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   unload() {
 
+    this.parentControl.removeControl(
+      this._control);
+
     this._panel.setVisible(false);
 
     console.log('Viewing.Extension.StateManager unloaded');
@@ -236,16 +162,19 @@ class StateManagerExtension extends ExtensionBase {
   //
   //
   ////////////////////////////////////////////////////////////////
-  onAddState(data){
+  onAddState (data) {
 
     var state = this._viewer.getState();
 
     state.name = (data.name.length ?
       data.name : new Date().toString('d/M/yyyy H:mm:ss'));
 
-    this._api.addState(
-      this._options.model._id,
-      state);
+    if(this._api) {
+
+      this._api.addState(
+        this._options.model._id,
+        state);
+    }
 
     return state;
   }
@@ -254,31 +183,37 @@ class StateManagerExtension extends ExtensionBase {
   //
   //
   ////////////////////////////////////////////////////////////////
-  onRestoreState(state){
+  onRestoreState (state) {
 
-    this._viewer.restoreState(state, false);
+    this._viewer.restoreState(state, null, false);
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   ////////////////////////////////////////////////////////////////
-  onRemoveState(state){
+  onRemoveState (state) {
 
-    this._api.removeState(
-      this._options.model._id,
-      state.guid);
+    if(this._api) {
+
+      this._api.removeState(
+        this._options.model._id,
+        state.guid);
+    }
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   ////////////////////////////////////////////////////////////////
-  onSaveSequence(sequence){
+  onSaveSequence (sequence) {
 
-    this._api.saveSequence(
-      this._options.model._id,
-      sequence);
+    if(this._api) {
+
+      this._api.saveSequence(
+        this._options.model._id,
+        sequence);
+    }
   }
 }
 

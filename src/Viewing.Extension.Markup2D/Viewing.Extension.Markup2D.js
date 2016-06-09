@@ -1,58 +1,53 @@
 /////////////////////////////////////////////////////////////////////
-// Viewing.Extension.VisualReport
-// by Philippe Leefsma, April 2016
+// Autodesk.ADN.Viewing.Extension.Markup
+// by Philippe Leefsma, Feb 2016
 //
 /////////////////////////////////////////////////////////////////////
-import VisualReportPanel from './Viewing.Extension.VisualReport.Panel'
-import ViewerToolkit from 'ViewerToolkit'
+import Markup2DPanel from './Viewing.Extension.Markup2D.Panel'
 import ExtensionBase from 'ExtensionBase'
+import './Viewing.Extension.Markup2D.css'
+import ViewerToolkit from 'ViewerToolkit'
+import './MarkupsCore.js'
+import './spectrum.css'
+import './spectrum'
 
-class VisualReportExtension extends ExtensionBase {
+class Markup2DExtension extends ExtensionBase {
 
   /////////////////////////////////////////////////////////////////
   // Class constructor
   //
   /////////////////////////////////////////////////////////////////
-  constructor(viewer, options) {
+  constructor (viewer, options) {
 
-    super(viewer, options);
+    super(viewer, options)
   }
 
   /////////////////////////////////////////////////////////////////
   // Extension Id
   //
   /////////////////////////////////////////////////////////////////
-  static get ExtensionId() {
+  static get ExtensionId () {
 
-    return 'Viewing.Extension.VisualReport';
+    return 'Viewing.Extension.Markup2D'
   }
 
   /////////////////////////////////////////////////////////////////
   // Load callback
   //
   /////////////////////////////////////////////////////////////////
-  async load() {
-
-    var componentIds = await ViewerToolkit.getLeafNodes(
-      this._viewer.model);
-
-    var properties = await ViewerToolkit.getPropertyList(
-      this._viewer.model,
-      componentIds);
-
+  load () {
 
     this._control = ViewerToolkit.createButton(
-      'toolbar-visual-report',
-      'glyphicon glyphicon-tasks',
-      'Visual Report', () => {
+      'toolbar-markup2D',
+      'glyphicon glyphicon-edit',
+      'Markup 2D Panel', () => {
 
-      this._panel.toggleVisibility()
-    })
+        this._panel.toggleVisibility()
+      })
 
-    this._panel = new VisualReportPanel(
+    this._panel = new Markup2DPanel(
       this._viewer,
-      properties,
-      componentIds,
+      'markup2d',
       this._control.container)
 
     this.parentControl = this._options.parentControl
@@ -62,7 +57,7 @@ class VisualReportExtension extends ExtensionBase {
       var viewerToolbar = this._viewer.getToolbar(true)
 
       this.parentControl = new Autodesk.Viewing.UI.ControlGroup(
-        'visual-report')
+        'markup')
 
       viewerToolbar.addControl(this.parentControl)
     }
@@ -70,28 +65,24 @@ class VisualReportExtension extends ExtensionBase {
     this.parentControl.addControl(
       this._control)
 
-    console.log('Viewing.Extension.VisualReport loaded');
-    
-    return true;
+    this._panel.setVisible(
+      this._options.showPanel)
+
+    console.log('Viewing.Extension.Markup2D loaded')
+
+    return true
   }
 
   /////////////////////////////////////////////////////////////////
   // Unload callback
   //
   /////////////////////////////////////////////////////////////////
-  unload() {
+  unload () {
 
-    this._panel.setVisible(false);
-
-    this.parentControl.removeControl(
-      this._control)
-
-    console.log('Viewing.Extension.VisualReport unloaded');
-
-    return true;
+    console.log('Viewing.Extension.Markup2D unloaded')
   }
 }
 
 Autodesk.Viewing.theExtensionManager.registerExtension(
-  VisualReportExtension.ExtensionId,
-  VisualReportExtension);
+  Markup2DExtension.ExtensionId,
+  Markup2DExtension)

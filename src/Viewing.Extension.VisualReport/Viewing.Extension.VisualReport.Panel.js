@@ -16,10 +16,11 @@ import d3 from 'd3'
 
 export default class VisualReportPanel extends ToolPanelBase{
 
-  constructor(viewer, properties, componentIds) {
+  constructor(viewer, properties, componentIds, buttonElement) {
 
     super(viewer.container, 'Visual Reports', {
-      shadow: true
+      shadow: true,
+      buttonElement
     });
 
     this.viewer = viewer;

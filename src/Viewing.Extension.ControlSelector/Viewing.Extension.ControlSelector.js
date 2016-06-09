@@ -21,30 +21,30 @@ Viewing.Extension.ControlSelector = function (viewer, options) {
   /////////////////////////////////////////////
   _thisExtension.load = function () {
 
-    var ControlSelector = options.Lockr.get(
-      options.storageKey);
+    var buttonId = guid();
 
-    if(!ControlSelector) {
+    _panel = new Panel(
+      viewer.container,
+      guid(),
+      buttonId);
 
-      ControlSelector = {
-        controls: {}
-      };
+    _toolbarId = createToolbar(buttonId);
 
-      options.Lockr.set(
-        options.storageKey,
-        ControlSelector);
-    }
+    if(options.Lockr) {
 
-    if (options.mobile.isAny()) {
+      var ControlSelector = options.Lockr.get(
+        options.storageKey);
 
-      var buttonId = guid();
+      if (!ControlSelector) {
 
-      _panel = new Panel(
-        viewer.container,
-        guid(),
-        buttonId);
+        ControlSelector = {
+          controls: {}
+        };
 
-      _toolbarId = createToolbar(buttonId);
+        options.Lockr.set(
+          options.storageKey,
+          ControlSelector);
+      }
 
       loadFromStorage();
     }
@@ -166,9 +166,8 @@ Viewing.Extension.ControlSelector = function (viewer, options) {
   /////////////////////////////////////////////
   function loadFromStorage() {
 
-    var ControlSelector = options.Lockr.get(options.storageKey);
-
-    console.log(ControlSelector)
+    var ControlSelector = options.Lockr.get(
+      options.storageKey);
 
     $('.adsk-control-group').each(function(){
 
@@ -309,17 +308,21 @@ Viewing.Extension.ControlSelector = function (viewer, options) {
           $this.removeClass('enabled');
         }
 
-        var ControlSelector = options.Lockr.get(options.storageKey);
+        if(options.Lockr) {
 
-        if(!ControlSelector.controls[button.id]) {
-          ControlSelector.controls[button.id] = {};
+          var ControlSelector = options.Lockr.get(
+            options.storageKey);
+
+          if (!ControlSelector.controls[button.id]) {
+            ControlSelector.controls[button.id] = {};
+          }
+
+          ControlSelector.controls[button.id].enabled = enabled;
+
+          options.Lockr.set(
+            options.storageKey,
+            ControlSelector);
         }
-
-        ControlSelector.controls[button.id].enabled = enabled;
-
-        options.Lockr.set(
-          options.storageKey,
-          ControlSelector);
 
         return false;
       });

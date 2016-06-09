@@ -16,6 +16,9 @@ module.exports = {
     'Viewing.Extension.StateManager':
       './src/Viewing.Extension.StateManager/Viewing.Extension.StateManager.js',
 
+    'Viewing.Extension.Markup2D':
+      './src/Viewing.Extension.Markup2D/Viewing.Extension.Markup2D.js',
+
     'Viewing.Extension.Markup3D':
       './src/Viewing.Extension.Markup3D/Viewing.Extension.Markup3D.js',
 
@@ -24,6 +27,12 @@ module.exports = {
 
     'Autodesk.ADN.Viewing.Extension.PropertyPanel':
       './src/Autodesk.ADN.Viewing.Extension.PropertyPanel/Autodesk.ADN.Viewing.Extension.PropertyPanel.js',
+
+    'Viewing.Extension.CustomTree':
+      './src/Viewing.Extension.CustomTree/Viewing.Extension.CustomTree.js',
+
+    '_Viewing.Extension.CSSTV':
+      './src/Viewing.Extension.CSSTV/Viewing.Extension.CSSTV.js',
 
     '_Viewing.Extension.ControlSelector':
       './src/Viewing.Extension.ControlSelector/Viewing.Extension.ControlSelector.js',
@@ -44,7 +53,10 @@ module.exports = {
       './src/Autodesk.ADN.Viewing.Extension.React/Autodesk.ADN.Viewing.Extension.React.js',
 
     'Viewing.Extension.TypeScript':
-      './src/Viewing.Extension.TypeScript/Viewing.Extension.TypeScript.js'
+      './src/Viewing.Extension.TypeScript/Viewing.Extension.TypeScript.js',
+
+    'ConnectedData':
+      './src/Forge.ConnectedData/ConnectedData.js'
   },
 
   output: {

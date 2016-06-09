@@ -278,7 +278,7 @@ export default class ViewerToolkit {
 
         model.getProperties(dbId, function(result) {
 
-          if (result.properties);
+          if (result.properties)
             return resolve(
               result.properties);
 
@@ -584,7 +584,7 @@ export default class ViewerToolkit {
   // Recursively builds the model tree
   //
   /////////////////////////////////////////////////////////////////
-  static buildModelTree(model){
+  static buildModelTree(model, createNodeFunc = null){
 
     //builds model tree recursively
     function _buildModelTreeRec(node){
@@ -592,14 +592,23 @@ export default class ViewerToolkit {
       instanceTree.enumNodeChildren(node.dbId,
         function(childId) {
 
-          node.children = node.children || [];
+          var childNode = null;
 
-          var childNode = {
-            dbId: childId,
-            name: instanceTree.getNodeName(childId)
+          if(createNodeFunc){
+
+            childNode = createNodeFunc(childId);
           }
+          else {
 
-          node.children.push(childNode);
+            node.children = node.children || [];
+
+            childNode = {
+              dbId: childId,
+              name: instanceTree.getNodeName(childId)
+            }
+
+            node.children.push(childNode);
+          }
 
           _buildModelTreeRec(childNode);
         });

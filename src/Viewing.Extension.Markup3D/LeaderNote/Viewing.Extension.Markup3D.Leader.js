@@ -1,4 +1,3 @@
-
 import Stopwatch from 'Stopwatch'
 
 export default class Leader {

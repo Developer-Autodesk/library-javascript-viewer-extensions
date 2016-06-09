@@ -151,7 +151,6 @@ Autodesk.ADN.Viewing.Extension.TransformTool =  function (viewer, options) {
                     fragProxy.getAnimTransform();
 
                     var offset = {
-
                         x: _hitPoint.x - fragProxy.position.x,
                         y: _hitPoint.y - fragProxy.position.y,
                         z: _hitPoint.z - fragProxy.position.z
