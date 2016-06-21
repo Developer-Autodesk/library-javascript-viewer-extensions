@@ -15,7 +15,7 @@ class CustomTreeExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   constructor(viewer, options) {
 
-    super(viewer, options);
+    super(viewer, options)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class CustomTreeExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   static get ExtensionId() {
 
-    return 'Viewing.Extension.CustomTree';
+    return 'Viewing.Extension.CustomTree'
   }
 
   /////////////////////////////////////////////////////////////////
@@ -34,16 +34,16 @@ class CustomTreeExtension extends ExtensionBase {
   async load() {
 
     var rootNode = await ViewerToolkit.buildModelTree(
-      this._viewer.model);
+      this._viewer.model)
 
     this.panel = new CustomTreePanel(
-      this._viewer.container, null, rootNode);
+      this._viewer.container, null, rootNode)
 
-    this.panel.setVisible(true);
+    this.panel.setVisible(true)
 
-    console.log('Viewing.Extension.CustomTree loaded');
+    console.log('Viewing.Extension.CustomTree loaded')
 
-    return true;
+    return true
   }
 
   /////////////////////////////////////////////////////////////////
@@ -52,12 +52,12 @@ class CustomTreeExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   unload() {
 
-    console.log('Viewing.Extension.CustomTree unloaded');
+    console.log('Viewing.Extension.CustomTree unloaded')
 
-    return true;
+    return true
   }
 }
 
 Autodesk.Viewing.theExtensionManager.registerExtension(
   CustomTreeExtension.ExtensionId,
-  CustomTreeExtension);
+  CustomTreeExtension)
