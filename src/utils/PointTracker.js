@@ -24,7 +24,7 @@ export default class PointTracker extends EventsEmitter {
   // Set screenpoint
   //
   /////////////////////////////////////////////////////////////////
-  setScreenPoint(screenPoint) {
+  setScreenPoint (screenPoint) {
 
     var n = this.normalize(screenPoint);
 
@@ -144,7 +144,7 @@ export default class PointTracker extends EventsEmitter {
       p.z /= p.w;
     }
 
-    // This one is multiplying by width/2 and â€“height/2,
+    // This one is multiplying by width/2 and height/2,
     // and offsetting by canvas location
     var point = this._viewer.impl.viewportToClient(p.x, p.y);
 

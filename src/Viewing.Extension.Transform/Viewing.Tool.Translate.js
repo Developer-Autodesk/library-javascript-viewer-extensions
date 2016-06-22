@@ -6,41 +6,39 @@ export default class TransformTool extends EventsEmitter {
   // Class constructor
   //
   /////////////////////////////////////////////////////////////////
-  constructor(viewer){
+  constructor (viewer) {
 
-    super();
+    super()
 
-    this._viewer = viewer;
+    this._viewer = viewer
+
+    this._dbIds = []
   
-    this._hitPoint = null;
-  
-    this._isDragging = false;
-  
-    this._transformMesh = null;
-  
-    this._modifiedFragIdMap = {};
+    this._hitPoint = null
 
-    this._transformControlTx = null;
+    this._selectSet = null
+  
+    this._isDragging = false
+  
+    this._transformMesh = null
+  
+    this._modifiedFragIdMap = {}
 
-    this._selectedDbIds = 0;
-    this._selectedFragProxyMap = {};
+    this._transformControlTx = null
 
-    this._selectSet = null;
+    this._selectedFragProxyMap = {}
 
     this.onTxChange =
-      this.onTxChange.bind(this);
-
-    this.onSelectionChanged =
-      this.onSelectionChanged.bind(this);
-
+      this.onTxChange.bind(this)
+    
     this.onAggregateSelectionChanged =
-      this.onAggregateSelectionChanged.bind(this);
+      this.onAggregateSelectionChanged.bind(this)
 
     this.onCameraChanged =
-      this.onCameraChanged.bind(this);
+      this.onCameraChanged.bind(this)
 
     this.handleSelectionChanged =
-      this.handleSelectionChanged.bind(this);
+      this.handleSelectionChanged.bind(this)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -49,7 +47,7 @@ export default class TransformTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   getNames() {
 
-    return ["Viewing.Transform.Tool"];
+    return ["Viewing.Transform.Tool"]
   }
 
   /////////////////////////////////////////////////////////////////
@@ -58,7 +56,7 @@ export default class TransformTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   getName() {
 
-    return "Viewing.Transform.Tool";
+    return "Viewing.Transform.Tool"
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -68,20 +66,20 @@ export default class TransformTool extends EventsEmitter {
   createTransformMesh() {
 
     var material = new THREE.MeshPhongMaterial(
-      { color: 0xff0000 });
+      { color: 0xff0000 })
 
     this._viewer.impl.matman().addMaterial(
       'transform-tool-material',
       material,
-      true);
+      true)
 
     var sphere = new THREE.Mesh(
       new THREE.SphereGeometry(0.0001, 5),
-      material);
+      material)
 
-    sphere.position.set(0, 0, 0);
+    sphere.position.set(0, 0, 0)
 
-    return sphere;
+    return sphere
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -92,24 +90,24 @@ export default class TransformTool extends EventsEmitter {
 
     for(var fragId in this._selectedFragProxyMap) {
 
-      var fragProxy = this._selectedFragProxyMap[fragId];
+      var fragProxy = this._selectedFragProxyMap[fragId]
 
       var position = new THREE.Vector3(
         this._transformMesh.position.x - fragProxy.offset.x,
         this._transformMesh.position.y - fragProxy.offset.y,
-        this._transformMesh.position.z - fragProxy.offset.z);
+        this._transformMesh.position.z - fragProxy.offset.z)
 
-      fragProxy.position = position;
+      fragProxy.position = position
 
-      fragProxy.updateAnimTransform();
+      fragProxy.updateAnimTransform()
     }
 
-    this._viewer.impl.sceneUpdated(true);
+    this._viewer.impl.sceneUpdated(true)
 
     this.emit('transform.TxChange', {
-      dbIds:  this._selectedDbIds,
+      dbIds: this._dbIds,
       fragIds: Object.keys(this._selectedFragProxyMap)
-    });
+    })
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -120,7 +118,7 @@ export default class TransformTool extends EventsEmitter {
 
     if(this._transformControlTx) {
 
-      this._transformControlTx.update();
+      this._transformControlTx.update()
     }
   }
 
@@ -128,113 +126,106 @@ export default class TransformTool extends EventsEmitter {
   // item selected callback
   //
   ///////////////////////////////////////////////////////////////////////////
-  onSelectionChanged(event) {
-
-    this.handleSelectionChanged(
-      event.dbIdArray,
-      event.fragIdsArray);
-  }
-
   onAggregateSelectionChanged(event) {
 
-    var fragIdsArray = [];
+    var dbIdArray = []
+    var fragIdsArray = []
 
     if(event.selections && event.selections.length) {
 
-      var selection = event.selections[0];
+      var selection = event.selections[0]
 
-      fragIdsArray = selection.fragIdsArray;
+      dbIdArray = selection.dbIdArray
+
+      fragIdsArray = selection.fragIdsArray
     }
 
-    this.handleSelectionChanged([/*TODO*/], fragIdsArray);
+    this.handleSelectionChanged(dbIdArray, fragIdsArray)
   }
 
   handleSelectionChanged(dbIdArray, fragIdsArray) {
+
+    this._selectedFragProxyMap = {}
+
+    this._dbIds = dbIdArray
 
     //component unselected
 
     if(!fragIdsArray.length) {
 
-      this._selectedFragProxyMap = {};
+      this._hitPoint = null
 
-      this._hitPoint = null;
-
-      this._transformControlTx.visible = false;
+      this._transformControlTx.visible = false
 
       this._transformControlTx.removeEventListener(
-        'change', this.onTxChange);
+        'change', this.onTxChange)
 
       this._viewer.removeEventListener(
         Autodesk.Viewing.CAMERA_CHANGE_EVENT,
-        this.onCameraChanged);
+        this.onCameraChanged)
 
       this.emit('transform.select', {
-        dbIds:[]
-      });
+        dbIds: this._dbIds
+      })
 
-      return;
+      return
     }
 
+    if (this._hitPoint) {
 
-    if(this._hitPoint) {
+      this._selectSet = this.emit('transform.select', {
+        dbIds: this._dbIds
+      })
 
-      this._selectedDbIds = dbIdArray;
+      if (this._selectSet) {
 
-      this._selectedFragProxyMap = {};
-
-      this._selectSet = this.emit('transform.select',{
-        dbIds: dbIdArray
-      });
-
-      if(this._selectSet){
-
-        if(!this._selectSet.selectable){
-          this._hitPoint = null;
-          this._viewer.select([]);
-          return;
+        if (!this._selectSet.selectable) {
+          this._hitPoint = null
+          this._viewer.select([])
+          return
         }
 
-        if(!this._selectSet.transformable){
-          this._hitPoint = null;
-          return;
+        if (!this._selectSet.transformable) {
+          this._hitPoint = null
+          return
         }
       }
 
-      this._transformControlTx.visible = true;
+      this._transformControlTx.visible = true
 
       this._transformControlTx.setPosition(
-        this._hitPoint);
+        this._hitPoint)
 
       this._transformControlTx.addEventListener(
-        'change', this.onTxChange);
+        'change', this.onTxChange)
 
       this._viewer.addEventListener(
         Autodesk.Viewing.CAMERA_CHANGE_EVENT,
-        this.onCameraChanged);
+        this.onCameraChanged)
 
       fragIdsArray.forEach((fragId)=> {
 
         var fragProxy = this._viewer.impl.getFragmentProxy(
           this._viewer.model,
-          fragId);
+          fragId)
 
-        fragProxy.getAnimTransform();
+        fragProxy.getAnimTransform()
 
         var offset = {
 
           x: this._hitPoint.x - fragProxy.position.x,
           y: this._hitPoint.y - fragProxy.position.y,
           z: this._hitPoint.z - fragProxy.position.z
-        };
+        }
 
-        fragProxy.offset = offset;
+        fragProxy.offset = offset
 
-        this._selectedFragProxyMap[fragId] = fragProxy;
+        this._selectedFragProxyMap[fragId] = fragProxy
 
-        this._modifiedFragIdMap[fragId] = {};
-      });
+        this._modifiedFragIdMap[fragId] = {}
+      })
 
-      this._hitPoint = null;
+      this._hitPoint = null
     }
   }
 
@@ -244,14 +235,14 @@ export default class TransformTool extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////////////
   normalize(screenPoint) {
 
-    var viewport = this._viewer.navigation.getScreenViewport();
+    var viewport = this._viewer.navigation.getScreenViewport()
 
     var n = {
       x: (screenPoint.x - viewport.left) / viewport.width,
       y: (screenPoint.y - viewport.top) / viewport.height
-    };
+    }
 
-    return n;
+    return n
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -263,39 +254,13 @@ export default class TransformTool extends EventsEmitter {
     var screenPoint = {
       x: event.clientX,
       y: event.clientY
-    };
-
-    var n = this.normalize(screenPoint);
-
-    var hitPoint = this._viewer.utilities.getHitPoint(n.x, n.y);
-
-    return hitPoint;
-  }
-
-  ///////////////////////////////////////////////////////////////////
-  // returns all transformed meshes
-  //
-  ///////////////////////////////////////////////////////////////////
-  getTransformMap() {
-
-    var transformMap = {};
-
-    for(var fragId in this._modifiedFragIdMap){
-
-      var fragProxy = this._viewer.impl.getFragmentProxy(
-        this._viewer.model,
-        fragId);
-
-      fragProxy.getAnimTransform();
-
-      transformMap[fragId] = {
-        position: fragProxy.position
-      };
-
-      fragProxy = null;
     }
 
-    return transformMap;
+    var n = this.normalize(screenPoint)
+
+    var hitPoint = this._viewer.utilities.getHitPoint(n.x, n.y)
+
+    return hitPoint
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -304,39 +269,37 @@ export default class TransformTool extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////
   activate() {
 
-    this._viewer.select([]);
+    this.active = true
 
-    var bbox = this._viewer.model.getBoundingBox();
+    this._viewer.select([])
+
+    var bbox = this._viewer.model.getBoundingBox()
 
     this._viewer.impl.createOverlayScene(
-      'TransformToolOverlay');
+      'TransformToolOverlay')
 
     this._transformControlTx = new THREE.TransformControls(
       this._viewer.impl.camera,
       this._viewer.impl.canvas,
-      "translate");
+      "translate")
 
     this._transformControlTx.setSize(
-      bbox.getBoundingSphere().radius * 5);
+      bbox.getBoundingSphere().radius * 5)
 
-    this._transformControlTx.visible = false;
+    this._transformControlTx.visible = false
 
     this._viewer.impl.addOverlay(
       'TransformToolOverlay',
-      this._transformControlTx);
+      this._transformControlTx)
 
-    this._transformMesh = this.createTransformMesh();
+    this._transformMesh = this.createTransformMesh()
 
     this._transformControlTx.attach(
-      this._transformMesh);
-
-    this._viewer.addEventListener(
-      Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-      this.onSelectionChanged);
+      this._transformMesh)
 
     this._viewer.addEventListener(
       Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
-      this.onAggregateSelectionChanged);
+      this.onAggregateSelectionChanged)
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -345,30 +308,28 @@ export default class TransformTool extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////////////
   deactivate() {
 
+    this.active = false
+
     this._viewer.impl.removeOverlay(
       'TransformToolOverlay',
-      this._transformControlTx);
+      this._transformControlTx)
 
     this._transformControlTx.removeEventListener(
       'change',
-      this.onTxChange);
+      this.onTxChange)
 
-    this._transformControlTx = null;
+    this._transformControlTx = null
 
     this._viewer.impl.removeOverlayScene(
-      'TransformToolOverlay');
+      'TransformToolOverlay')
 
     this._viewer.removeEventListener(
       Autodesk.Viewing.CAMERA_CHANGE_EVENT,
-      this.onCameraChanged);
-
-    this._viewer.removeEventListener(
-      Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-      this.onSelectionChanged);
+      this.onCameraChanged)
 
     this._viewer.removeEventListener(
       Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT,
-      this.onAggregateSelectionChanged);
+      this.onAggregateSelectionChanged)
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -377,16 +338,16 @@ export default class TransformTool extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////////////
   handleButtonDown(event, button) {
 
-    this._hitPoint = this.getHitPoint(event);
+    this._hitPoint = this.getHitPoint(event)
 
-    this._isDragging = true;
+    this._isDragging = true
 
     if (this._transformControlTx.onPointerDown(event))
-      return true;
+      return true
 
-    //return _transRotControl.onPointerDown(event);
-    return false;
-  };
+    //return _transRotControl.onPointerDown(event)
+    return false
+  }
 
   ///////////////////////////////////////////////////////////////////////////
   //
@@ -394,13 +355,13 @@ export default class TransformTool extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////////////
   handleButtonUp(event, button) {
 
-    this._isDragging = false;
+    this._isDragging = false
 
     if (this._transformControlTx.onPointerUp(event))
-      return true;
+      return true
 
-    //return _transRotControl.onPointerUp(event);
-    return false;
+    //return _transRotControl.onPointerUp(event)
+    return false
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -413,16 +374,16 @@ export default class TransformTool extends EventsEmitter {
 
       if (this._transformControlTx.onPointerMove(event) ) {
 
-        return true;
+        return true
       }
 
-      return false;
+      return false
     }
 
     if (this._transformControlTx.onPointerHover(event))
-      return true;
+      return true
 
-    //return _transRotControl.onPointerHover(event);
-    return false;
+    //return _transRotControl.onPointerHover(event)
+    return false
   }
 }

@@ -2,7 +2,7 @@
 // Create dropwdown menu
 //
 /////////////////////////////////////////////////////////////
-import EventsEmitter from 'EventsEmitter';
+import EventsEmitter from 'EventsEmitter'
 
 export default class Dropdown extends EventsEmitter {
   

@@ -6,11 +6,11 @@
 import './Viewing.Extension.CustomTree.css'
 import ToolPanelBase from 'ToolPanelBase'
 
-export default class CustomTreePanel extends ToolPanelBase{
+export default class CustomTreePanel extends ToolPanelBase {
 
-  constructor (container, btnElement, rootNode) {
+  constructor (viewer, btnElement, rootNode) {
 
-    super (container, 'Custom Tree', {
+    super (viewer.container, 'Custom Tree', {
       buttonElement: btnElement,
       shadow: true
     })
@@ -19,7 +19,7 @@ export default class CustomTreePanel extends ToolPanelBase{
 
     var treeContainer = $(`#${this.container.id}-tree-container`)[0]
 
-    this.treeDelegate = new CustomTreeDelegate()
+    this.treeDelegate = new CustomTreeDelegate(viewer)
 
     this.tree = new Autodesk.Viewing.UI.Tree(
       this.treeDelegate, rootNode, treeContainer, {
@@ -43,6 +43,13 @@ export default class CustomTreePanel extends ToolPanelBase{
 
 class CustomTreeDelegate extends Autodesk.Viewing.UI.TreeDelegate {
 
+  constructor (viewer) {
+
+    super()
+
+    this.viewer = viewer
+  }
+
   getTreeNodeId (node) {
 
     return node.dbId
@@ -56,5 +63,26 @@ class CustomTreeDelegate extends Autodesk.Viewing.UI.TreeDelegate {
     }
 
     return true
+  }
+
+  onTreeNodeDoubleClick (tree, node, event) {
+
+    console.log(node)
+
+    this.viewer.select([node.dbId])
+    this.viewer.isolate([node.dbId])
+  }
+
+  forEachChild (node, callback) {
+
+    if (node.children) {
+
+      node.children.forEach((child) => {
+
+        //if(child === 'some condition') mode.getProperties(child.dbId, ()=>{  decide if node or not})
+
+        callback(child)
+      })
+    }
   }
 }

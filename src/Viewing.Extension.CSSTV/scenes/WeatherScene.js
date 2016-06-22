@@ -62,10 +62,10 @@ export default class WeatherScene {
 
     this.intervalId = setInterval(() => {
 
-      $.get(this.forecastUrl, (response) => {
-
-        console.log(response)
-      })
+      //$.get(this.forecastUrl, (response) => {
+      //
+      //  console.log(response)
+      //})
 
       ts.append(new Date().getTime(), Math.random() * 10000)
 

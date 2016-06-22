@@ -637,7 +637,7 @@ export default class ViewerToolkit {
 
     var taskResults = [];
 
-    function _executeTaskOnModelTreeRec(dbId){
+    function _executeTaskOnModelTreeRec(dbId, path){
 
       instanceTree.enumNodeChildren(dbId,
         function(childId) {
@@ -653,7 +653,7 @@ export default class ViewerToolkit {
 
     var rootId = instanceTree.getRootId();
 
-    _executeTaskOnModelTreeRec(rootId);
+    _executeTaskOnModelTreeRec(rootId, [rootId]);
 
     return taskResults;
   }

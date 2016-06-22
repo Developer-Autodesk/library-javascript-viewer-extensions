@@ -216,7 +216,7 @@ class CSSTVExtension extends ExtensionBase {
         this.clearScenes()
 
         var browserScene = new BrowserScene(
-          'http://forge.autodesk.com/')
+          'https://forge.autodesk.io')
 
         this.scenes = [ browserScene ]
 
@@ -231,7 +231,7 @@ class CSSTVExtension extends ExtensionBase {
         this.clearScenes()
 
         var iFrameScene = new IFrameScene(
-          'http://viewer.autodesk.io/node/basic')
+          'https://lmv-react.herokuapp.com/embed?id=560c6c57611ca14810e1b2bf')
 
         this.scenes = [iFrameScene]
 

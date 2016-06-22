@@ -3,9 +3,9 @@
 // by Philippe Leefsma, March 2016
 //
 /////////////////////////////////////////////////////////////////////
-import TransformTool from 'Viewing.Extension.Transform.Tool'
 import ParticlePanel from 'Viewing.Extension.Particle.Panel'
 import ParticleTool from 'Viewing.Extension.Particle.Tool'
+import TranslateTool from 'Viewing.Tool.Translate'
 import ExtensionBase from 'ExtensionBase'
 import SwitchButton from 'SwitchButton'
 import Toolkit from 'ViewerToolkit'
@@ -34,7 +34,7 @@ class ParticleExtension extends ExtensionBase {
     this.viewer.toolController.registerTool(
       this.particleTool);
 
-    this.transformTool = new TransformTool(
+    this.transformTool = new TranslateTool(
       this.viewer);
 
     this.viewer.toolController.registerTool(
@@ -75,11 +75,11 @@ class ParticleExtension extends ExtensionBase {
       this.viewer.setProgressiveRendering(
         false);
 
-      this.viewer.setLightPreset(1);
-
-      setTimeout(()=> {
-        this.viewer.setLightPreset(0)
-      }, 100);
+      //this.viewer.setLightPreset(1);
+      //
+      //setTimeout(()=> {
+      //  this.viewer.setLightPreset(0)
+      //}, 100);
 
       await ParticleExtension.sleep(1000);
 

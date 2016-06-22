@@ -50,6 +50,9 @@ module.exports = {
     'Viewing.Extension.TypeScript':
       './src/Viewing.Extension.TypeScript/Viewing.Extension.TypeScript.js',
 
+    'Viewing.Extension.Transform':
+      './src/Viewing.Extension.Transform/Viewing.Extension.Transform.js',
+
     'ConnectedData':
       './src/Forge.ConnectedData/ConnectedData.js'
   },

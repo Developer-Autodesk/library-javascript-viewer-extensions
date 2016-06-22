@@ -79,6 +79,9 @@ class Markup2DExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   unload () {
 
+    this.parentControl.removeControl(
+      this._control)
+
     console.log('Viewing.Extension.Markup2D unloaded')
   }
 }

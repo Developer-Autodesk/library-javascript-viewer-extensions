@@ -33,13 +33,39 @@ class CustomTreeExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   async load() {
 
-    var rootNode = await ViewerToolkit.buildModelTree(
-      this._viewer.model)
+    this._viewer.search('Levels: 1/4" Head', (dbIdArray) => {
 
-    this.panel = new CustomTreePanel(
-      this._viewer.container, null, rootNode)
+      //var rootNode = await ViewerToolkit.buildModelTree(
+      //  this._viewer.model)
 
-    this.panel.setVisible(true)
+      var instanceTree =
+        this._viewer.model.getData().instanceTree
+
+      var rootId = instanceTree.getRootId()
+
+      var rootNode = {
+        dbId: rootId,
+        name: instanceTree.getNodeName(rootId),
+        children: []
+      }
+
+      dbIdArray.forEach((dbId) => {
+
+        var node = {
+          dbId: dbId,
+          name: instanceTree.getNodeName(dbId)
+        }
+
+        this.buildNodeTreeRec(instanceTree, node)
+
+        rootNode.children.push(node)
+      })
+
+      this.panel = new CustomTreePanel(
+        this._viewer, null, rootNode)
+
+      this.panel.setVisible(true)
+    })
 
     console.log('Viewing.Extension.CustomTree loaded')
 
@@ -55,6 +81,26 @@ class CustomTreeExtension extends ExtensionBase {
     console.log('Viewing.Extension.CustomTree unloaded')
 
     return true
+  }
+
+  buildNodeTreeRec(instanceTree, node) {
+
+    instanceTree.enumNodeChildren(node.dbId,
+      (childId) => {
+
+        var childNode = null;
+
+        node.children = node.children || [];
+
+        childNode = {
+          dbId: childId,
+          name: instanceTree.getNodeName(childId)
+        }
+
+        node.children.push(childNode);
+
+        this.buildNodeTreeRec(instanceTree, childNode);
+      });
   }
 }
 

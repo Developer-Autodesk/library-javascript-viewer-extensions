@@ -287,7 +287,7 @@ export default class LeaderNote extends EventsEmitter {
         dist.y * dist.y +
         dist.z * dist.z;
 
-     if(d > 2.0){
+     if(d > 25.0){
 
        return true;
      }
