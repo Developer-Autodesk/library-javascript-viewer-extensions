@@ -9,61 +9,65 @@ export default class LeaderNote extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  constructor(viewer, screenPoint, dbId, fragId, worldPoint = null) {
+  constructor (viewer, screenPoint, dbId, fragId, worldPoint = null) {
 
-    super();
+    super()
 
-    this.id = this.guid();
+    this.id = this.guid()
 
-    this.bindToState = true;
+    this.bindToState = true
 
-    this.occlusion = true;
+    this.occlusion = true
 
-    this.viewer = viewer;
+    this.viewer = viewer
 
-    this.fragId = fragId;
+    this.fragId = fragId
 
-    this.visible = true;
+    this.visible = true
 
-    this.dbId = dbId;
+    this.dbId = dbId
 
     this.initialMeshPos = this.meshPosition(
-      this.fragId);
+      this.fragId)
 
     this.initialWorldPoint = worldPoint || this.screenToWorld(
-      screenPoint);
+      screenPoint)
 
     this.pinMarker = new PinMarker(
       viewer,
-      this.initialWorldPoint);
+      this.initialWorldPoint)
 
     this.trackerModifiedHandler =
       (screenPoint) => this.onTrackerModified(
-        screenPoint);
+        screenPoint)
 
     this.pinMarker.on('tracker.modified',
-      this.trackerModifiedHandler);
+      this.trackerModifiedHandler)
 
     // creates single container for all Leader objects
     // if doesnt exist
-    if($('.leader-container').length == 0){
+    if ($('.leader-container').length === 0) {
 
       $(viewer.container).append(
-        '<svg class="markup3D leader-container"></svg>');
+        '<svg class="markup3D leader-container"></svg>')
     }
 
     this.leaderContainer =
-      $('.leader-container')[0];
+      $('.leader-container')[0]
 
     this.onMouseUpHandler = (event)=>
-      this.onMouseUp(event);
+      this.onMouseUp(event)
 
     $(viewer.container).on(
       'mouseup',
-      this.onMouseUpHandler);
+      this.onMouseUpHandler)
 
-    this.offset = this.getClientOffset(
-      viewer.container);
+    var offset = $(viewer.container).offset()
+
+    this.offset = {
+      x: offset.left,
+      y: offset.top
+    }
 
     this.startPoint = {
       x: screenPoint.x - this.offset.x,
@@ -77,108 +81,110 @@ export default class LeaderNote extends EventsEmitter {
 
     this.leader = new Leader(
       this.leaderContainer,
-      this.startPoint);
+      this.startPoint)
 
     this.labelMarker = new LabelMarker(
       this,
       this.viewer,
       this.dbId,
-      this.startPoint);
+      this.startPoint)
 
-    this.setLeaderEndPoint(screenPoint);
+    this.setLeaderEndPoint(screenPoint)
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  startDrag(){
+  startDrag () {
 
-    this.labelMarker.startDrag();
+    this.labelMarker.startDrag()
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  endDrag(){
+  endDrag () {
 
-    this.labelMarker.endDrag();
+    this.labelMarker.endDrag()
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  setVisible(show){
+  setVisible (show) {
 
     //update only if it's a toggle
 
-    if(show == this.visible)
-      return;
+    if (show === this.visible) {
 
-    this.visible = show;
+      return
+    }
 
-    this.labelMarker.setVisible(show);
-    this.pinMarker.setVisible(show);
-    this.leader.setVisible(show);
+    this.visible = show
+
+    this.labelMarker.setVisible(show)
+    this.pinMarker.setVisible(show)
+    this.leader.setVisible(show)
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  setLabelItem(item){
+  setLabelItem (item) {
 
-    this.labelMarker.item = item;
+    this.labelMarker.item = item
 
     this.labelMarker.updateLabel(
       item.name,
-      item.value);
+      item.value)
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  normalize(screenPoint) {
+  normalize (screenPoint) {
 
-    var viewport = this.viewer.navigation.getScreenViewport();
+    var viewport = this.viewer.navigation.getScreenViewport()
 
     var n = {
       x: (screenPoint.x - viewport.left) / viewport.width,
       y: (screenPoint.y - viewport.top) / viewport.height
-    };
+    }
 
-    return n;
+    return n
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  screenToWorld(screenPoint){
+  screenToWorld (screenPoint) {
 
-    var n = this.normalize(screenPoint);
+    var n = this.normalize(screenPoint)
 
     var worldPoint = this.viewer.utilities.getHitPoint(
-      n.x, n.y);
+      n.x, n.y)
 
-    return worldPoint;
+    return worldPoint
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  worldToScreen(screenPoint){
+  worldToScreen (screenPoint) {
 
-    var n = this.normalize(screenPoint);
+    var n = this.normalize(screenPoint)
 
     var worldPoint = this.viewer.utilities.getHitPoint(
-      n.x, n.y);
+      n.x, n.y)
 
-    return screenPoint;
+    return worldPoint
   }
 
   /////////////////////////////////////////////////////////////////
@@ -193,17 +199,17 @@ export default class LeaderNote extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   getHitData(x, y) {
 
-    y = 1.0 - y;
+    y = 1.0 - y
 
-    x = x * 2.0 - 1.0;
-    y = y * 2.0 - 1.0;
+    x = x * 2.0 - 1.0
+    y = y * 2.0 - 1.0
 
-    var vpVec = new THREE.Vector3(x, y, 1);
+    var vpVec = new THREE.Vector3(x, y, 1)
 
     var result = this.viewer.impl.hitTestViewport(
-      vpVec, false);
+      vpVec, false)
 
-    return result ? result : null;
+    return result ? result : null
   }
 
   /////////////////////////////////////////////////////////////////
@@ -215,41 +221,41 @@ export default class LeaderNote extends EventsEmitter {
     var dir = {
       x: this.endPoint.x - this.startPoint.x,
       y: this.endPoint.y - this.startPoint.y
-    };
+    }
 
-    return dir;
+    return dir
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  setLeaderEndPoint(endPoint){
+  setLeaderEndPoint (endPoint) {
 
     this.endPoint = {
       x: endPoint.x - this.offset.x,
       y: endPoint.y - this.offset.y
-    };
+    }
 
-    this.update();
+    this.update()
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  onTrackerModified(screenPoint){
+  onTrackerModified (screenPoint) {
 
-    this.startPoint = screenPoint;
+    this.startPoint = screenPoint
 
-    if(this.occlusion && this.checkOcclusion()){
+    if (this.occlusion && this.checkOcclusion()) {
 
-      this.setVisible(false);
-    }
-    else {
+      this.setVisible(false)
 
-      this.update();
-      this.setVisible(true);
+    } else {
+
+      this.update()
+      this.setVisible(true)
     }
   }
 
@@ -257,43 +263,43 @@ export default class LeaderNote extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  checkOcclusion(){
+  checkOcclusion () {
 
     var n = this.normalize({
       x: this.startPoint.x + this.offset.x,
       y: this.startPoint.y + this.offset.y
-    });
+    })
 
     var hitData = this.getHitData(
-      n.x, n.y);
+      n.x, n.y)
 
-    if(hitData) {
+    if (hitData) {
 
       if(hitData.dbId != this.dbId) {
 
-        return true;
+        return true
       }
 
-      var worldPoint = this.pinMarker.getWorldPoint();
+      var worldPoint = this.pinMarker.getWorldPoint()
 
       var dist = {
         x: hitData.intersectPoint.x - worldPoint.x,
         y: hitData.intersectPoint.y - worldPoint.y,
         z: hitData.intersectPoint.z - worldPoint.z
-      };
+      }
 
       var d =
         dist.x * dist.x +
         dist.y * dist.y +
-        dist.z * dist.z;
+        dist.z * dist.z
 
      if(d > 25.0){
 
-       return true;
+       return true
      }
     }
 
-   return false;
+   return false
   }
 
   /////////////////////////////////////////////////////////////////
@@ -302,30 +308,30 @@ export default class LeaderNote extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   update(){
 
-    var dir = this.direction();
+    var dir = this.direction()
 
-    var norm = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+    var norm = Math.sqrt(dir.x * dir.x + dir.y * dir.y)
 
     if(norm > 0) {
-      dir.x = dir.x / norm;
-      dir.y = dir.y / norm;
+      dir.x = dir.x / norm
+      dir.y = dir.y / norm
     }
 
     var leaderEndPoint = {
       x: this.startPoint.x + dir.x * Math.max(50, norm - 50),
       y: this.startPoint.y + dir.y * Math.max(50, norm - 50)
-    };
+    }
 
     this.leader.update({
         x: this.startPoint.x + dir.x * 20,
         y: this.startPoint.y + dir.y * 20
       },
-      leaderEndPoint);
+      leaderEndPoint)
 
     this.labelMarker.setScreenPoint({
       x: leaderEndPoint.x + (dir.x > 0 ? -dir.x * 50 : dir.x * 50),
       y: leaderEndPoint.y + (dir.y > 0 ? 20 : -30)
-    });
+    })
   }
 
   /////////////////////////////////////////////////////////////////
@@ -335,23 +341,23 @@ export default class LeaderNote extends EventsEmitter {
   updateFragmentTransform(){
 
     var pos = this.meshPosition(
-      this.fragId);
+      this.fragId)
 
     var meshTranslation = {
 
       x: pos.x - this.initialMeshPos.x,
       y: pos.y - this.initialMeshPos.y,
       z: pos.z - this.initialMeshPos.z
-    };
+    }
 
     var worldPoint = {
 
       x: this.initialWorldPoint.x + meshTranslation.x,
       y: this.initialWorldPoint.y + meshTranslation.y,
       z: this.initialWorldPoint.z + meshTranslation.z
-    };
+    }
 
-    this.pinMarker.setWorldPoint(worldPoint);
+    this.pinMarker.setWorldPoint(worldPoint)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -362,38 +368,13 @@ export default class LeaderNote extends EventsEmitter {
 
     var mesh = this.viewer.impl.getRenderProxy(
       this.viewer.model,
-      fragId);
+      fragId)
 
-    var pos = new THREE.Vector3();
+    var pos = new THREE.Vector3()
 
-    pos.setFromMatrixPosition(mesh.matrixWorld);
+    pos.setFromMatrixPosition(mesh.matrixWorld)
 
-    return pos;
-  }
-
-  /////////////////////////////////////////////////////////////////
-  //
-  //
-  /////////////////////////////////////////////////////////////////
-  getClientOffset(element) {
-
-    var x = 0;
-    var y = 0;
-
-    while (element) {
-
-      x += element.offsetLeft -
-        element.scrollLeft +
-        element.clientLeft;
-
-      y += element.offsetTop -
-        element.scrollTop +
-        element.clientTop;
-
-      element = element.offsetParent;
-    }
-
-    return { x: x, y: y };
+    return pos
   }
 
   /////////////////////////////////////////////////////////////////
@@ -404,9 +385,9 @@ export default class LeaderNote extends EventsEmitter {
 
     if (this.dragging) {
 
-      this.labelMarker.endDrag();
+      this.labelMarker.endDrag()
 
-      this.emit('drag.end', this);
+      this.emit('drag.end', this)
     }
   }
 
@@ -416,9 +397,9 @@ export default class LeaderNote extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   remove() {
 
-    this.pinMarker.remove();
-    this.leader.remove();
-    this.labelMarker.remove();
+    this.pinMarker.remove()
+    this.leader.remove()
+    this.labelMarker.remove()
   }
 
   /////////////////////////////////////////////////////////////////
@@ -430,7 +411,7 @@ export default class LeaderNote extends EventsEmitter {
     var screenPoint = {
       x: this.startPoint.x + this.offset.x,
       y: this.startPoint.y + this.offset.y
-    };
+    }
 
     var state = {
       worldPoint: this.initialWorldPoint,
@@ -441,9 +422,9 @@ export default class LeaderNote extends EventsEmitter {
       endPoint: this.endPoint,
       fragId: this.fragId,
       dbId: this.dbId
-    };
+    }
 
-    return state;
+    return state
   }
 
   /////////////////////////////////////////////////////////////////
@@ -457,22 +438,22 @@ export default class LeaderNote extends EventsEmitter {
       state.screenPoint,
       state.dbId,
       state.fragId,
-      state.worldPoint);
+      state.worldPoint)
 
     leaderNote.bindToState =
-      state.bindToState;
+      state.bindToState
 
     leaderNote.occlusion =
-      state.occlusion;
+      state.occlusion
 
     leaderNote.endPoint =
-      state.endPoint;
+      state.endPoint
 
     leaderNote.setLabelItem(
-      state.item);
+      state.item)
 
-    leaderNote.update();
+    leaderNote.update()
 
-    return leaderNote;
+    return leaderNote
   }
 }

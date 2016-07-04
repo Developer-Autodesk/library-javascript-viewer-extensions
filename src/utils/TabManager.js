@@ -13,20 +13,21 @@ export default class TabManager extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////
   constructor(container) {
 
-    super();
+    super()
 
-    this.class = this.guid();
-    this.containerId = this.guid();
-    this.tabsHeaderId = this.guid();
+    this.tabsHeaderId = this.guid()
+    this.containerId = this.guid()
+    this.class = this.guid()
+    this.nbTabs = 0
 
     var html = `
       <div id="${this.containerId}" class="c${this.class} tabs">
-        <ul id="${this.tabsHeaderId}">
+        <ul id="${this.tabsHeaderId}" class="headers">
         </ul>
       </div>
-    `;
+    `
 
-    $(container).append(html);
+    $(container).append(html)
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -35,18 +36,32 @@ export default class TabManager extends EventsEmitter {
   ///////////////////////////////////////////////////////////////////
   addTab(tabInfo) {
 
+    this.nbTabs ++
+
+    var tabHeaderLinkId = this.guid();
     var tabHeaderId = this.guid();
 
     var tabId = this.guid();
 
     var tabHtml = `
-
-      <li>
-        <a id="${tabHeaderId}" target="${tabId}" class="tab-link">${tabInfo.name}</a>
+      <li id="${tabHeaderId}" tabId="${tabId}">
+        <a id="${tabHeaderLinkId}" tabId="${tabId}"
+           class="tab-link">${tabInfo.name}
+        </a>
       </li>
     `;
 
     $('#' + this.tabsHeaderId).append(tabHtml);
+
+    var nbTabs = this.nbTabs
+
+    $(`#${this.tabsHeaderId} > li`).each(function(idx){
+
+      $(this).css({
+        width: `calc(${100/nbTabs}% - ${nbTabs>1?'12px':'40px'})`,
+        left: `calc(${idx * (100/nbTabs)}% - ${idx * 16}px`
+      })
+    })
 
     var containerHtml = `
 
@@ -60,9 +75,9 @@ export default class TabManager extends EventsEmitter {
     if(tabInfo.active)
       this.setActiveTab(tabId);
 
-    $('#' + tabHeaderId).click((e)=>{
+    $('#' + tabHeaderLinkId).click((e)=>{
 
-      var id = $(e.target).attr('target');
+      var id = $(e.target).attr('tabId');
 
       this.setActiveTab(id);
     });
@@ -74,15 +89,15 @@ export default class TabManager extends EventsEmitter {
   //
   //
   ///////////////////////////////////////////////////////////////////
-  setActiveTab(tabId){
+  setActiveTab(tabId) {
 
     var _this = this;
 
     $(`.c${this.class} .tab-link`).each((idx, element)=>{
 
-      var id = $(element).attr('target');
+      var id = $(element).attr('tabId');
 
-      if(id != tabId){
+      if(id != tabId) {
 
         $(element).removeClass('active');
         $('#' + id).css('display', 'none');
@@ -99,24 +114,32 @@ export default class TabManager extends EventsEmitter {
       }
     });
   }
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  clear() {
+
+    $(`#${this.tabsHeaderId} > li`).remove();
+    $(`#${this.containerId} > div`).remove();
+
+    this.nbTabs = 0
+  }
 }
 
 var css = `
 
-  .tabs{
+  .tabs {
     overflow:hidden;
     height: 100%;
     clear:both;
   }
 
-  .tabs ul{
+  .tabs ul {
     list-style-type:none;
     bottom: -1px;
     position:relative;
-  }
-
-  .tabs li{
-    float:left;
   }
 
   .tabs a.active{
@@ -124,7 +147,7 @@ var css = `
     border-bottom:1px solid #fff;
   }
 
-  .tabs div{
+  .tabs > div {
     clear: both;
     border:1px solid #CCC;
     padding:5px;
@@ -135,11 +158,14 @@ var css = `
     height: calc(100% - 42px);
     border-radius: 5px;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
   }
 
-  .tabs{
-    overflow:hidden;
-    clear:both;
+  .tabs .headers {
+    width:100%;
+    margin-bottom: 30px;
+    z-index: 0;
   }
 
   .tabs ul{
@@ -148,7 +174,8 @@ var css = `
     position:relative;
   }
 
-  .tabs li{
+  .tabs li {
+    position: absolute;
     float:left;
   }
 
@@ -172,6 +199,8 @@ var css = `
   .tabs a.active{
     background-color: #E8E8E8;
     border-bottom:1px solid #E8E8E8;
+    color: #000;
+    text-decoration: none;
   }
 `;
 

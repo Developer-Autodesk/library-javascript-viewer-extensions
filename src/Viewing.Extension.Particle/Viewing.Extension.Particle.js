@@ -3,9 +3,9 @@
 // by Philippe Leefsma, March 2016
 //
 /////////////////////////////////////////////////////////////////////
+import TranslateTool from './Viewing.Tool.Particle.Translate'
 import ParticlePanel from 'Viewing.Extension.Particle.Panel'
 import ParticleTool from 'Viewing.Extension.Particle.Tool'
-import TranslateTool from 'Viewing.Tool.Translate'
 import ExtensionBase from 'ExtensionBase'
 import SwitchButton from 'SwitchButton'
 import Toolkit from 'ViewerToolkit'

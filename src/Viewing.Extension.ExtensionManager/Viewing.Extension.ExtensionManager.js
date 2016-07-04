@@ -178,7 +178,7 @@ class ExtensionManager extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   initializeExtensions(extensions) {
 
-    extensions.forEach((extension)=> {
+    var loadTasks = extensions.map((extension)=> {
 
       this._extensionsMap[extension.id] = extension;
 
@@ -199,9 +199,16 @@ class ExtensionManager extends ExtensionBase {
 
       if(enable) {
 
-        this.loadManagedExtension(extension);
+        return this.loadManagedExtension(extension);
       }
+
+      return Promise.resolve();
     });
+
+    Promise.all(loadTasks).then((results)=>{
+
+      this.emit('allExtensionsLoaded', results)
+    })
 
     var visibleExtensions = extensions.filter((extension)=>{
       return (this._options.showHidden ||

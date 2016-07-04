@@ -108,37 +108,38 @@ export default class PointTracker extends EventsEmitter {
   // Normalize screen coordinates
   //
   ///////////////////////////////////////////////////////////////////////////
-  normalize(screenPoint) {
+  normalize (screenPoint) {
 
-    var viewport = this._viewer.navigation.getScreenViewport();
+    var viewport = this._viewer.navigation.getScreenViewport()
 
     return {
+
       x: (screenPoint.x - viewport.left) / viewport.width,
       y: (screenPoint.y - viewport.top) / viewport.height
-    };
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////
   // world -> screen coords conversion
   //
   ///////////////////////////////////////////////////////////////////////////
-  worldToScreen(worldPoint, camera) {
+  worldToScreen (worldPoint, camera) {
 
-    var p = new THREE.Vector4();
+    var p = new THREE.Vector4()
 
-    p.x = worldPoint.x;
-    p.y = worldPoint.y;
-    p.z = worldPoint.z;
-    p.w = 1;
+    p.x = worldPoint.x
+    p.y = worldPoint.y
+    p.z = worldPoint.z
+    p.w = 1
 
-    p.applyMatrix4(camera.matrixWorldInverse);
-    p.applyMatrix4(camera.projectionMatrix);
+    p.applyMatrix4(camera.matrixWorldInverse)
+    p.applyMatrix4(camera.projectionMatrix)
 
     // Don't want to mirror values with negative z (behind camera)
     // if camera is inside the bounding box,
     // better to throw markers to the screen sides.
-    if (p.w > 0)
-    {
+    if (p.w > 0) {
+
       p.x /= p.w;
       p.y /= p.w;
       p.z /= p.w;

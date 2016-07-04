@@ -49,17 +49,24 @@ class TransformExtension extends ExtensionBase {
       'fa fa-arrows-alt',
       'Translate Tool', () => {
 
-        var toolName = this.translateTool.getName()
+        var txTool = this.translateTool.getName()
+        var rxTool = this.rotateTool.getName()
 
         if (this.translateTool.active) {
 
-          this._viewer.toolController.deactivateTool(toolName)
+          this._viewer.toolController.deactivateTool(txTool)
           this._txControl.container.classList.remove('active')
+          this._comboCtrl.container.classList.remove('active')
 
         } else {
 
-          this._viewer.toolController.activateTool(toolName)
+          this._viewer.toolController.activateTool(txTool)
           this._txControl.container.classList.add('active')
+
+          this._viewer.toolController.deactivateTool(rxTool)
+          this._rxControl.container.classList.remove('active')
+
+          this._comboCtrl.container.classList.add('active')
         }
       })
 
@@ -68,17 +75,24 @@ class TransformExtension extends ExtensionBase {
       'fa fa-refresh',
       'Rotate Tool', () => {
 
-        var toolName = this.rotateTool.getName()
+        var txTool = this.translateTool.getName()
+        var rxTool = this.rotateTool.getName()
 
         if (this.rotateTool.active) {
 
-          this._viewer.toolController.deactivateTool(toolName)
+          this._viewer.toolController.deactivateTool(rxTool)
           this._rxControl.container.classList.remove('active')
+          this._comboCtrl.container.classList.remove('active')
 
         } else {
 
-          this._viewer.toolController.activateTool(toolName)
+          this._viewer.toolController.activateTool(rxTool)
           this._rxControl.container.classList.add('active')
+
+          this._viewer.toolController.deactivateTool(txTool)
+          this._txControl.container.classList.remove('active')
+
+          this._comboCtrl.container.classList.add('active')
         }
       })
 
@@ -94,11 +108,44 @@ class TransformExtension extends ExtensionBase {
       viewerToolbar.addControl(this.parentControl)
     }
 
-    this.parentControl.addControl(
-      this._txControl)
+    this._comboCtrl = new Autodesk.Viewing.UI.ComboButton(
+      'transform-combo')
 
-    this.parentControl.addControl(
-      this._rxControl)
+    this._comboCtrl.setToolTip('Transform Tools')
+
+    this._comboCtrl.icon.style.fontSize = '24px'
+    this._comboCtrl.icon.style.transform = 'rotateY(180Deg)'
+
+    this._comboCtrl.icon.className =
+      'glyphicon glyphicon-wrench'
+
+    this._comboCtrl.addControl(this._txControl)
+    this._comboCtrl.addControl(this._rxControl)
+
+    var openCombo = this._comboCtrl.onClick
+
+    this._comboCtrl.onClick = (e) => {
+
+      if(this._comboCtrl.container.classList.contains('active')) {
+
+        this._txControl.container.classList.remove('active')
+        this._rxControl.container.classList.remove('active')
+
+        this._comboCtrl.container.classList.remove('active')
+
+        var txTool = this.translateTool.getName()
+        var rxTool = this.rotateTool.getName()
+
+        this._viewer.toolController.deactivateTool(txTool)
+        this._viewer.toolController.deactivateTool(rxTool)
+
+      } else {
+
+        openCombo()
+      }
+    }
+
+    this.parentControl.addControl(this._comboCtrl)
 
     console.log('Viewing.Extension.Transform loaded')
 
@@ -112,10 +159,7 @@ class TransformExtension extends ExtensionBase {
   unload () {
 
     this.parentControl.removeControl(
-      this._txControl)
-
-    this.parentControl.removeControl(
-      this._rxControl)
+      this._comboCtrl)
 
     this._viewer.toolController.deactivateTool(
       this.translateTool.getName())
@@ -130,3 +174,38 @@ class TransformExtension extends ExtensionBase {
 Autodesk.Viewing.theExtensionManager.registerExtension(
   TransformExtension.ExtensionId,
   TransformExtension)
+
+
+//function createRadioButton() {
+//
+//  var viewerToolbar = _viewer.getToolbar(true);
+//
+//  var modelTools = viewerToolbar.getControl(
+//    Autodesk.Viewing.TOOLBAR.MODELTOOLSID);
+//
+//  var radio = new Autodesk.Viewing.UI.RadioButtonGroup(
+//    "Autodesk.ADN.Viewing.Extension.Toolbar.Radio");
+//
+//  radio.addClass('toolbar-vertical-group');
+//
+//  var radioBtn1 = createButton(
+//    'Autodesk.ADN.Viewing.Extension.Toolbar.RadioBtn1',
+//    'url(img/adsk/adsk-24x24-32.png)',
+//    'Radio button1',
+//    function(e) {
+//      alert("I'm a radio button!");
+//    });
+//
+//  var radioBtn2 = createButton(
+//    'Autodesk.ADN.Viewing.Extension.Toolbar.RadioBtn2',
+//    'url(img/adsk/adsk-24x24-32.png)',
+//    'Radio button2',
+//    function(e) {
+//      alert("I'm another radio button!");
+//    });
+//
+//  radio.addControl(radioBtn1);
+//  radio.addControl(radioBtn2);
+//
+//  modelTools.addControl(radio);
+//}

@@ -2,7 +2,7 @@
 // Create dropwdown menu
 //
 /////////////////////////////////////////////////////////////
-import EventsEmitter from 'EventsEmitter'
+import EventsEmitter from 'EventsEmitter';
 
 export default class Dropdown extends EventsEmitter {
   
@@ -27,23 +27,29 @@ export default class Dropdown extends EventsEmitter {
   /////////////////////////////////////////////////////////////
   constructor(opts) {
 
-    super();
+    super()
 
-    this.dropdownId = guid();
+    this.dropdownId = guid()
 
-    this.buttonId = guid();
+    this.buttonId = guid()
 
-    this.labelId = guid();
+    this.labelId = guid()
 
-    this.listId = guid();
+    this.listId = guid()
+
+    this.currentItem = null
+
+    this.title = opts.title || 'Select Item: '
 
     var html = `
       <div id="${this.dropdownId}" class="dropdown lmv-dropdown">
-      <button id="${this.buttonId}" class="btn btn-default dropdown-toggle"
+      <button id="${this.buttonId}" class="btn dropdown-toggle"
         type="button" 
-        data-toggle="dropdown">
-      <label id="${this.labelId}" class="label">${opts.title}</label>
-      <span class="caret"></span>
+        data-toggle="dropdown" disabled>
+        <div class="label-container">
+          <label id="${this.labelId}" class="label">${this.title}</label>
+          <span class="caret"></span>
+        </div>
       </button>
       <ul id="${this.listId}" class="dropdown-menu scrollable-menu">
       </ul>
@@ -54,40 +60,140 @@ export default class Dropdown extends EventsEmitter {
 
     $('#' + this.dropdownId).css(opts.pos);
 
+    opts.menuItems = opts.menuItems || [];
 
-    var text = opts.prompt ||  opts.title + ': ' +
+    var text = opts.prompt || this.title + ': ' +
      opts.menuItems[opts.selectedItemIdx || 0].name;
 
     $('#' + this.labelId).text(text);
 
-    opts.menuItems.forEach((menuItem)=> {
+    opts.menuItems.forEach((item)=> {
 
-      var itemId = guid();
-
-      var itemHtml = `
-        <li id="${itemId}">
-          <a href="">${menuItem.name}</a>
-        </li>`;
-
-      $('#' + this.listId).append(itemHtml);
-
-      $('#' + itemId).click((event)=> {
-
-        event.preventDefault();
-
-        var eventResult = this.emit(
-          'item.selected',
-          menuItem);
-
-        if(menuItem.handler)
-          menuItem.handler();
-
-        $('#' + this.labelId).text(
-          opts.title + ': ' + menuItem.name);
-      });
+      this.addItem(item);
     });
   }
-  
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  addItem(item, setActive = false) {
+
+    $('#' + this.buttonId).prop('disabled', false);
+
+    var itemId = item.id || guid();
+
+    var itemHtml = `
+      <li id="${itemId}">
+        <a href="">${item.name}</a>
+      </li>`;
+
+    $('#' + this.listId).append(itemHtml);
+
+    var onClick = (event)=> {
+
+      if(event){
+
+        event.preventDefault();
+      }
+
+      this.currentItem = item
+
+      var eventResult = this.emit(
+        'item.selected',
+        item);
+
+      if(item.handler)
+        item.handler();
+
+      $('#' + this.labelId).text(
+        this.title + ': ' + item.name);
+    };
+
+    $('#' + itemId).click((e)=>{
+      onClick(e);
+    });
+
+    if(setActive){
+      onClick();
+    }
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  setCurrentItem(item) {
+
+    this.currentItem = item
+
+    $('#' + this.labelId).text(
+      this.title + ': ' + item.name);
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  setItems(items, selectedItemIdx = 0) {
+
+    $(`#${this.listId} li`).remove();
+
+    var text = this.title + ': ' +
+      items[selectedItemIdx].name;
+
+    $('#' + this.labelId).text(text);
+
+    items.forEach((item)=>{
+
+      this.addItem(item);
+    });
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  removeCurrentItem() {
+
+    if(this.currentItem){
+
+      $('#' + this.currentItem.id).remove()
+
+      if($('#' + this.listId + ' > li').length === 0){
+
+        $('#' + this.buttonId).prop('disabled', true)
+      }
+
+      this.currentItem = null
+    }
+
+    $('#' + this.labelId).text(this.title)
+
+    this.emit('item.selected', null)
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  removeItem(item) {
+
+    if(this.currentItem && this.currentItem.id === item.id) {
+
+      $('#' + this.labelId).text(this.title)
+
+      this.currentItem = null
+    }
+
+    $('#' + item.id).remove()
+
+    if($('#' + this.listId + ' > li').length === 0){
+
+      $('#' + this.buttonId).prop('disabled', true)
+    }
+  }
+
   /////////////////////////////////////////////////////////////
   //
   //
@@ -117,13 +223,26 @@ export default class Dropdown extends EventsEmitter {
     $('#' + this.dropdownId).addClass('open');
     $('#' + this.dropdownId).trigger('click.bs.dropdown');
   }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  clear() {
+
+    $('#' + this.buttonId).prop('disabled', true)
+
+    $(`#${this.listId} li`).remove()
+
+    this.currentItem = null
+  }
 }
 
 /////////////////////////////////////////////////////////////
 //
 //
 /////////////////////////////////////////////////////////////
-function guid(format='xxxx-xxxx-xxxx') {
+function guid(format='xxxxxxxx') {
 
   var d = new Date().getTime();
 
@@ -160,6 +279,11 @@ var css = `
     max-height: 250px;
     overflow-x: hidden;
     overflow-y: scroll;
+  }
+
+  .lmv-dropdown .label-container{
+    width: 100%;
+    overflow: hidden;
   }
 
   .lmv-dropdown .caret{

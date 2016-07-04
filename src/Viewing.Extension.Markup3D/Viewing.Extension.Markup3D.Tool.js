@@ -16,6 +16,8 @@ export default class Markup3DTool extends EventsEmitter {
 
     this.active = false
 
+    this.MarkupCollection = {}
+
     this.onSelectionChangedHandler =
       (e) => this.onSelectionChanged(e)
 
@@ -55,8 +57,6 @@ export default class Markup3DTool extends EventsEmitter {
 
     this.active = true
 
-    this.MarkupCollection = {}
-    
     this.currentMarkup = null
 
     this.viewer.addEventListener(
@@ -91,93 +91,91 @@ export default class Markup3DTool extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  handleSingleClick(event, button) {
+  handleSingleClick (event, button) {
 
     this.screenPoint = {
       x: event.clientX,
       y: event.clientY
-    };
+    }
 
-    //console.log('-------------------');
-    //console.log('Tool:handleSingleClick(event, button)');
-    //console.log(event);
-    //console.log(button);
+    //console.log('-------------------')
+    //console.log('Tool:handleSingleClick(event, button)')
+    //console.log(event)
+    //console.log(button)
 
-    return false;
+    return false
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  handleMouseMove(event) {
+  handleMouseMove (event) {
 
-    if(this.currentMarkup){
+    if (this.currentMarkup) {
 
       this.currentMarkup.setLeaderEndPoint({
         x: event.clientX,
         y: event.clientY
-      });
+      })
     }
 
-    return false;
+    return false
   }
 
   /////////////////////////////////////////////////////////////////
   //
   //
   /////////////////////////////////////////////////////////////////
-  handleKeyDown(event, keyCode) {
+  handleKeyDown (event, keyCode) {
 
-    if(keyCode === 27){ //ESC
+    if (keyCode === 27) { //ESC
 
       //cancel markup creation
-      if(this.currentMarkup &&
-        !this.MarkupCollection[this.currentMarkup.id]){
+      if (this.currentMarkup &&
+        !this.MarkupCollection[this.currentMarkup.id]) {
 
-        this.currentMarkup.off();
+        this.currentMarkup.off()
 
-        this.currentMarkup.endDrag();
+        this.currentMarkup.endDrag()
 
-        this.currentMarkup.remove();
+        this.currentMarkup.remove()
 
-        this.currentMarkup = null;
+        this.currentMarkup = null
       }
     }
 
-    return false;
+    return false
   }
 
   /////////////////////////////////////////////////////////////////
   // SELECTION_CHANGED_EVENT Handler
   //
   /////////////////////////////////////////////////////////////////
-  onSelectionChanged(event) {
+  onSelectionChanged (event) {
 
-    //console.log(event)
+    if (event.selections.length) {
 
-    if(event.selections.length){
+      this.viewer.select([])
 
-      this.viewer.select([]);
+      if (this.currentMarkup)
+        return
 
-      if(this.currentMarkup)
-        return;
-
-      var sel = event.selections[0];
+      var sel = event.selections[0]
 
       var markup = new LeaderNote(
         this.viewer,
         this.screenPoint,
         sel.dbIdArray[0],
-        sel.fragIdsArray[0]);
+        sel.fragIdsArray[0])
 
       markup.on('drag.start',
-        this.onStartDragHandler);
+        this.onStartDragHandler)
 
       markup.on('drag.end',
-        this.onEndDragHandler);
+        this.onEndDragHandler)
 
-      markup.startDrag();
+      markup.startDrag()
     }
   }
 
@@ -185,13 +183,13 @@ export default class Markup3DTool extends EventsEmitter {
   // EXPLODE_CHANGE_EVENT Handler
   //
   /////////////////////////////////////////////////////////////////
-  onExplode(event) {
+  onExplode (event) {
 
-    for(var id in this.MarkupCollection){
+    for (var id in this.MarkupCollection) {
 
-      var markup = this.MarkupCollection[id];
+      var markup = this.MarkupCollection[id]
 
-      markup.updateFragmentTransform();
+      markup.updateFragmentTransform()
     }
   }
 
@@ -201,7 +199,7 @@ export default class Markup3DTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   onStartDrag(markup) {
 
-    this.currentMarkup = markup;
+    this.currentMarkup = markup
   }
 
   /////////////////////////////////////////////////////////////////
@@ -212,32 +210,32 @@ export default class Markup3DTool extends EventsEmitter {
 
     if(!this.MarkupCollection[markup.id]){
 
-      this.MarkupCollection[markup.id] = markup;
+      this.MarkupCollection[markup.id] = markup
     }
 
-    this.currentMarkup = null;
+    this.currentMarkup = null
   }
 
   /////////////////////////////////////////////////////////////////
   // Inject markups data into state
   //
   /////////////////////////////////////////////////////////////////
-  getState(viewerState) {
+  getState (viewerState) {
 
     viewerState.Markup3D = {
 
       MarkupCollection: []
-    };
+    }
 
-    for(var id in this.MarkupCollection){
+    for (var id in this.MarkupCollection) {
 
-      var markup = this.MarkupCollection[id];
+      var markup = this.MarkupCollection[id]
 
-      if(markup.bindToState) {
+      if (markup.bindToState) {
 
         viewerState.Markup3D.MarkupCollection.push(
           markup.save()
-        );
+        )
       }
     }
   }
@@ -246,34 +244,34 @@ export default class Markup3DTool extends EventsEmitter {
   // Restore markup data from state
   //
   /////////////////////////////////////////////////////////////////
-  restoreState(viewerState, immediate) {
+  restoreState (viewerState, immediate) {
 
-    for(var id in this.MarkupCollection){
+    for (var id in this.MarkupCollection) {
 
-      var markup = this.MarkupCollection[id];
+      var markup = this.MarkupCollection[id]
 
-      if(markup.bindToState){
+      if (markup.bindToState) {
 
-        markup.remove();
-        delete this.MarkupCollection[id];
+        markup.remove()
+        delete this.MarkupCollection[id]
       }
     }
 
-    if(viewerState.Markup3D){
+    if (viewerState.Markup3D) {
 
-      viewerState.Markup3D.MarkupCollection.forEach((state)=>{
+      viewerState.Markup3D.MarkupCollection.forEach((state) => {
 
         var markup = LeaderNote.load(
-          this.viewer, state);
+          this.viewer, state)
 
         markup.on('drag.start',
-          this.onStartDragHandler);
+          this.onStartDragHandler)
 
         markup.on('drag.end',
-          this.onEndDragHandler);
+          this.onEndDragHandler)
 
-        this.MarkupCollection[markup.id] = markup;
-      });
+        this.MarkupCollection[markup.id] = markup
+      })
     }
   }
 }

@@ -147,6 +147,8 @@ export default class RotateTool extends EventsEmitter {
 
       this.drawAxis()
 
+      this.viewer.model = this.selection.model
+
       this.viewer.fitToView(
         this.selection.dbIdArray)
 

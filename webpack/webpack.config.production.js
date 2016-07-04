@@ -1,7 +1,9 @@
-var path = require('path');
-var webpack = require('webpack');
+var webpack = require('webpack')
+var path = require('path')
 
 module.exports = {
+
+  devtool: false,
 
   entry: {
 
@@ -22,6 +24,9 @@ module.exports = {
 
     'Autodesk.ADN.Viewing.Extension.ModelLoader':
       './src/Autodesk.ADN.Viewing.Extension.ModelLoader/Autodesk.ADN.Viewing.Extension.ModelLoader.js',
+
+    'Viewing.Extension.ModelTransformer':
+      './src/Viewing.Extension.ModelTransformer/Viewing.Extension.ModelTransformer.js',
 
     'Autodesk.ADN.Viewing.Extension.PropertyPanel':
       './src/Autodesk.ADN.Viewing.Extension.PropertyPanel/Autodesk.ADN.Viewing.Extension.PropertyPanel.js',
