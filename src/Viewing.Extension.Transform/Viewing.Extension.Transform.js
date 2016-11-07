@@ -14,7 +14,7 @@ class TransformExtension extends ExtensionBase {
   // Class constructor
   //
   /////////////////////////////////////////////////////////////////
-  constructor (viewer, options) {
+  constructor (viewer, options = {}) {
 
     super (viewer, options)
 

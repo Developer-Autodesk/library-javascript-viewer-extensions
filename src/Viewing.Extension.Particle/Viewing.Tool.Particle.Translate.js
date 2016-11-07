@@ -1,4 +1,5 @@
 import EventsEmitter from 'EventsEmitter'
+import './TransformGizmos'
 
 export default class TransformTool extends EventsEmitter {
 

@@ -3,16 +3,14 @@ import Vector from './Vector'
 
 export default class Field extends BaseObject {
 
-  constructor(id, type){
+  constructor (id, type) {
 
-    super(id, type);
+    super(id, type)
   }
 
-  computeAcceleration(particle){
+  computeAcceleration (particle) {
 
-    return new Vector();
+    return new Vector()
   }
 }
-
-
 

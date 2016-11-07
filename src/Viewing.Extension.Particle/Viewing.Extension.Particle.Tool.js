@@ -11,64 +11,64 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   constructor(viewer, opts = {}){
 
-    super();
+    super()
 
     this.active = false
 
-    this.viewer = viewer;
+    this.viewer = viewer
 
-    this.nbParticleTypes = 50;
+    this.nbParticleTypes = 50
 
     this.objectMaterials =
-      this.createObjectMaterials();
+      this.createObjectMaterials()
 
     this.particleMaterials =
       this.createRandomMaterials(
-        this.nbParticleTypes);
+        this.nbParticleTypes)
 
     this.particleSystem = new ParticleSystem({
-      maxParticles: opts.maxParticles || 3000
-    });
+      maxParticles: opts.maxParticles || 0
+    })
 
     this.onNewParticleHandler = (e)=>{
 
-      this.onNewParticle(e);
-    };
+      this.onNewParticle(e)
+    }
 
     this.particleSystem.on('particle.new', (e)=>{
 
       this.onNewParticleHandler(e)
-    });
+    })
 
     this.onRecycleParticleHandler = (e)=>{
 
-      this.onRecycleParticle(e);
-    };
+      this.onRecycleParticle(e)
+    }
 
     this.particleSystem.on('particle.recycle', (e)=>{
 
       this.onRecycleParticleHandler(e)
-    });
+    })
 
     this.onFilterParticleHandler = (e)=>{
 
-      return this.onFilterParticle(e);
-    };
+      return this.onFilterParticle(e)
+    }
 
     this.particleSystem.on('particle.filter', (e)=>{
 
       return this.onFilterParticleHandler(e)
-    });
+    })
 
     this.onDestroyParticleHandler = (e)=>{
 
-      return this.onDestroyParticle(e);
-    };
+      return this.onDestroyParticle(e)
+    }
 
     this.particleSystem.on('particle.destroy', (e)=>{
 
       return this.onDestroyParticleHandler(e)
-    });
+    })
   }
 
   /////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   getNames() {
 
-    return ["Viewing.Particle.Tool"];
+    return ["Viewing.Particle.Tool"]
   }
 
   /////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   getName() {
 
-    return "Viewing.Particle.Tool";
+    return "Viewing.Particle.Tool"
   }
 
   /////////////////////////////////////////////////////////////////
@@ -99,7 +99,7 @@ export default class ParticleTool extends EventsEmitter {
 
     this.active = true
 
-    this.t_last = 0;
+    this.t_last = 0
   }
 
   /////////////////////////////////////////////////////////////////
@@ -112,9 +112,9 @@ export default class ParticleTool extends EventsEmitter {
 
     this.active = false
 
-    this.particleSystem.destroy();
+    this.particleSystem.destroy()
 
-    this.viewer.impl.invalidate(true);
+    this.viewer.impl.invalidate(true)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -128,42 +128,42 @@ export default class ParticleTool extends EventsEmitter {
       this.viewer.search('particle.scene', async(dbIds)=>{
 
         if (dbIds.length != 1)
-          return reject('Invalid Particle scene');
+          return reject('Invalid Particle scene')
 
         try {
 
           var propSettings = await Toolkit.getProperty(
-            this.viewer.model, dbIds[0], 'particle.settings');
+            this.viewer.model, dbIds[0], 'particle.settings')
 
           var settings = JSON.parse(
-            propSettings.displayValue);
+            propSettings.displayValue)
 
           this.particleSystem.dof = Vector.fromArray(
-            settings.dof);
+            settings.dof)
 
-          this.bounds = [];
+          this.bounds = []
 
           for (var i = 1; i <= settings.bounds; ++i) {
 
             var propBounds = await Toolkit.getProperty(
-              this.viewer.model, dbIds[0], 'particle.bound' + i);
+              this.viewer.model, dbIds[0], 'particle.bound' + i)
 
-            this.bounds.push(this.parseBound(propBounds));
+            this.bounds.push(this.parseBound(propBounds))
           }
 
           var tasks = [
             this.loadEmitters(),
             this.loadObjects(),
             this.loadFields()
-          ];
+          ]
 
-          return resolve(Promise.all(tasks));
+          return resolve(Promise.all(tasks))
         }
         catch (ex) {
-          return reject(ex);
+          return reject(ex)
         }
-      });
-    });
+      })
+    })
   }
 
   /////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   parseBound(propBound) {
 
-    var bound = JSON.parse(propBound.displayValue);
+    var bound = JSON.parse(propBound.displayValue)
 
     switch(bound.type) {
 
@@ -199,19 +199,19 @@ export default class ParticleTool extends EventsEmitter {
   // Loads scene objects
   //
   /////////////////////////////////////////////////////////////////
-  loadObject(dbId) {
+  loadObject (dbId) {
 
-    return new Promise(async(resolve, reject)=> {
+    return new Promise(async(resolve, reject) => {
 
       try {
 
         var propSettings = await Toolkit.getProperty(
-          this.viewer.model, dbId, 'particle.settings');
+          this.viewer.model, dbId, 'particle.settings')
 
         var settings = JSON.parse(
-          propSettings.displayValue);
+          propSettings.displayValue)
 
-        var color = parseInt(settings.clr, 16);
+        var color = parseInt(settings.clr, 16)
 
         var material = this.createMaterial({
           transparent: settings.transparent,
@@ -221,20 +221,20 @@ export default class ParticleTool extends EventsEmitter {
           shininess: 30,
           specular: color,
           color: color
-        });
+        })
 
         Toolkit.setMaterial(
-          this.viewer.model, dbId, material);
+          this.viewer.model, dbId, material)
 
-          return resolve();
+          return resolve()
       }
       catch (ex) {
 
         //throwing Invalid DbId
-        //return reject(ex);
-        return resolve();
+        //return reject(ex)
+        return resolve()
       }
-    });
+    })
   }
 
   loadObjects() {
@@ -245,12 +245,12 @@ export default class ParticleTool extends EventsEmitter {
 
         var tasks = dbIds.map((dbId)=> {
 
-          return this.loadObject(dbId);
-        });
+          return this.loadObject(dbId)
+        })
 
-        return resolve(Promise.all(tasks));
-      });
-    });
+        return resolve(Promise.all(tasks))
+      })
+    })
   }
   
   /////////////////////////////////////////////////////////////////
@@ -264,49 +264,49 @@ export default class ParticleTool extends EventsEmitter {
       try {
 
         var bbox = await Toolkit.getWorldBoundingBox(
-          this.viewer.model, dbId);
+          this.viewer.model, dbId)
 
         var center = new Vector(
           (bbox.min.x + bbox.max.x) /2,
           (bbox.min.y + bbox.max.y) /2,
           (bbox.min.z + bbox.max.z) /2
-        );
+        )
 
-        var emitter = this.particleSystem.addEmitter(dbId);
+        var emitter = this.particleSystem.addEmitter(dbId)
 
         var propSettings = await Toolkit.getProperty(
-          this.viewer.model, dbId, 'particle.settings');
+          this.viewer.model, dbId, 'particle.settings')
 
         var settings = JSON.parse(
-          propSettings.displayValue);
+          propSettings.displayValue)
 
-        emitter.offset = Vector.fromArray(settings.dir).scaled(0.5);
-        emitter.direction = Vector.fromArray(settings.dir);
-        emitter.transformable = settings.transfo;
-        emitter.emissionRate = settings.rate;
-        emitter.selectable = settings.select;
-        emitter.velocity = settings.velocity;
-        emitter.charge = settings.charge;
-        emitter.spread = settings.spread;
-        emitter.setPosition(center);
+        emitter.offset = Vector.fromArray(settings.dir).scaled(0.5)
+        emitter.direction = Vector.fromArray(settings.dir)
+        emitter.transformable = settings.transfo
+        emitter.emissionRate = settings.rate
+        emitter.selectable = settings.select
+        emitter.velocity = settings.velocity
+        emitter.charge = settings.charge
+        emitter.spread = settings.spread
+        emitter.setPosition(center)
 
-        var matIdx = emitter.charge < 0 ? 0 : 1;
+        var matIdx = emitter.charge < 0 ? 0 : 1
 
-        var material = this.objectMaterials[matIdx];
+        var material = this.objectMaterials[matIdx]
 
         Toolkit.setMaterial(
           this.viewer.model,
-          dbId, material);
+          dbId, material)
 
-        return resolve();
+        return resolve()
       }
       catch(ex){
 
         //throwing Invalid DbId
-        //return reject(ex);
-        return resolve();
+        //return reject(ex)
+        return resolve()
       }
-    });
+    })
   }
 
   loadEmitters() {
@@ -317,12 +317,12 @@ export default class ParticleTool extends EventsEmitter {
 
         var tasks = dbIds.map((dbId)=> {
 
-          return this.loadEmitter(dbId);
-        });
+          return this.loadEmitter(dbId)
+        })
 
-        return resolve(Promise.all(tasks));
-      });
-    });
+        return resolve(Promise.all(tasks))
+      })
+    })
   }
   
   /////////////////////////////////////////////////////////////////
@@ -336,45 +336,45 @@ export default class ParticleTool extends EventsEmitter {
       try {
 
         var bbox = await Toolkit.getWorldBoundingBox(
-          this.viewer.model, dbId);
+          this.viewer.model, dbId)
 
         var center = new Vector(
           (bbox.min.x + bbox.max.x) /2,
           (bbox.min.y + bbox.max.y) /2,
           (bbox.min.z + bbox.max.z) /2
-        );
+        )
 
-        var field = this.particleSystem.addMagneticField(dbId);
+        var field = this.particleSystem.addMagneticField(dbId)
 
         var propSettings = await Toolkit.getProperty(
           this.viewer.model, dbId,
-          'particle.settings');
+          'particle.settings')
 
         var settings = JSON.parse(
-          propSettings.displayValue);
+          propSettings.displayValue)
 
-        field.transformable = settings.transfo;
-        field.selectable = settings.select;
-        field.force = settings.force;
-        field.setPosition(center);
+        field.transformable = settings.transfo
+        field.selectable = settings.select
+        field.force = settings.force
+        field.setPosition(center)
 
-        var matIdx = field.force < 0 ? 0 : 1;
+        var matIdx = field.force < 0 ? 0 : 1
 
-        var material = this.objectMaterials[matIdx];
+        var material = this.objectMaterials[matIdx]
 
         Toolkit.setMaterial(
           this.viewer.model,
-          dbId, material);
+          dbId, material)
 
-        return resolve();
+        return resolve()
       }
       catch(ex){
 
         //throwing Invalid DbId
-        //return reject(ex);
-        return resolve();
+        //return reject(ex)
+        return resolve()
       }
-    });
+    })
   }
 
   loadFields() {
@@ -385,12 +385,12 @@ export default class ParticleTool extends EventsEmitter {
 
         var tasks = dbIds.map((dbId)=> {
 
-          return this.loadField(dbId);
-        });
+          return this.loadField(dbId)
+        })
 
-        return resolve(Promise.all(tasks));
-      });
-    });
+        return resolve(Promise.all(tasks))
+      })
+    })
   }
 
   /////////////////////////////////////////////////////////////////
@@ -400,17 +400,17 @@ export default class ParticleTool extends EventsEmitter {
   async updateObjectPosition(dbId) {
 
     var bbox = await Toolkit.getWorldBoundingBox(
-      this.viewer.model, dbId);
+      this.viewer.model, dbId)
 
     var center = new Vector(
       (bbox.min.x + bbox.max.x) /2,
       (bbox.min.y + bbox.max.y) /2,
       (bbox.min.z + bbox.max.z) /2
-    );
+    )
 
-    var obj = this.particleSystem.getObjectById(dbId);
+    var obj = this.particleSystem.getObjectById(dbId)
 
-    obj.setPosition(center);
+    obj.setPosition(center)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -436,9 +436,9 @@ export default class ParticleTool extends EventsEmitter {
         specular: parseInt('0000B8', 16),
         color: parseInt('0000B8', 16)
       })
-    ];
+    ]
 
-    return materials;
+    return materials
   }
 
   /////////////////////////////////////////////////////////////////
@@ -447,11 +447,11 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   createRandomMaterials(nb){
 
-    var materials = [];
+    var materials = []
 
-    for(var i=0; i<nb; ++i){
+    for (var i = 0; i < nb; ++i) {
 
-      var clr = Math.random() * 16777215;
+      var clr = Math.random() * 16777215
 
       materials.push(this.createMaterial({
         shading: THREE.FlatShading,
@@ -459,10 +459,10 @@ export default class ParticleTool extends EventsEmitter {
         shininess: 50,
         specular: clr,
         color: clr
-      }));
+      }))
     }
 
-    return materials;
+    return materials
   }
 
   /////////////////////////////////////////////////////////////////
@@ -471,11 +471,11 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   setParticleTypes(nb){
 
-    this.nbParticleTypes = nb;
+    this.nbParticleTypes = nb
 
     this.particleMaterials =
       this.createRandomMaterials(
-        this.nbParticleTypes);
+        this.nbParticleTypes)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -484,12 +484,12 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   onNewParticle(particle) {
 
-    var type = randomInt(0, this.nbParticleTypes);
+    var type = randomInt(0, this.nbParticleTypes)
 
     particle.mesh = this.createMesh(
       particle.position,
       particle.radius,
-      this.particleMaterials[type]);
+      this.particleMaterials[type])
   }
 
   /////////////////////////////////////////////////////////////////
@@ -498,17 +498,17 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   onRecycleParticle(particle) {
 
-    particle.mesh.visible = !particle.recycled;
+    particle.mesh.visible = !particle.recycled
 
     if(particle.recycled){
 
-      this.emit('particle.recycled');
+      this.emit('particle.recycled')
     }
     else{
 
-      var type = randomInt(0, this.nbParticleTypes);
+      var type = randomInt(0, this.nbParticleTypes)
 
-      particle.mesh.material = this.particleMaterials[type];
+      particle.mesh.material = this.particleMaterials[type]
     }
   }
 
@@ -519,7 +519,7 @@ export default class ParticleTool extends EventsEmitter {
   onDestroyParticle(particle) {
 
     this.viewer.impl.scene.remove(
-      particle.mesh);
+      particle.mesh)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -528,7 +528,7 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   onFilterParticle(particle) {
 
-    var result = true;
+    var result = true
 
     this.bounds.forEach((bound)=>{
 
@@ -539,31 +539,31 @@ export default class ParticleTool extends EventsEmitter {
           if(bound.max){
             if(!particle.position.withinSphere(
                 bound.center, bound.max)) {
-              result = false;
+              result = false
             }
           }
 
           if(bound.min){
             if(particle.position.withinSphere(
                 bound.center, bound.min)) {
-              result = false;
+              result = false
             }
           }
 
-          break;
+          break
 
         case 'box':
 
           if(!particle.position.withinBox(
               bound.center, bound.size)) {
-            result = false;
+            result = false
           }
 
-          break;
+          break
       }
-    });
+    })
 
-    return result;
+    return result
   }
 
   /////////////////////////////////////////////////////////////////
@@ -579,15 +579,15 @@ export default class ParticleTool extends EventsEmitter {
 
         // red material < 0
         // blue material >= 0
-        var matIdx = event.value < 0 ? 0 : 1;
+        var matIdx = event.value < 0 ? 0 : 1
 
-        var material = this.objectMaterials[matIdx];
+        var material = this.objectMaterials[matIdx]
 
         Toolkit.setMaterial(
           this.viewer.model,
-          event.object.id, material);
+          event.object.id, material)
 
-        break;
+        break
     }
   }
 
@@ -597,51 +597,51 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   update(t) {
 
-    var dt = t - this.t_last;
+    var dt = t - this.t_last
 
-    this.t_last = t;
+    this.t_last = t
 
-    this.particleSystem.step(dt * 0.001);
+    this.particleSystem.step(dt * 0.001)
 
     this.particleSystem.particles.forEach((particle)=>{
 
-      particle.mesh.position.x = particle.position.x;
-      particle.mesh.position.y = particle.position.y;
-      particle.mesh.position.z = particle.position.z;
-    });
+      particle.mesh.position.x = particle.position.x
+      particle.mesh.position.y = particle.position.y
+      particle.mesh.position.z = particle.position.z
+    })
 
     //needsClear, needsRender, overlayDirty)
     this.viewer.impl.invalidate(
-      true, false, false);
+      true, false, false)
 
-    this.emit('fps.tick');
+    this.emit('fps.tick')
   }
 
   // version using requestAnimationFrame
   // instead of update()
   run() {
 
-    var _this = this;
+    var _this = this
 
     requestAnimationFrame(function(){
       _this.run()
-    });
+    })
 
-    _this.particleSystem.step(100 * 0.001);
+    _this.particleSystem.step(100 * 0.001)
 
     _this.particleSystem.particles.forEach((particle)=>{
 
       particle.mesh.position.set(
         particle.position.x,
         particle.position.y,
-        particle.position.z);
-    });
+        particle.position.z)
+    })
 
     //needsClear, needsRender, overlayDirty)
     _this.viewer.impl.invalidate(
-      true, false, false);
+      true, false, false)
 
-    _this.emit('fps.tick');
+    _this.emit('fps.tick')
   }
 
   /////////////////////////////////////////////////////////////////
@@ -650,14 +650,14 @@ export default class ParticleTool extends EventsEmitter {
   /////////////////////////////////////////////////////////////////
   createMaterial(props) {
 
-    var material = new THREE.MeshPhongMaterial(props);
+    var material = new THREE.MeshPhongMaterial(props)
 
     this.viewer.impl.matman().addMaterial(
       props.name,
       material,
-      true);
+      true)
 
-    return material;
+    return material
   }
 
   /////////////////////////////////////////////////////////////////
@@ -667,27 +667,27 @@ export default class ParticleTool extends EventsEmitter {
   createMesh(pos, size, material) {
 
     var geometry = new THREE.SphereGeometry(
-      size, 4, 4);
+      size, 4, 4)
 
     //var geometry = new THREE.BoxGeometry(
-    //  size, size, size);
+    //  size, size, size)
 
     var mesh = new THREE.Mesh(
       geometry,
-      material);
+      material)
 
     mesh.position.set(
       pos.x,
       pos.y,
-      pos.z);
+      pos.z)
 
-    this.viewer.impl.scene.add(mesh);
+    this.viewer.impl.scene.add(mesh)
 
-    return mesh;
+    return mesh
   }
 }
 
 // Random int in [min, max[
 function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+  return Math.floor(Math.random() * (max - min)) + min
 }

@@ -3,8 +3,9 @@
 // by Philippe Leefsma, March 2016
 //
 ///////////////////////////////////////////////////////////////////////////////
+import ExtensionBase from 'ExtensionBase'
 
-class PointCloud {
+class PointCloud extends ExtensionBase {
 
   /////////////////////////////////////////////////////////////////
   // Class constructor
@@ -12,7 +13,7 @@ class PointCloud {
   /////////////////////////////////////////////////////////////////
   constructor(viewer, options) {
 
-    this.viewer = viewer;
+    super (viewer, options)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -26,30 +27,32 @@ class PointCloud {
     var geometry = new THREE.Geometry();
 
     for (var i = 0; i < particles; i++) {
+
       var x = Math.random() * n - n2;
       var y = Math.random() * n - n2;
       var z = Math.random() * n - n2;
 
       geometry.vertices.push(
         new THREE.Vector3(x, y, z)
-      );
+      )
+
+      geometry.colors.push(
+          new THREE.Color(
+              Math.random(),
+              Math.random(),
+              Math.random()));
     }
 
     THREE.ImageUtils.crossOrigin = '';
 
     var material = new THREE.PointCloudMaterial({
-      //map : THREE.ImageUtils.loadTexture(
-      //  'http://i.imgur.com/cxUw2NL.png'),
-      size : 70,
-      sizeAttenuation : true,
-      transparent : true,
-      opacity : 0.6
+      //map : THREE.ImageUtils.loadTexture('text.jpg'),
+      vertexColors: THREE.VertexColors,
+      size : 150
+      //sizeAttenuation : true,
+      //transparent : true,
+      //opacity : 0.6
     });
-
-    this.viewer.impl.matman().addMaterial(
-      'PointCloud',
-      material,
-      true);
 
     this.pointCloud = new THREE.PointCloud(
       geometry,
@@ -57,10 +60,10 @@ class PointCloud {
 
     this.pointCloud.sortParticles = true;
 
-    this.viewer.impl.scene.add(
+    this._viewer.impl.scene.add(
       this.pointCloud);
 
-    this.viewer.impl.invalidate(
+    this._viewer.impl.invalidate(
       true, false, false);
 
     console.log('Viewing.Extension.PointCloud Loaded');

@@ -64,8 +64,8 @@ module.exports = {
     'Viewing.Extension.Transform':
       './src/Viewing.Extension.Transform/Viewing.Extension.Transform.js',
 
-    'ConnectedData':
-      './src/Forge.ConnectedData/ConnectedData.js'
+     'Viewing.Extension.InViewerSearchWrapper':
+      './src/Viewing.Extension.InViewerSearch/Viewing.Extension.InViewerSearch.js'
   },
 
   output: {

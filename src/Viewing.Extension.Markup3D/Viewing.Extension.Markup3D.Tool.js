@@ -169,8 +169,9 @@ export default class Markup3DTool extends EventsEmitter {
         sel.dbIdArray[0],
         sel.fragIdsArray[0])
 
-      markup.on('drag.start',
-        this.onStartDragHandler)
+      markup.on('drag.start', (markup) => {
+        this.onStartDragHandler (markup)
+      })
 
       markup.on('drag.end',
         this.onEndDragHandler)
@@ -197,7 +198,7 @@ export default class Markup3DTool extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  onStartDrag(markup) {
+  onStartDrag (markup) {
 
     this.currentMarkup = markup
   }
@@ -206,9 +207,9 @@ export default class Markup3DTool extends EventsEmitter {
   //
   //
   /////////////////////////////////////////////////////////////////
-  onEndDrag(markup) {
+  onEndDrag (markup) {
 
-    if(!this.MarkupCollection[markup.id]){
+    if (!this.MarkupCollection[markup.id]) {
 
       this.MarkupCollection[markup.id] = markup
     }
@@ -264,8 +265,9 @@ export default class Markup3DTool extends EventsEmitter {
         var markup = LeaderNote.load(
           this.viewer, state)
 
-        markup.on('drag.start',
-          this.onStartDragHandler)
+        markup.on('drag.start', (markup) => {
+          this.onStartDragHandler (markup)
+        })
 
         markup.on('drag.end',
           this.onEndDragHandler)

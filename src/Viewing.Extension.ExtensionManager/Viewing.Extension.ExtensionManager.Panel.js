@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////
 import ToolPanelBase from 'ToolPanelBase';
 
-export default class ExtensionManagerPanel extends ToolPanelBase{
+export default class ExtensionManagerPanel extends ToolPanelBase {
 
   constructor(container, btnElement) {
 
@@ -58,15 +58,17 @@ export default class ExtensionManagerPanel extends ToolPanelBase{
   /////////////////////////////////////////////////////////////
   addItem(extension) {
 
+    const itemId = extension._id
+
     var itemHtml = `
-      <div id="${extension._id}" class="list-group-item">
+      <div id="${itemId}" class="list-group-item">
         ${extension.name}
       </div>
     `;
 
     $(`#${this.container.id}-item-list`).append(itemHtml);
 
-    var $item = $(`#${extension._id}`);
+    var $item = $(`#${itemId}`);
 
     $item.addClass(extension.enabled ? 'enabled' : '');
 
@@ -181,7 +183,7 @@ var css = `
 
 .extension-manager .filter {
   background-color: #DEDEDE;
-  width: calc(100% - 6px);
+  width: calc(100% - 8px);
   border-radius: 4px;
   margin-bottom: 6px;
 }

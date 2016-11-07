@@ -1,94 +1,91 @@
 
 export default class Vector {
 
-  constructor(x, y, z) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.z = z || 0;
+  constructor (x, y, z) {
+    this.x = x || 0
+    this.y = y || 0
+    this.z = z || 0
   }
 
-  magnitude() {
+  magnitude () {
 
     return Math.sqrt(
       this.x * this.x +
       this.y * this.y +
-      this.z * this.z);
+      this.z * this.z)
   }
 
-  asUnitVector(){
+  asUnitVector () {
 
-    var m = this.magnitude();
+    var m = this.magnitude()
 
     return new Vector(
       this.x / m,
       this.y / m,
-      this.z / m);
+      this.z / m)
   }
 
-  scaled(scaleFactor){
+  scaled (scaleFactor) {
 
-    var m = this.magnitude();
+    var m = this.magnitude()
 
     return new Vector(
-      this.x * scaleFactor/m,
-      this.y * scaleFactor/m,
-      this.z * scaleFactor/m);
+      this.x * scaleFactor / m,
+      this.y * scaleFactor / m,
+      this.z * scaleFactor / m)
   }
 
-  multiply( scaleFactor ){
+  multiply (scaleFactor) {
 
-    this.x *= scaleFactor;
-    this.y *= scaleFactor;
-    this.z *= scaleFactor;
+    this.x *= scaleFactor
+    this.y *= scaleFactor
+    this.z *= scaleFactor
 
-    return this;
+    return this
   }
 
-  add(vector){
+  add (vector) {
 
-    this.x += vector.x;
-    this.y += vector.y;
-    this.z += vector.z;
+    this.x += vector.x
+    this.y += vector.y
+    this.z += vector.z
 
-    return this;
+    return this
   }
 
-  vectorTo(vector) {
+  vectorTo (vector) {
 
     return new Vector(
       vector.x - this.x,
       vector.y - this.y,
       vector.z - this.z
-    );
+    )
   }
 
-  withinSphere(center, radius) {
+  withinSphere (center, radius) {
 
     var magnitudeSqr =
-      (this.x - center.x) *  (this.x - center.x) +
-      (this.y - center.y) *  (this.y - center.y) +
-      (this.z - center.z) *  (this.z - center.z);
+      (this.x - center.x) * (this.x - center.x) +
+      (this.y - center.y) * (this.y - center.y) +
+      (this.z - center.z) * (this.z - center.z)
 
-    return magnitudeSqr < radius * radius;
+    return magnitudeSqr < radius * radius
   }
 
-  withinBox(center, size) {
+  withinBox (center, size) {
 
     //TODO
 
-    return true;
+    return true
   }
 
-  copy() {
+  copy () {
 
-    return new Vector(this.x, this.y, this.z);
+    return new Vector(this.x, this.y, this.z)
   }
 
-  static fromArray(data) {
+  static fromArray (data) {
 
-    return new Vector(data[0], data[1], data[2]);
+    return new Vector(data[0], data[1], data[2])
   }
 }
-
-
-
