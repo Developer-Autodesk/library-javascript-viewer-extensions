@@ -6,8 +6,11 @@
 //
 /////////////////////////////////////////////////////////////////////
 import EventsEmitter from 'EventsEmitter'
-import './BarChart.css'
+import './BarChart.scss'
 import d3 from 'd3'
+
+
+
 
 export default class BarChart extends EventsEmitter {
 
@@ -28,11 +31,11 @@ export default class BarChart extends EventsEmitter {
       left: 80
     };
 
-    var computedWidth = 40 * data.length - margin.left - margin.right;
+    var width = Math.min(Math.max(
+      $('.tabs-container').width() - 40,
+      30 * data.length), 100 * data.length);
 
-    var width = Math.max(450, computedWidth);
-
-    var height = 450 - margin.top - margin.bottom;
+    var height = $('.tabs-container').height() - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal().rangeRoundBands(
       [0, width], .1);
@@ -93,7 +96,7 @@ export default class BarChart extends EventsEmitter {
       .style('padding','0 10px')
       .style('background','white')
       .style('opacity',0);
-    
+
     var tempcolor = null;
 
     svg.selectAll(".bar-item")
@@ -130,7 +133,7 @@ export default class BarChart extends EventsEmitter {
 
         tooltip.html(props.label + ': ' + props.value)
           .style('left', x - 20 + 'px')
-          .style('top', y + 80 + 'px')
+          .style('top', y - 40 + 'px')
           .style('display', 'block')
 
         tempcolor = this.style.fill;

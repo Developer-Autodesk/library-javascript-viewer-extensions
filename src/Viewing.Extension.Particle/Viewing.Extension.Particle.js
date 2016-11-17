@@ -6,9 +6,9 @@
 import TranslateTool from './Viewing.Tool.Particle.Translate'
 import ParticlePanel from 'Viewing.Extension.Particle.Panel'
 import ParticleTool from 'Viewing.Extension.Particle.Tool'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
 import SwitchButton from 'SwitchButton'
-import Toolkit from 'ViewerToolkit'
+import Toolkit from 'Viewer.Toolkit'
 import FPS from './fpsmeter'
 import dat from 'dat-gui'
 

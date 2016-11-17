@@ -1,7 +1,7 @@
 import ParticleSystem from './ParticleSystem/ParticleSystem'
 import Vector from './ParticleSystem/Vector'
 import EventsEmitter from 'EventsEmitter'
-import Toolkit from 'ViewerToolkit'
+import Toolkit from 'Viewer.Toolkit'
 
 export default class ParticleTool extends EventsEmitter {
 

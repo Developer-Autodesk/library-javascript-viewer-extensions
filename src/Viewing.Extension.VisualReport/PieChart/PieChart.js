@@ -19,7 +19,9 @@ export default class PieChart extends EventsEmitter {
 
      super();
 
-     this.chart = new d3pie($(selector)[0], {
+     let $container = $(selector)
+
+     this.chart = new d3pie($container[0], {
 
       //header: {
       //  title: {
@@ -27,9 +29,21 @@ export default class PieChart extends EventsEmitter {
       //  }
       //},
 
+       effects: {
+         load: {
+           //effect: "none"
+         }
+       },
+
+       labels: {
+         inner: {
+           hideWhenLessThanPercentage: 5
+         }
+       },
+
       size: {
-        canvasHeight: 450,
-        canvasWidth: 600,
+        canvasHeight: $('.tabs-container').height(),
+        canvasWidth: $('.tabs-container').width(),
         "pieInnerRadius": "39%",
         "pieOuterRadius": "80%"
       },
@@ -45,6 +59,22 @@ export default class PieChart extends EventsEmitter {
         //}
       },
 
+      tooltips: {
+        enabled: true,
+        type: "placeholder",
+        string: "{label}: {percentage}%",
+        styles: {
+          fadeInSpeed: 250,
+          backgroundColor: "#000000",
+          backgroundOpacity: 0.5,
+          color: "#efefef",
+          borderRadius: 2,
+          font: "arial",
+          fontSize: 10,
+          padding: 4
+        }
+      },
+
       callbacks: {
         onClickSegment: (event)=> {
           this.emit('segment.click', {
@@ -54,6 +84,6 @@ export default class PieChart extends EventsEmitter {
       }
     });
 
-    $(`${selector} > svg`).css('transform', 'translate(15px, -30px)');
+    $(`${selector} > svg`).css('transform', `translate(15px, -30px)`);
   }
 }

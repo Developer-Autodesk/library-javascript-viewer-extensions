@@ -3,10 +3,10 @@
 // by Philippe Leefsma, Feb 2016
 //
 /////////////////////////////////////////////////////////////////////
-import './Viewing.Extension.StateManager.css'
+import './Viewing.Extension.StateManager.scss'
 import ToolPanelBase from 'ToolPanelBase'
+import 'dragula/dist/dragula.min.css'
 import dragula from 'dragula'
-import './dragula.css'
 
 export default class StateManagerPanel extends ToolPanelBase{
 
@@ -55,14 +55,13 @@ export default class StateManagerPanel extends ToolPanelBase{
   //
   //
   /////////////////////////////////////////////////////////////
-  htmlContent(id) {
+  htmlContent (id) {
 
     return `
 
       <div class="container">
         <div>
-          <button id="${id}-save-btn"
-                  class="btn btn-info btn-save">
+          <button id="${id}-save-btn" class="btn btn-info btn-save">
             <span class="glyphicon glyphicon-save-file btn-span-list">
             </span>
             Save State
@@ -79,12 +78,15 @@ export default class StateManagerPanel extends ToolPanelBase{
   //
   //
   /////////////////////////////////////////////////////////////
-  addItem(item) {
+  addItem (item) {
 
     var itemHtml = `
 
-        <div id="${item.guid}" class="state-list-group-item">
-            ${item.name}
+        <div id="${item.guid}"
+          class="state-list-group-item state-restore">
+            <label class="state-restore">
+              ${item.name}
+            </label>
              <button id="${item.guid}-delete-btn"
                     class="btn btn-danger state-btn-list">
               <span class="glyphicon glyphicon-remove state-btn-span-list">
@@ -93,19 +95,20 @@ export default class StateManagerPanel extends ToolPanelBase{
         </div>
       `;
 
-    $(`#${this.container.id}-item-list`).append(itemHtml);
+    $(`#${this.container.id}-item-list`).append(itemHtml)
 
     if(item.readonly){
 
-      $(`#${item.guid}-delete-btn`).css({display:'none'});
+      $(`#${item.guid}-delete-btn`).css({display:'none'})
     }
 
-    var $item = $(`#${item.guid}`);
+    var $item = $(`#${item.guid}`)
 
     $(`#${item.guid}-delete-btn`).click((e)=>{
 
-      this.emit('state.remove', item);
-      $item.remove();
+      this.emit('state.remove', item)
+
+      $item.remove()
     });
 
     $item.click((e)=> {
@@ -113,13 +116,21 @@ export default class StateManagerPanel extends ToolPanelBase{
       e.preventDefault();
 
       var element = document.elementFromPoint(
-        e.pageX,
-        e.pageY);
+        e.pageX, e.pageY)
 
-      if (element.className.indexOf('list-group-item') > -1) {
+      if (element.className.indexOf('state-restore') > -1) {
 
-        this.emit('state.restore', item);
+        this.emit('state.restore', item)
       }
     });
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  clearItems () {
+
+    $(`#${this.container.id}-item-list`).empty()
   }
 }

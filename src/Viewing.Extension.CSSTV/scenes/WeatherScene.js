@@ -1,5 +1,5 @@
 import { TimeSeries, SmoothieChart } from 'smoothie'
-import ViewerToolkit from 'ViewerToolkit'
+import ViewerToolkit from 'Viewer.Toolkit'
 import './styles.css'
 
 export default class WeatherScene {

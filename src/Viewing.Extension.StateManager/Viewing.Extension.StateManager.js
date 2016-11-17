@@ -4,8 +4,8 @@
 /////////////////////////////////////////////////////////////////
 import StateManagerPanel from './Viewing.Extension.StateManager.Panel'
 import StatesAPI from './Viewing.Extension.StateManager.API'
-import ViewerToolkit from 'ViewerToolkit'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 class StateManagerExtension extends ExtensionBase {
 
@@ -60,8 +60,42 @@ class StateManagerExtension extends ExtensionBase {
       (e) => this.onSaveSequence(e);
 
     this._panel = new StateManagerPanel(
-      this._viewer.container,
+      this._options.container || this._viewer.container,
       this._control.container);
+
+    this._panel.on('open', () => {
+
+      if(this._api) {
+
+        this._api.getSequence(this._options.model._id).then(
+          async(sequence) => {
+
+          var states = await this._api.getStates(
+            this._options.model._id);
+
+          sequence.forEach((stateId) => {
+
+            states.forEach((state) => {
+
+              if(state.guid == this._options.stateId){
+
+                this._viewer.restoreState(state, false);
+              }
+
+              if (state.guid == stateId) {
+
+                this._panel.addItem(state);
+              }
+            })
+          })
+        })
+      }
+    })
+
+    this._panel.on('close', (state) => {
+
+      this._panel.clearItems()
+    })
 
     this._panel.on('state.add', (state) => {
 
@@ -97,32 +131,6 @@ class StateManagerExtension extends ExtensionBase {
 
     this.parentControl.addControl(
       this._control);
-
-    if(this._api) {
-
-      this._api.getSequence(this._options.model._id).then(
-        async(sequence) => {
-
-        var states = await this._api.getStates(
-          this._options.model._id);
-
-        sequence.forEach((stateId) => {
-
-        states.forEach((state) => {
-
-          if(state.guid == this._options.stateId){
-
-            this._viewer.restoreState(state, false);
-          }
-
-          if (state.guid == stateId) {
-
-            this._panel.addItem(state);
-          }
-        })
-      })
-     })
-    }
 
     if(this._options.homeState) {
 
@@ -165,6 +173,8 @@ class StateManagerExtension extends ExtensionBase {
   onAddState (data) {
 
     var state = this._viewer.getState();
+
+    state.guid = ExtensionBase.guid()
 
     state.name = (data.name.length ?
       data.name : new Date().toString('d/M/yyyy H:mm:ss'));

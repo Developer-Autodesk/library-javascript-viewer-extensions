@@ -5,8 +5,9 @@
 /////////////////////////////////////////////////////////////////////
 import Snap from 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'
 import Markup3DTool from './Viewing.Extension.Markup3D.Tool'
-import ViewerToolkit from 'ViewerToolkit'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
+import ViewerTooltip from 'Viewer.Tooltip'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 class Markup3DExtension extends ExtensionBase {
 
@@ -16,12 +17,35 @@ class Markup3DExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   constructor (viewer, options) {
 
-    super(viewer, options)
+    super (viewer, options)
 
-    this.markup3DTool = new Markup3DTool(viewer)
+    this.markupCollection = {}
+
+    this.markup3DTool = new Markup3DTool(
+      viewer,
+      this.markupCollection,
+      options)
+
+    this.tooltip = new ViewerTooltip(
+      viewer)
+
+    this.tooltip.setContent(`
+      <div id="markup3D-tooltipId" class="markup3D-tooltip">
+        <b>Place new markup (or ESC) ...</b>
+      </div>`, '#markup3D-tooltipId')
 
     this._viewer.toolController.registerTool(
       this.markup3DTool)
+
+    var toolName = this.markup3DTool.getName()
+
+    this._viewer.toolController.activateTool(toolName)
+
+    this.onExplodeHandler =
+      (e) => this.onExplode(e)
+
+    this.onVisibilityHandler =
+      (e) => this.onVisibility(e)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -44,17 +68,13 @@ class Markup3DExtension extends ExtensionBase {
       'glyphicon glyphicon-check',
       'Markup 3D', () => {
 
-        var toolName = this.markup3DTool.getName()
+        if (this.markup3DTool.create) {
 
-        if (this.markup3DTool.active) {
-
-          this._viewer.toolController.deactivateTool(toolName)
-          this._control.container.classList.remove('active')
+          this.markup3DTool.stopCreate()
 
         } else {
 
-          this._viewer.toolController.activateTool(toolName)
-          this._control.container.classList.add('active')
+          this.markup3DTool.startCreate()
         }
       })
 
@@ -73,6 +93,80 @@ class Markup3DExtension extends ExtensionBase {
     this.parentControl.addControl(
       this._control)
 
+    this.markup3DTool.on('startCreate', () => {
+
+      this.tooltip.activate()
+
+      this._control.container.classList.add('active')
+    })
+
+    this.markup3DTool.on('pinSelected', () => {
+
+      this.tooltip.deactivate()
+    })
+
+    this.markup3DTool.on('markupCreated', () => {
+
+    })
+
+    this.markup3DTool.on('stopCreate', () => {
+
+      this.tooltip.deactivate()
+
+      this._control.container.classList.remove('active')
+    })
+
+    this.markup3DTool.on('markupLabel.mouseover', (markup) => {
+
+      this.tooltip.deactivate()
+    })
+
+    this.markup3DTool.on('markupLabel.mouseout', (markup) => {
+
+      if (this.markup3DTool.create) {
+
+        const markup = this.markup3DTool.currentMarkup
+
+        if (markup) {
+
+          if(markup.created && !markup.dragging) {
+
+            this.tooltip.activate()
+          }
+
+        } else {
+
+          this.tooltip.activate()
+        }
+      }
+    })
+
+    this.eventHandlers = [
+      {
+        event: Autodesk.Viewing.EXPLODE_CHANGE_EVENT,
+        handler: this.onExplodeHandler
+      },
+      {
+        event: Autodesk.Viewing.ISOLATE_EVENT,
+        handler: this.onVisibilityHandler
+      },
+      {
+        event: Autodesk.Viewing.HIDE_EVENT,
+        handler: this.onVisibilityHandler
+      },
+      {
+        event: Autodesk.Viewing.SHOW_EVENT,
+        handler: this.onVisibilityHandler
+      }
+    ]
+
+    this.eventHandlers.forEach((entry) => {
+
+      this._viewer.addEventListener(
+        entry.event,
+        entry.handler)
+    })
+
     console.log('Viewing.Extension.Markup3D loaded')
 
     return true
@@ -83,6 +177,16 @@ class Markup3DExtension extends ExtensionBase {
   //
   /////////////////////////////////////////////////////////////////
   unload () {
+
+    this.eventHandlers.forEach((entry) => {
+
+      if(entry.removeOnDeactivate) {
+
+        this._viewer.removeEventListener(
+          entry.event,
+          entry.handler)
+      }
+    })
 
     this.parentControl.removeControl(
       this._control)
@@ -123,6 +227,35 @@ class Markup3DExtension extends ExtensionBase {
     this.markup3DTool.restoreState(
       viewerState, immediate)
   }
+
+  /////////////////////////////////////////////////////////////////
+  // EXPLODE_CHANGE_EVENT Handler
+  //
+  /////////////////////////////////////////////////////////////////
+  onExplode (event) {
+
+    for (var id in this.markupCollection) {
+
+      var markup = this.markupCollection[id]
+
+      markup.updateFragmentTransform()
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // ISOLATE_EVENT Handler
+  //
+  /////////////////////////////////////////////////////////////////
+  onVisibility (event) {
+
+    for (var id in this.markupCollection) {
+
+      var markup = this.markupCollection[id]
+
+      markup.updateVisibilty(event)
+    }
+  }
+
 }
 
 Autodesk.Viewing.theExtensionManager.registerExtension(

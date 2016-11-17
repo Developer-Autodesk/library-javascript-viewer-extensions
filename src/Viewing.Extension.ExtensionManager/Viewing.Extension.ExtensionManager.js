@@ -3,8 +3,8 @@
 //
 /////////////////////////////////////////////////////////////////
 import ExtensionManagerPanel from './Viewing.Extension.ExtensionManager.Panel';
-import ExtensionBase from 'ExtensionBase';
-import ViewerToolkit from 'ViewerToolkit';
+import ExtensionBase from 'Viewer.ExtensionBase';
+import ViewerToolkit from 'Viewer.Toolkit';
 import Debug from 'debug';
 
 var debug = Debug('Viewing.Extension.ExtensionManager');

@@ -3,7 +3,7 @@
 // by Philippe Leefsma, March 2016
 //
 ///////////////////////////////////////////////////////////////////////////////
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
 
 class PointCloud extends ExtensionBase {
 

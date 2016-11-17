@@ -4,8 +4,8 @@
 //
 /////////////////////////////////////////////////////////////////////
 import CustomModelStructurePanel from  './Viewing.Extension.CustomModelStructure.Panel'
-import ViewerToolkit from 'ViewerToolkit'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 class CustomModelStructure extends ExtensionBase {
 

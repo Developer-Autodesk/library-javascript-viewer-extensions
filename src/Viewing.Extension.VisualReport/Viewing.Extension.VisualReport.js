@@ -4,8 +4,8 @@
 //
 /////////////////////////////////////////////////////////////////////
 import VisualReportPanel from './Viewing.Extension.VisualReport.Panel'
-import ViewerToolkit from 'ViewerToolkit'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 class VisualReportExtension extends ExtensionBase {
 
@@ -15,7 +15,7 @@ class VisualReportExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   constructor(viewer, options) {
 
-    super(viewer, options);
+    super (viewer, options)
   }
 
   /////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class VisualReportExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   static get ExtensionId() {
 
-    return 'Viewing.Extension.VisualReport';
+    return 'Viewing.Extension.VisualReport'
   }
 
   /////////////////////////////////////////////////////////////////
@@ -33,13 +33,39 @@ class VisualReportExtension extends ExtensionBase {
   /////////////////////////////////////////////////////////////////
   async load() {
 
+    this._viewer.setQualityLevel(false, true)
+
     var componentIds = await ViewerToolkit.getLeafNodes(
       this._viewer.model);
 
-    var properties = await ViewerToolkit.getPropertyList(
-      this._viewer.model,
-      componentIds);
+    var fragIdToMaterial = {}
 
+    componentIds.forEach(async(dbId) => {
+
+      var fragIds = await ViewerToolkit.getFragIds(
+        this._viewer.model, dbId)
+
+      fragIds.forEach((fragId) => {
+
+        let fragList = this._viewer.model.getFragmentList()
+
+        let material = fragList.getMaterial(fragId)
+
+        if(material) {
+
+          fragIdToMaterial[fragId] = material
+        }
+      })
+    })
+
+    let properties = this._options.properties
+
+    if (!properties) {
+
+      properties = await ViewerToolkit.getPropertyList(
+        this._viewer.model,
+        componentIds)
+    }
 
     this._control = ViewerToolkit.createButton(
       'toolbar-visual-report',
@@ -67,11 +93,29 @@ class VisualReportExtension extends ExtensionBase {
       viewerToolbar.addControl(this.parentControl)
     }
 
+    this._panel.on('close', () => {
+
+      for(let fragId in fragIdToMaterial) {
+
+        let material = fragIdToMaterial[fragId]
+
+        let fragList = this._viewer.model.getFragmentList()
+
+        fragList.setMaterial(fragId, material)
+      }
+
+      ViewerToolkit.isolateFull(
+        this._viewer)
+
+      this._viewer.impl.invalidate(
+        true, false, false);
+    })
+
     this.parentControl.addControl(
       this._control)
 
     console.log('Viewing.Extension.VisualReport loaded');
-    
+
     return true;
   }
 

@@ -4,9 +4,9 @@
 //
 /////////////////////////////////////////////////////////////////////
 import Markup2DPanel from './Viewing.Extension.Markup2D.Panel'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
+import ViewerToolkit from 'Viewer.Toolkit'
 import './Viewing.Extension.Markup2D.css'
-import ViewerToolkit from 'ViewerToolkit'
 import './MarkupsCore.js'
 import './spectrum.css'
 import './spectrum'

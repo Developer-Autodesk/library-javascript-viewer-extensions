@@ -1,4 +1,4 @@
-import ViewerToolkit from 'ViewerToolkit'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 export default class IFrameScene {
 

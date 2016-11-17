@@ -3,22 +3,20 @@
 // by Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////////////
-import CircleGraph from './CircleGraph/CircleGraph'
-import ForceGraph from './ForceGraph/ForceGraph'
-import './Viewing.Extension.VisualReport.css'
+import './Viewing.Extension.VisualReport.scss'
 import PieChart from './PieChart/PieChart'
 import BarChart from './BarChart/BarChart'
-import ViewerToolkit from 'ViewerToolkit'
+import ViewerToolkit from 'Viewer.Toolkit'
 import ToolPanelBase from 'ToolPanelBase'
 import TabManager from 'TabManager'
 import Dropdown from 'Dropdown'
 import d3 from 'd3'
 
-export default class VisualReportPanel extends ToolPanelBase{
+export default class VisualReportPanel extends ToolPanelBase {
 
   constructor(viewer, properties, componentIds, buttonElement) {
 
-    super(viewer.container, 'Visual Reports', {
+    super($('.viewer-view')[0], 'Visual Reports', {
       shadow: true,
       buttonElement
     });
@@ -87,19 +85,34 @@ export default class VisualReportPanel extends ToolPanelBase{
       html: `<p class="d3 d3-bar c${this.barChartSelector}"></p>`
     });
 
-    this.forceGraphSelector = ToolPanelBase.guid();
+    this.$container = $(this.container)
 
-    this.forceTabId = this.TabManager.addTab({
-      name: 'Force Graph',
-      html: `<p class="d3 d3-force c${this.forceGraphSelector}"></p>`
-    });
+    this.$container.mousedown(() => {
 
-    this.circleGraphSelector = ToolPanelBase.guid();
+      this.size = {
+        h: this.$container.height(),
+        w: this.$container.width()
+      }
 
-    this.circleTabId = this.TabManager.addTab({
-      name: 'Circle Graph',
-      html: `<p class="d3 d3-circle c${this.circleGraphSelector}"></p>`
-    });
+      this.mousedown = true
+    })
+
+    this.$container.parent().mouseup(() => {
+
+      if(this.mousedown) {
+
+        if(this.size.w !== this.$container.width() ||
+          this.size.h !== this.$container.height()) {
+
+          if(this.data) {
+
+            this.redraw(this.data)
+          }
+        }
+      }
+
+      this.mousedown = false
+    })
   }
 
   /////////////////////////////////////////////////////////////
@@ -134,24 +147,52 @@ export default class VisualReportPanel extends ToolPanelBase{
   //
   //
   /////////////////////////////////////////////////////////////
-  createMaterial(clrStr) {
+  setVisible(show) {
 
-    var clr = parseInt(clrStr.replace('#',''), 16);
+    if(show && this.data) {
+
+      this.data.forEach((entry) => {
+
+        entry.dbIds.forEach((dbId)=> {
+
+          ViewerToolkit.setMaterial(
+            this.viewer.model,
+            dbId,
+            entry.material)
+        })
+      })
+
+      this.viewer.impl.invalidate(
+        true, false, false);
+    }
+
+    super.setVisible(show)
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  createMaterial (clrStr) {
+
+    var clr = parseInt(clrStr.replace('#',''), 16)
 
     var props = {
       shading: THREE.FlatShading,
       name: ViewerToolkit.guid(),
-      shininess: 10,
       specular: clr,
+      shininess: 0,
+      emissive: 0,
+      diffuse: 0,
       color: clr
-    };
+    }
 
-    var material = new THREE.MeshPhongMaterial(props);
+    var material = new THREE.MeshPhongMaterial(props)
 
     this.viewer.impl.matman().addMaterial(
       props.name,
       material,
-      true);
+      true)
 
     return material;
   }
@@ -160,12 +201,12 @@ export default class VisualReportPanel extends ToolPanelBase{
   // Dropdown selected item changed
   //
   /////////////////////////////////////////////////////////////////
-  async onPropertyChanged(propName){
+  async onPropertyChanged (propName) {
 
     var componentsMap = await ViewerToolkit.mapComponentsByProp(
       this.viewer.model,
       propName,
-      this.componentIds);
+      this.componentIds)
 
     var groupedMap = this.groupMap(
       componentsMap, 'Other', 1.5);
@@ -174,9 +215,10 @@ export default class VisualReportPanel extends ToolPanelBase{
 
     var colors = d3.scale.linear()
       .domain([0, keys.length * .33, keys.length * .66, keys.length])
-      .range(['#B58929','#C61C6F', '#268BD2', '#85992C']) //Orange to Green.
+      .range(['#FCB843', '#C2149F', '#0CC4BD', '#0270E9']) //adsk colors
+      //.range(['#B58929','#C61C6F', '#268BD2', '#85992C']) //Orange to Green.
 
-    var data = keys.map((key, idx)=> {
+    this.data = keys.map((key, idx) => {
 
       var color = colors(idx);
 
@@ -189,21 +231,36 @@ export default class VisualReportPanel extends ToolPanelBase{
         ViewerToolkit.setMaterial(
           this.viewer.model,
           dbId,
-          material);
-      });
+          material)
+      })
 
       return {
         label: key,
         dbIds: dbIds,
         color: color,
+        material: material,
         value: dbIds.length
       }
     });
 
-    $('.d3 > svg').remove();
+    this.viewer.fitToView()
 
-    this.viewer.fitToView();
-    this.viewer.isolate();
+    ViewerToolkit.isolateFull(
+      this.viewer)
+
+    this.redraw(this.data)
+
+    this.viewer.impl.invalidate(
+      true, false, false);
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //
+  /////////////////////////////////////////////////////////////
+  redraw (data) {
+
+    $('.d3 > svg', '.visual-report').remove();
 
     this.pieChart = new PieChart(
       '.c' + this.pieChartSelector,
@@ -211,8 +268,12 @@ export default class VisualReportPanel extends ToolPanelBase{
 
     this.pieChart.on('segment.click', (e)=>{
 
-      this.viewer.fitToView(e.dbIds);
-      this.viewer.isolate(e.dbIds);
+      this.viewer.fitToView(e.dbIds)
+
+      ViewerToolkit.isolateFull(
+        this.viewer,
+        this.viewer.model,
+        e.dbIds)
     });
 
     this.barChart = new BarChart(
@@ -221,29 +282,13 @@ export default class VisualReportPanel extends ToolPanelBase{
 
     this.barChart.on('bar.click', (e)=>{
 
-      this.viewer.fitToView(e.dbIds);
-      this.viewer.isolate(e.dbIds);
+      this.viewer.fitToView(e.dbIds)
+
+      ViewerToolkit.isolateFull(
+        this.viewer,
+        this.viewer.model,
+        e.dbIds)
     });
-
-    var dataTree = await this.buildCustomDataTree(
-      propName);
-
-    this.forceGraph = new ForceGraph(
-      '.c' + this.forceGraphSelector,
-      dataTree);
-
-    this.forceGraph.on('node.click', (e)=>{
-
-      this.viewer.fitToView(e.dbId);
-      this.viewer.isolate(e.dbId);
-    });
-
-    this.circleGraph = new CircleGraph(
-      '.c' + this.circleGraphSelector,
-      dataTree);
-
-    this.viewer.impl.invalidate(
-      true, false, false);
   }
 
   /////////////////////////////////////////////////////////////
@@ -280,12 +325,11 @@ export default class VisualReportPanel extends ToolPanelBase{
   // based on viewer input property
   //
   /////////////////////////////////////////////////////////////
-  async buildCustomDataTree(propName) {
+  async buildCustomDataTree (propName) {
 
     var model = this.viewer.model;
 
-    var root = await ViewerToolkit.buildModelTree(
-      model);
+    var root = await ViewerToolkit.buildModelTree(model)
 
     var taskFunc = (node, parent)=> {
 
@@ -300,27 +344,28 @@ export default class VisualReportPanel extends ToolPanelBase{
 
           if (isNaN(prop.displayValue)) {
 
-            node.size = 0;
+            node.size = 0
+
+          } else {
+
+            node.size = prop.displayValue
           }
-          else {
 
-            node.size = prop.displayValue;
-          }
+          return resolve()
 
-          return resolve();
-        }
-        catch (ex) {
+        } catch (ex) {
 
-          node.size = 0;
-          return resolve();
+          node.size = 0
+
+          return resolve()
         }
       });
     }
 
     await ViewerToolkit.runTaskOnDataTree(
-      root, taskFunc);
+      root, taskFunc)
 
-    this.normalize(root);
+    this.normalize(root)
 
     return root;
   }

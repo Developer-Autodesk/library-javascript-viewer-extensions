@@ -3,7 +3,7 @@
 // by Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////////////
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
 import './Viewing.Extension.InViewerSearch.css'
 
 class InViewerSearchWrapperExtension extends ExtensionBase {

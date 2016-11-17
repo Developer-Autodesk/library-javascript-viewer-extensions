@@ -3,8 +3,7 @@
 // by Philippe Leefsma, April 2016
 //
 /////////////////////////////////////////////////////////////////////
-
-import ViewerToolkit from 'ViewerToolkit'
+import ViewerToolkit from 'Viewer.Toolkit'
 
 export default class CustomModelStructurePanel
     extends Autodesk.Viewing.UI.ModelStructurePanel {

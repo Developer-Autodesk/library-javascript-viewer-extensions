@@ -6,7 +6,7 @@
 import BrowserScene from './scenes/BrowserScene'
 import WeatherScene from './scenes/WeatherScene'
 import IFrameScene from './scenes/IFrameScene'
-import ExtensionBase from 'ExtensionBase'
+import ExtensionBase from 'Viewer.ExtensionBase'
 import './CSS3DRenderer'
 
 class CSSTVExtension extends ExtensionBase {
