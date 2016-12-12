@@ -91,9 +91,10 @@ module.exports = {
     }),
 
     new webpack.ProvidePlugin({
-      jQuery: "jquery",
-      _ : "lodash",
-      $: "jquery"
+      'window.jQuery': 'jquery',
+      jQuery: 'jquery',
+      _: 'lodash',
+      $: 'jquery'
     })
   ],
 

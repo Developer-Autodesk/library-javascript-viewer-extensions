@@ -95,41 +95,50 @@ module.exports = {
         }),
 
         new webpack.ProvidePlugin({
-            jQuery: "jquery",
-            _ : "lodash",
-            $: "jquery"
+            'window.jQuery': 'jquery',
+            jQuery: 'jquery',
+            _: 'lodash',
+            $: 'jquery'
         })
     ],
 
     resolve: {
         extensions: ['', '.js', '.jsx', '.json', '.ts'],
         root: [
-            path.resolve('./src/utils'),
+            path.resolve('./src/components'),
             path.resolve('./src/Viewing.Extension.Particle'),
             path.resolve('./src/Viewing.Extension.Transform')
         ]
     },
 
     module: {
+
         loaders: [
             {
-                test: /\.jsx?$/,
-                loader: 'babel',
-                exclude: /node_modules/,
-                query: {
-                    cacheDirectory: true,
-                    presets: ['es2015', 'stage-0', 'react']
-                }
-            },
-            {
-                test: /\.css$/,
-                loader: "style-loader!css-loader"
+                test: /\.json$/,
+                loader: 'json-loader'
             },
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/
             },
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                loader: 'babel',
+                query: {
+                    cacheDirectory: true,
+                    presets: ['es2015', 'stage-0', 'react']
+                }
+            },
+            { test: /\.scss$/, loaders: ["style", "css", "sass"] },
+            { test: /\.less$/, loader: "style!css!less" },
+            { test: /\.css$/, loader: "style-loader!css-loader" },
+            { test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff' },
+            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream' },
+            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file' },
+            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml' },
             {
                 test: /\.(jpe?g|png|gif|svg)$/i,
                 loaders: [
